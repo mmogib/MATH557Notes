@@ -16,6 +16,7 @@ begin
     using Symbolics
     using QRCoders
     using PrettyTables
+	using Combinatorics
     # using NonlinearSolve
     # using ForwardDiff
     # using Integrals
@@ -25,41 +26,130 @@ begin
 	
 end
 
-# ╔═╡ c6241f8a-60ff-44c0-b363-f2d91b2c5eb0
+# ╔═╡ c59dffb4-c419-461b-8096-e27171be0a87
+# cm"""
+# - LU and QR factorizations 2.4, 2.5, 3.2, 3.3, 3.5, 4.1, 4.2, 5.1− 5.4, 5.6
+# - SVD, norms and LSQ 6.1, 6.3, 7.1 − 7.4, 8.1 − 8.3, 9.1 − 9.3, 9.4.1
+# - Kronecker products 10.1, 10.2, 10.3, 11.1, 11.2, 11.3
+# - Iterative methods 12.1 − 12.4, 13.1 − 13.3, 13.5
+# - Eigenpairs 14.1 − 14.5, 15.1 − 15.3
+# """
+
+# ╔═╡ a8948e17-2846-431f-9765-6359eaeb20a9
+md" # Chapter 1: Review of Basic Concepts."
+
+# ╔═╡ db84f278-2b61-40fd-b0a8-bb132cff5f18
 cm"""
-__Applied/Numerical linear algebra__ providesalgorithms for solving problems of the
-following kind:
-
-__System of linear equations.__ 
-
-Given a (square) matrix ``\boldsymbol{A}`` and a vector ``\boldsymbol{b}``. 
-
-Find a vector ``\boldsymbol{x}`` such that ``\boldsymbol{A x}=\boldsymbol{b}``.
-
-__Least squares.__ 
-
-Given a (rectangular) matrix ``\boldsymbol{A}`` and a vector ``\boldsymbol{b}``. 
-
-Find a vector ``\boldsymbol{x}`` such that the sum of squares of the components of ``\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}`` is as small as possible.
-
-__Eigenvalues and eigenvectors.__  
-
-Given a (square) matrix ``\boldsymbol{A}``. 
-
-Find a number ``\lambda`` and/or a nonzero vector ``\boldsymbol{x}`` such that ``\boldsymbol{A} \boldsymbol{x}=\lambda \boldsymbol{x}``.
+> You should read this chapter to recall the basic concepts of linear algebra you learned in your undergarduate studies.
 """
 
-# ╔═╡ c59dffb4-c419-461b-8096-e27171be0a87
+# ╔═╡ df6c46d3-fa32-4709-a392-463167b33c46
+md"## Column Space, Row Sapce, Null Space, Inner Product and Norm"
+
+# ╔═╡ 17263bb2-6964-48a6-b31e-b20f168f35a2
+# using LinearAlgebra
+
+# ╔═╡ 30bc89ef-58af-4bed-b172-aa6b4e2c8491
+let
+	X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
+	x₁,x₂,x₃,x₄ = eachcol(X)
+	# combs = combinations([1,2,3,4],3)
+	# for a in combs
+	# 	@show det(X[:,a])
+	# end
+	nullspace(X)
+	Y = X'
+	# nullspace(Y)
+	Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
+	
+end
+
+# ╔═╡ 7e88c07e-394e-46eb-b1e5-89fb65287e36
+md"##  Linear Systems"
+
+# ╔═╡ 21a9d1b8-fdb4-44e6-99da-f97ac172a9a3
 cm"""
-- LU and QR factorizations 2.4, 2.5, 3.2, 3.3, 3.5, 4.1, 4.2, 5.1− 5.4, 5.6
-- SVD, norms and LSQ 6.1, 6.3, 7.1 − 7.4, 8.1 − 8.3, 9.1 − 9.3, 9.4.1
-- Kronecker products 10.1, 10.2, 10.3, 11.1, 11.2, 11.3
-- Iterative methods 12.1 − 12.4, 13.1 − 13.3, 13.5
-- Eigenpairs 14.1 − 14.5, 15.1 − 15.3
+Consider a linear system
+```math
+\begin{array}{cc}
+a_{11} x_1+a_{12} x_2+\cdots+a_{1 n} x_n & =b_1 \\
+a_{21} x_1+a_{22} x_2+\cdots+a_{2 n} x_n & =b_2 \\
+\vdots & \vdots \\
+\vdots & \vdots \\
+a_{m 1} x_1+a_{m 2} x_2+\cdots+a_{m n} x_n & =b_m
+\end{array}
+```
+This can be written
+```math
+\boldsymbol{A} \boldsymbol{x}=\left[\begin{array}{cccc}a_{11} & a_{12} & \cdots & a_{1 n} \\ a_{21} & a_{22} & \cdots & a_{2 n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m 1} & a_{m 2} & \cdots & a_{m n}\end{array}\right]\left[\begin{array}{c}x_1 \\ x_2 \\ \vdots \\ x_n\end{array}\right]=\left[\begin{array}{c}b_1 \\ b_2 \\ \vdots \\ b_m\end{array}\right]=\boldsymbol{b}
+```
+
+"""
+
+# ╔═╡ c7f1e8cd-da40-469f-b8cf-42869d5b46ed
+md"## The Inverse Matrix"
+
+# ╔═╡ ffcc0c43-bbb5-433c-a98f-b8421a846485
+md"## Determinants"
+
+# ╔═╡ 8aa563a5-8264-4bf0-89c9-c1daa74bd4d6
+cm"""
+For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` the determinant of ``\boldsymbol{A}`` is defined by the number
+```math
+\operatorname{det}(\boldsymbol{A})=\sum_{\sigma \in S_n} \operatorname{sign}(\sigma) a_{\sigma(1), 1} a_{\sigma(2), 2} \cdots a_{\sigma(n), n}
+```
+"""
+
+# ╔═╡ 5ab2ce16-f52d-4107-9035-4dc47df19fcd
+let
+	Random.seed!(0)
+	n = 4
+	A =[1 1 2 ; 2 3 5; -2 2 1] 
+	A = rand(-2:5,n,n)
+	σ= permutations(1:n,n)|>collect
+	mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+	det(A),mydet
+	parity([3,5,1,2,4])
+end
+
+# ╔═╡ 21e63aa1-c0de-4980-b973-9afd6b1dde87
+md"## Eigenvalues, Eigenvectors and Eigenpairs"
+
+# ╔═╡ 65875093-4ff0-4684-a355-678d727f36f7
+cm"""
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is a square matrix, ``\lambda \in \mathbb{C}`` and ``\boldsymbol{x} \in \mathbb{C}^n``. 
+
+- We say that ``(\lambda, \boldsymbol{x})`` is an eigenpair for ``\boldsymbol{A}`` if 
+```math
+\boldsymbol{A} \boldsymbol{x}=\lambda \boldsymbol{x} \quad \text{ and } \boldsymbol{x} \quad \text{is nonzero.}
+``` 
+- The scalar ``\lambda`` is called an __eigenvalue__ and ``\boldsymbol{x}`` is said to be an __eigenvector__. 
+- The set of eigenvalues is called the __spectrum__ of ``\boldsymbol{A}`` and is denoted by ``\sigma(\boldsymbol{A})``. (For example, ``\sigma(\boldsymbol{I})=\{1, \ldots, 1\}=\{1\}``.)
+-  For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` we have ``\lambda \in`` ``\sigma(\boldsymbol{A}) \Longleftrightarrow \operatorname{det}(\boldsymbol{A}-\lambda \boldsymbol{I})=0``
+"""
+
+# ╔═╡ 6d79d33f-8caa-4fa9-b1e3-baf6bb25d519
+cm"""
+- For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``
+```math
+\operatorname{trace}(\boldsymbol{A})=\lambda_1+\lambda_2+\cdots+\lambda_n, \quad \operatorname{det}(\boldsymbol{A})=\lambda_1 \lambda_2 \cdots \lambda_n
+```
+<div class="p40" >
+
+where the trace of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is the sum of its diagonal elements
+```math
+\operatorname{trace}(\boldsymbol{A}):=a_{11}+a_{22}+\cdots+a_{n n}
+```
+</div>
+
+- The matrix ``A`` is singular if and only if zero is an eigenvalue.
 """
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
+
+# ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
+initialize_eqref()
 
 # ╔═╡ 7b9ffd7c-3b93-4cfd-bed5-1590368ce987
 
@@ -67,7 +157,17 @@ TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=
 <style>
 @import url("https://mmogib.github.io/math102/custom.css");
 
+ul {
+  list-style: none;
+}
 
+ul li:before {
+  content: '💡 ';
+}
+
+.p40 {
+	padding-left: 40px;
+}
 </style>
 """)
 
@@ -187,10 +287,166 @@ begin
     @htl("")
 end
 
+# ╔═╡ 06790633-b8aa-45ba-ac67-c416c88b166a
+begin
+    text_book = post_img("https://www.dropbox.com/scl/fi/0axh6gwcwp4eg97wxfwtd/text_book.webp?rlkey=zlptduxz777cvreoghlcerwbm&raw=1", 200)
+    md""" # Syllabus
+    ## Syallbus
+    See here [Term 241 - MATH557 - Syllabus](https://www.dropbox.com/scl/fi/y7fnigu9r4ez5ilma11qq/T241_MATH557_Syllabus.pdf?rlkey=8w3lyyqvsn59eyp1s0pwcslbk&raw=1)
+    ## Textbook
+    __Textbook: Lyche, T. (2020). Numerical Linear Algebra and Matrix Factorizations (Vol. 22). Springer International Publishing. [https://doi.org/10.1007/978-3-030-36468-7](https://doi.org/10.1007/978-3-030-36468-7)__
+    $text_book
+
+    ## Office Hours
+    I strongly encourage all students to make use of my office hours. These dedicated times are a valuable opportunity for you to ask questions, seek clarification on lecture material, discuss challenging problems, and get personalized feedback on your work. Engaging with me during office hours can greatly enhance your understanding of the course content and improve your performance. Whether you're struggling with a specific concept or simply want to delve deeper into the subject, I am here to support your learning journey. Don't hesitate to drop by; __your success is my priority__.
+
+    | Day       | Time        |
+    |-----------|-------------|
+    | Tuesday    | 08:00-08:40PM |
+    | Thursday | 08:00-08:40PM |
+    Also you can ask for an online meeting through __TEAMS__.
+    """
+end
+
+# ╔═╡ c6241f8a-60ff-44c0-b363-f2d91b2c5eb0
+cm"""
+__Applied/Numerical linear algebra__ providesalgorithms for solving problems of the
+following kind:
+
+$(bbl("System of linear equations",""))
+
+Given a (square) matrix ``\boldsymbol{A}`` and a vector ``\boldsymbol{b}``. 
+
+Find a vector ``\boldsymbol{x}`` such that ``\boldsymbol{A x}=\boldsymbol{b}``.
+$(ebl())
+
+$(bbl("Least squares",""))
+
+Given a (rectangular) matrix ``\boldsymbol{A}`` and a vector ``\boldsymbol{b}``. 
+
+Find a vector ``\boldsymbol{x}`` such that the sum of squares of the components of ``\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}`` is as small as possible.
+$(ebl())
+
+$(bbl("Eigenvalues and eigenvectors",""))
+Given a (square) matrix ``\boldsymbol{A}``. 
+
+Find a number ``\lambda`` and/or a nonzero vector ``\boldsymbol{x}`` such that ``\boldsymbol{A} \boldsymbol{x}=\lambda \boldsymbol{x}``.
+$(ebl())
+"""
+
+# ╔═╡ 6dec69df-0c80-4790-b5c5-12fbe2dc41b8
+cm"""
+Associated with an ``m \times n`` matrix ``\boldsymbol{X}=\left[\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n\right]``, where ``\boldsymbol{x}_j \in \mathcal{V}, j=1, \ldots, n`` are the following subspaces of ``\mathcal{V}``.
+1. The subspace 
+```math
+\mathcal{R}(\boldsymbol{X}):=\left\{\boldsymbol{X} \boldsymbol{c}: \boldsymbol{c} \in \mathbb{R}^n\right\}=\operatorname{span}(\mathcal{X})
+``` 
+$(add_space(10))is called the column space of ``\boldsymbol{X}``. It is the smallest subspace containing ``\mathcal{X}=\left\{\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n\right\}``. 
+$(add_space(20))▶ The dimension of ``\mathcal{R}(\boldsymbol{X})`` is called the __rank of ``\boldsymbol{X}``__. 
+
+$(add_space(20))▶ The matrix ``\boldsymbol{X}`` has rank ``n`` if and only if it has linearly independent columns.
+{}
+2. ``\mathcal{R}\left(\boldsymbol{X}^T\right)`` is called the row space of ``\boldsymbol{X}``. It is generated by the rows of ``\boldsymbol{X}`` written as column vectors.
+3. The subspace ``\mathcal{N}(\boldsymbol{X}):=\left\{\boldsymbol{y} \in \mathbb{R}^n: \boldsymbol{X} \boldsymbol{y}=\boldsymbol{0}\right\}`` is called the __null space__ or __kernel space__ of ``\boldsymbol{X}``. The dimension of ``\mathcal{N}(\boldsymbol{X})`` is called the __nullity__ of ``\boldsymbol{X}`` and denoted ``\operatorname{null}(\boldsymbol{X})``.
+
+4. Suppose ``\boldsymbol{X} \in`` ``\mathbb{C}^{m \times n}``. Then
+	- ``\operatorname{rank}(X)=\operatorname{rank}\left(X^*\right)`` where ``X^*=\overline{X}^T``.
+	- ``\operatorname{rank}(\boldsymbol{X})+\operatorname{null}(\boldsymbol{X})=n``,
+	- ``\operatorname{rank}(\boldsymbol{X})+\operatorname{null}\left(\boldsymbol{X}^*\right)=m``,
+"""
+
+# ╔═╡ 5742ff61-39a1-41e6-9136-1f148516d5e0
+cm"""
+The system is
+- __homogeneous__ if ``\boldsymbol{b}=\boldsymbol{0}`` and 
+- __underdetermined__ $(add_space(40)) if $(add_space(10)) ``m< n``
+- __square__ $(add_space(67)) if $(add_space(10)) ``m=n``
+- __overdetermined__ $(add_space(44)) if $(add_space(10))``m > n``
+
+The matrix ``\boldsymbol{A} \in\mathbb{R}^{n \times n}`` is called
+- __nonsingular__ if the only real solution of the homogeneous system ``\boldsymbol{A} \boldsymbol{x}=\mathbf{0}`` is ``\boldsymbol{x}=\mathbf{0}``. 
+- __singular__ if there is a nonzero ``\boldsymbol{x} \in \mathbb{R}^n`` such that ``\boldsymbol{A x}=\mathbf{0}``.
+"""
+
+# ╔═╡ 7f18dc1e-e040-4f0d-b3bf-a5477489a1ab
+cm"""
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is a square matrix. 
+
+- A matrix ``\boldsymbol{B} \in \mathbb{C}^{n \times n}`` is called a __right inverse of__ ``\boldsymbol{A}`` if 
+```math
+\boldsymbol{A B}=\boldsymbol{I}.
+``` 
+- A matrix ``\boldsymbol{C} \in \mathbb{C}^{n \times n}`` is said to be a __left inverse__ of ``\boldsymbol{A}`` if ``\boldsymbol{C} \boldsymbol{A}=\boldsymbol{I}``. 
+- We say that ``\boldsymbol{A}`` is __invertible__ if it has both a left and a right inverse. If ``\boldsymbol{A}`` has a right inverse ``\boldsymbol{B}`` and a left inverse ``\boldsymbol{C}`` then
+```math
+\boldsymbol{C}=\boldsymbol{C} \boldsymbol{I}=\boldsymbol{C}(\boldsymbol{A B})=(\boldsymbol{C} \boldsymbol{A}) \boldsymbol{B}=\boldsymbol{I} \boldsymbol{B}=\boldsymbol{B}.
+```
+$(add_space(10))It is called the inverse of ``\boldsymbol{A}`` and denoted by ``\boldsymbol{A}^{-1}``. 
+- Thus the inverse satisfies ``\boldsymbol{A}^{-1} \boldsymbol{A}=\boldsymbol{A} \boldsymbol{A}^{-1}=\boldsymbol{I}``.
+-  A square matrix is invertible if and only if it is nonsingular.
+Suppose ``\boldsymbol{A}, \boldsymbol{B} \in \mathbb{C}^{n \times n}`` are nonsingular and ``c`` is a nonzero constant.
+- ``\boldsymbol{A}^{-1}`` is nonsingular and ``\left(\boldsymbol{A}^{-1}\right)^{-1}=\boldsymbol{A}``.
+- ``\boldsymbol{C}=\boldsymbol{A} \boldsymbol{B}`` is nonsingular and ``\boldsymbol{C}^{-1}=\boldsymbol{B}^{-1} \boldsymbol{A}^{-1}``.
+- ``\boldsymbol{A}^T`` is nonsingular and ``\left(\boldsymbol{A}^T\right)^{-1}=\left(\boldsymbol{A}^{-1}\right)^T=: \boldsymbol{A}^{-T}``.
+- ``\boldsymbol{A}^*`` is nonsingular and ``\left(\boldsymbol{A}^*\right)^{-1}=\left(\boldsymbol{A}^{-1}\right)^*=: \boldsymbol{A}^{-*}``.
+- ``c \boldsymbol{A}`` is nonsingular and ``(c \boldsymbol{A})^{-1}=\frac{1}{c} \boldsymbol{A}^{-1}``.
+"""
+
+# ╔═╡ 0fb73bc3-e70d-4de2-a8fa-49938c6f3a60
+cm"""
+$(bbl("Properties",""))
+
+- if ``A`` is triangular then ``\operatorname{det}(A) = a_{11} a_{22} \cdots a_{n n}``, the product of the diagonal elements. 
+- ``\operatorname{det}(\boldsymbol{I})=1``. 
+
+The elementary operations using either rows or columns are
+- Interchanging two rows(columns): ``\operatorname{det}(\boldsymbol{B})=-\operatorname{det}(\boldsymbol{A})``,
+- Multiply a row(column) by a scalar: ``\alpha, \operatorname{det}(\boldsymbol{B})=\alpha \operatorname{det}(\boldsymbol{A})``,
+- Add a constant multiple of one row(column) to another row(column): ``\operatorname{det}(\boldsymbol{B})=\operatorname{det}(\boldsymbol{A})``.
+
+where ``\boldsymbol{B}`` is the result of performing the indicated operation on ``\boldsymbol{A}``.
+
+```math
+\begin{aligned}
+& \operatorname{det}(\boldsymbol{A})=\sum_{j=1}^n(-1)^{i+j} a_{i j} \operatorname{det}\left(\boldsymbol{A}_{i j}\right) \text { for } i=1, \ldots, n, \text { row } \\
+\end{aligned}
+```
+
+Here ``\boldsymbol{A}_{i, j}`` denotes the submatrix of ``\boldsymbol{A}`` obtained by deleting the ``i`` th row and ``j`` th column of ``\boldsymbol{A}``. 
+
+For ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` and ``1 \leq i, j \leq n`` the determinant ``\operatorname{det}\left(\boldsymbol{A}_{i j}\right)`` is called the __cofactor__ of ``a_{i j}``.
+
+-----------
+
+If ``\boldsymbol{A}, \boldsymbol{B}`` are square matrices of order ``n`` with real or complex elements, then
+- ``\operatorname{det}(\boldsymbol{A B})=\operatorname{det}(\boldsymbol{A}) \operatorname{det}(\boldsymbol{B})``.
+- ``\operatorname{det}\left(\boldsymbol{A}^T\right)=\operatorname{det}(\boldsymbol{A})``, and ``\operatorname{det}\left(\boldsymbol{A}^*\right)=\overline{\operatorname{det}(\boldsymbol{A})}``, (complex conjugate).
+- ``\operatorname{det}(a \boldsymbol{A})=a^n \operatorname{det}(\boldsymbol{A})``, for ``a \in \mathbb{C}``.
+- ``\boldsymbol{A}`` is singular if and only if ``\operatorname{det}(\boldsymbol{A})=0``.
+- If ``\boldsymbol{A}=\left[\begin{array}{ll}\boldsymbol{C} & \boldsymbol{D} \\ \mathbf{0} & \boldsymbol{E}\end{array}\right]`` for some square matrices ``\boldsymbol{C}, \boldsymbol{E}`` then ``\operatorname{det}(\boldsymbol{A})=\operatorname{det}(\boldsymbol{C}) \operatorname{det}(\boldsymbol{E})``.
+- __Cramer's rule__ Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is nonsingular and ``\boldsymbol{b} \in \mathbb{C}^n``. Let ``\boldsymbol{x}=`` ``\left[x_1, x_2, \ldots, x_n\right]^T`` be the unique solution of ``\boldsymbol{A} \boldsymbol{x}=\boldsymbol{b}``. Then
+```math
+x_j=\frac{\operatorname{det}\left(\boldsymbol{A}_j(\boldsymbol{b})\right)}{\operatorname{det}(\boldsymbol{A})}, \quad j=1,2, \ldots, n
+```
+$(add_space(10))where ``\boldsymbol{A}_j(\boldsymbol{b})`` denote the matrix obtained from ``\boldsymbol{A}`` by replacing the ``j`` th column of ``\boldsymbol{A}`` by ``\boldsymbol{b}``.
+- __Adjoint formula for the inverse.__ If ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is nonsingular then
+```math
+\boldsymbol{A}^{-1}=\frac{1}{\operatorname{det}(\boldsymbol{A})} \operatorname{adj}(\boldsymbol{A})
+```
+
+<div style="padding-left:40px;">
+
+where the matrix ``\operatorname{adj}(\boldsymbol{A}) \in \mathbb{C}^{n \times n}`` with elements ``\operatorname{adj}(\boldsymbol{A})_{i, j}=(-1)^{i+j} \operatorname{det}\left(\boldsymbol{A}_{j, i}\right)`` is called the adjoint of ``\boldsymbol{A}``. Moreover, ``\boldsymbol{A}_{j, i}`` denotes the submatrix of ``\boldsymbol{A}`` obtained by deleting the ``j`` th row and ``i`` th column of ``\boldsymbol{A}``.
+
+</div>
+
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
@@ -209,6 +465,7 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 Colors = "~0.12.11"
+Combinatorics = "~1.0.2"
 CommonMark = "~0.8.12"
 HypertextLiteral = "~0.9.5"
 LaTeXStrings = "~1.3.1"
@@ -228,7 +485,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "186ae2c2a1369482fbe09733ee2c74a950b47857"
+project_hash = "c0ebb49e35a82749903dc283fabb2ae7becc4654"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "6778bcc27496dae5723ff37ee30af451db8b35fe"
@@ -2239,10 +2496,30 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╟─06790633-b8aa-45ba-ac67-c416c88b166a
 # ╟─c6241f8a-60ff-44c0-b363-f2d91b2c5eb0
 # ╟─c59dffb4-c419-461b-8096-e27171be0a87
+# ╟─a8948e17-2846-431f-9765-6359eaeb20a9
+# ╟─db84f278-2b61-40fd-b0a8-bb132cff5f18
+# ╟─df6c46d3-fa32-4709-a392-463167b33c46
+# ╟─6dec69df-0c80-4790-b5c5-12fbe2dc41b8
+# ╠═17263bb2-6964-48a6-b31e-b20f168f35a2
+# ╠═30bc89ef-58af-4bed-b172-aa6b4e2c8491
+# ╟─7e88c07e-394e-46eb-b1e5-89fb65287e36
+# ╟─21a9d1b8-fdb4-44e6-99da-f97ac172a9a3
+# ╟─5742ff61-39a1-41e6-9136-1f148516d5e0
+# ╟─c7f1e8cd-da40-469f-b8cf-42869d5b46ed
+# ╟─7f18dc1e-e040-4f0d-b3bf-a5477489a1ab
+# ╟─ffcc0c43-bbb5-433c-a98f-b8421a846485
+# ╟─8aa563a5-8264-4bf0-89c9-c1daa74bd4d6
+# ╠═5ab2ce16-f52d-4107-9035-4dc47df19fcd
+# ╟─0fb73bc3-e70d-4de2-a8fa-49938c6f3a60
+# ╟─21e63aa1-c0de-4980-b973-9afd6b1dde87
+# ╟─65875093-4ff0-4684-a355-678d727f36f7
+# ╟─6d79d33f-8caa-4fa9-b1e3-baf6bb25d519
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
+# ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
 # ╟─d0060e13-0aa0-495e-828e-084df48ef7e7
 # ╟─d779340e-4dab-45c1-b8df-c0bcbae32a90
