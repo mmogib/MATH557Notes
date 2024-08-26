@@ -13,10 +13,12 @@ begin
     using HypertextLiteral
     using Colors
     using LinearAlgebra, Random, Printf, SparseArrays
-    using Symbolics
+    using Symbolics, SymbolicUtils
     using QRCoders
     using PrettyTables
 	using Combinatorics
+	using Roots
+	# using SymPy as sp
     # using NonlinearSolve
     # using ForwardDiff
     # using Integrals
@@ -25,6 +27,9 @@ begin
 	# using ModelingToolkit
 	
 end
+
+# ╔═╡ 01183bde-075c-4848-995a-b23ffeeb97c8
+md"## mathmatize"
 
 # ╔═╡ c59dffb4-c419-461b-8096-e27171be0a87
 # cm"""
@@ -46,21 +51,40 @@ cm"""
 # ╔═╡ df6c46d3-fa32-4709-a392-463167b33c46
 md"## Column Space, Row Sapce, Null Space, Inner Product and Norm"
 
+# ╔═╡ b976040e-4974-4bfc-a6a9-e3926a1f2eef
+# using LinearAlgebra
+
+# ╔═╡ 5356f40b-2cc7-4490-9752-115cae126839
+let 
+	X = [
+	1 2 3 4 1
+	1 6 6 9 4
+	1 5 6 3 9]
+	rank(X)
+	# nullspace(X)
+end
+
+# ╔═╡ e3e2f379-f7bb-4ccf-85e0-378ff479f3de
+1+2im
+
+# ╔═╡ 6ccfccef-09cc-42d1-a5c8-3899801b4438
+
+
 # ╔═╡ 17263bb2-6964-48a6-b31e-b20f168f35a2
 # using LinearAlgebra
 
 # ╔═╡ 30bc89ef-58af-4bed-b172-aa6b4e2c8491
 let
 	X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
-	x₁,x₂,x₃,x₄ = eachcol(X)
+	# x₁,x₂,x₃,x₄ = eachcol(X)
 	# combs = combinations([1,2,3,4],3)
 	# for a in combs
 	# 	@show det(X[:,a])
 	# end
-	nullspace(X)
-	Y = X'
+	# nullspace(X)
+	# Y = X'
 	# nullspace(Y)
-	Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
+	# Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
 	
 end
 
@@ -100,16 +124,26 @@ For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` the determinant of ``\bol
 ```
 """
 
+# ╔═╡ dbf3b4de-06ce-46ff-9178-cc28961ab3e5
+function mydet(A)
+	n,=size(A)
+	σ= permutations(1:n,n)
+	map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+end
+
 # ╔═╡ 5ab2ce16-f52d-4107-9035-4dc47df19fcd
 let
 	Random.seed!(0)
-	n = 4
+	n = 3
 	A =[1 1 2 ; 2 3 5; -2 2 1] 
-	A = rand(-2:5,n,n)
-	σ= permutations(1:n,n)|>collect
-	mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
-	det(A),mydet
-	parity([3,5,1,2,4])
+	inv(A), mydet(A)
+	# det(A)
+	# # A = rand(-2:5,n,n)
+	# σ= permutations(1:n,n)|>collect
+	# [(s,prod(A[s[i],i] for i in 1:n)) for s in σ]
+	# mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+	# det(A),mydet
+	# parity([3,5,1,2,4])
 end
 
 # ╔═╡ 21e63aa1-c0de-4980-b973-9afd6b1dde87
@@ -144,6 +178,21 @@ where the trace of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is the sum of 
 
 - The matrix ``A`` is singular if and only if zero is an eigenvalue.
 """
+
+# ╔═╡ d465c7a3-8c83-4f99-b747-2a519a136111
+let
+	A =[1 1 2 ; 2 3 5; -2 2 1] 
+	@variables λ
+	f(x)=substitute(expand(simplify(mydet([1-λ 1 2
+		2 3-λ 5
+		-2 2 1-λ
+	]))),Dict(λ=>x))
+
+	find_zeros(f,-10,50)
+end
+
+# ╔═╡ 374034ce-15d5-403d-9d2a-aa760cc0a269
+
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -182,6 +231,11 @@ begin
         write(io, read(w.filename))
     end
 end
+
+# ╔═╡ a8e556ea-48ca-4a43-914a-7171a6491186
+LocalImage("docs/imgs/mathmatize_qrcode.png")
+
+# exportqrcode("https://www.mathmatize.com/c/1263/","docs/imgs/mathmatize_qrcode.png",version=1,width=8,pixels=500)
 
 # ╔═╡ d779340e-4dab-45c1-b8df-c0bcbae32a90
 
@@ -460,7 +514,9 @@ PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 QRCoders = "f42e9828-16f3-11ed-2883-9126170b272d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
@@ -469,13 +525,15 @@ Combinatorics = "~1.0.2"
 CommonMark = "~0.8.12"
 HypertextLiteral = "~0.9.5"
 LaTeXStrings = "~1.3.1"
-Latexify = "~0.16.4"
+Latexify = "~0.16.5"
 PlotThemes = "~3.2.0"
 Plots = "~1.40.5"
 PlutoExtras = "~0.7.12"
 PlutoUI = "~0.7.59"
 PrettyTables = "~2.3.2"
 QRCoders = "~1.4.5"
+Roots = "~2.1.6"
+SymbolicUtils = "~2.1.2"
 Symbolics = "~5.35.1"
 """
 
@@ -485,12 +543,12 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "c0ebb49e35a82749903dc283fabb2ae7becc4654"
+project_hash = "ed431b402d73b8c6440b3ee125486d75a4458251"
 
 [[deps.ADTypes]]
-git-tree-sha1 = "6778bcc27496dae5723ff37ee30af451db8b35fe"
+git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
 uuid = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
-version = "1.6.2"
+version = "1.7.1"
 
     [deps.ADTypes.extensions]
     ADTypesChainRulesCoreExt = "ChainRulesCore"
@@ -707,9 +765,9 @@ version = "1.0.0"
 
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
-git-tree-sha1 = "b1c55339b7c6c350ee89f2c1604299660525b248"
+git-tree-sha1 = "8ae8d32e09f0dcf42a36b90d4e17f5dd2e4c4215"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "4.15.0"
+version = "4.16.0"
 weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
@@ -812,9 +870,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.Distributions]]
 deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "9c405847cc7ecda2dc921ccf18b47ca150d7317e"
+git-tree-sha1 = "0e0a1264b0942f1f3abb2b30891f2a590cc652ac"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.109"
+version = "0.25.110"
 
     [deps.Distributions.extensions]
     DistributionsChainRulesCoreExt = "ChainRulesCore"
@@ -1191,14 +1249,14 @@ weakdeps = ["Random", "RecipesBase", "Statistics"]
     IntervalSetsStatisticsExt = "Statistics"
 
 [[deps.InverseFunctions]]
-deps = ["Test"]
-git-tree-sha1 = "18c59411ece4838b18cd7f537e56cf5e41ce5bfd"
+git-tree-sha1 = "2787db24f4e03daf859c6509ff87764e4182f7d1"
 uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
-version = "0.1.15"
-weakdeps = ["Dates"]
+version = "0.1.16"
+weakdeps = ["Dates", "Test"]
 
     [deps.InverseFunctions.extensions]
-    DatesExt = "Dates"
+    InverseFunctionsDatesExt = "Dates"
+    InverseFunctionsTestExt = "Test"
 
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
@@ -1287,16 +1345,18 @@ version = "0.4.6"
 
 [[deps.Latexify]]
 deps = ["Format", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
-git-tree-sha1 = "5b0d630f3020b82c0775a51d05895852f8506f50"
+git-tree-sha1 = "ce5f5621cac23a86011836badfedf664a612cee4"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.4"
+version = "0.16.5"
 
     [deps.Latexify.extensions]
     DataFramesExt = "DataFrames"
+    SparseArraysExt = "SparseArrays"
     SymEngineExt = "SymEngine"
 
     [deps.Latexify.weakdeps]
     DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
 
 [[deps.LazyModules]]
@@ -1800,10 +1860,10 @@ uuid = "01d81517-befc-4cb6-b9ec-a95719d0359c"
 version = "0.6.12"
 
 [[deps.RecursiveArrayTools]]
-deps = ["Adapt", "ArrayInterface", "DocStringExtensions", "GPUArraysCore", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "SparseArrays", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "Tables"]
-git-tree-sha1 = "b450d967a770fb13d0e26358f58375e20361cf9c"
+deps = ["Adapt", "ArrayInterface", "DocStringExtensions", "GPUArraysCore", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "Tables"]
+git-tree-sha1 = "b034171b93aebc81b3e1890a036d13a9c4a9e3e0"
 uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
-version = "3.26.0"
+version = "3.27.0"
 
     [deps.RecursiveArrayTools.extensions]
     RecursiveArrayToolsFastBroadcastExt = "FastBroadcast"
@@ -1811,6 +1871,7 @@ version = "3.26.0"
     RecursiveArrayToolsMeasurementsExt = "Measurements"
     RecursiveArrayToolsMonteCarloMeasurementsExt = "MonteCarloMeasurements"
     RecursiveArrayToolsReverseDiffExt = ["ReverseDiff", "Zygote"]
+    RecursiveArrayToolsSparseArraysExt = ["SparseArrays"]
     RecursiveArrayToolsTrackerExt = "Tracker"
     RecursiveArrayToolsZygoteExt = "Zygote"
 
@@ -1820,6 +1881,7 @@ version = "3.26.0"
     Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
     MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
     ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
     Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
@@ -1848,9 +1910,27 @@ version = "0.7.1"
 
 [[deps.Rmath_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "d483cd324ce5cf5d61b77930f0bbd6cb61927d21"
+git-tree-sha1 = "e60724fd3beea548353984dc61c943ecddb0e29a"
 uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
-version = "0.4.2+0"
+version = "0.4.3+0"
+
+[[deps.Roots]]
+deps = ["Accessors", "ChainRulesCore", "CommonSolve", "Printf"]
+git-tree-sha1 = "3484138c9fa4296a0cf46a74ca3f97b59d12b1d0"
+uuid = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+version = "2.1.6"
+
+    [deps.Roots.extensions]
+    RootsForwardDiffExt = "ForwardDiff"
+    RootsIntervalRootFindingExt = "IntervalRootFinding"
+    RootsSymPyExt = "SymPy"
+    RootsSymPyPythonCallExt = "SymPyPythonCall"
+
+    [deps.Roots.weakdeps]
+    ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+    IntervalRootFinding = "d2bf35a9-74e0-55ec-b149-d360ff49b807"
+    SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
+    SymPyPythonCall = "bc8888f7-b21e-4b7c-a06a-5d9c9496438c"
 
 [[deps.RuntimeGeneratedFunctions]]
 deps = ["ExprTools", "SHA", "Serialization"]
@@ -1894,10 +1974,11 @@ version = "2.48.1"
     Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [[deps.SciMLOperators]]
-deps = ["ArrayInterface", "DocStringExtensions", "LinearAlgebra", "MacroTools", "Setfield", "SparseArrays", "StaticArraysCore"]
-git-tree-sha1 = "10499f619ef6e890f3f4a38914481cc868689cd5"
+deps = ["ArrayInterface", "DocStringExtensions", "LinearAlgebra", "MacroTools", "Setfield", "StaticArraysCore"]
+git-tree-sha1 = "23b02c588ac9a17ecb276cc62ab37f3e4fe37b32"
 uuid = "c0aeaf25-5076-4817-a8d5-81caf7dfa961"
-version = "0.3.8"
+version = "0.3.9"
+weakdeps = ["SparseArrays"]
 
 [[deps.SciMLStructures]]
 deps = ["ArrayInterface"]
@@ -2047,9 +2128,9 @@ version = "7.2.1+1"
 
 [[deps.SymbolicIndexingInterface]]
 deps = ["Accessors", "ArrayInterface", "RuntimeGeneratedFunctions", "StaticArraysCore"]
-git-tree-sha1 = "2dd32da03adaf43fd91494e38ef3df0ab2e6c20e"
+git-tree-sha1 = "c9fce29fb41a10677e24f74421ebe31220b81ad0"
 uuid = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
-version = "0.3.27"
+version = "0.3.28"
 
 [[deps.SymbolicLimits]]
 deps = ["SymbolicUtils"]
@@ -2498,10 +2579,16 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─06790633-b8aa-45ba-ac67-c416c88b166a
 # ╟─c6241f8a-60ff-44c0-b363-f2d91b2c5eb0
+# ╟─01183bde-075c-4848-995a-b23ffeeb97c8
+# ╟─a8e556ea-48ca-4a43-914a-7171a6491186
 # ╟─c59dffb4-c419-461b-8096-e27171be0a87
 # ╟─a8948e17-2846-431f-9765-6359eaeb20a9
 # ╟─db84f278-2b61-40fd-b0a8-bb132cff5f18
 # ╟─df6c46d3-fa32-4709-a392-463167b33c46
+# ╠═b976040e-4974-4bfc-a6a9-e3926a1f2eef
+# ╠═5356f40b-2cc7-4490-9752-115cae126839
+# ╠═e3e2f379-f7bb-4ccf-85e0-378ff479f3de
+# ╠═6ccfccef-09cc-42d1-a5c8-3899801b4438
 # ╟─6dec69df-0c80-4790-b5c5-12fbe2dc41b8
 # ╠═17263bb2-6964-48a6-b31e-b20f168f35a2
 # ╠═30bc89ef-58af-4bed-b172-aa6b4e2c8491
@@ -2512,11 +2599,14 @@ version = "1.4.1+1"
 # ╟─7f18dc1e-e040-4f0d-b3bf-a5477489a1ab
 # ╟─ffcc0c43-bbb5-433c-a98f-b8421a846485
 # ╟─8aa563a5-8264-4bf0-89c9-c1daa74bd4d6
+# ╠═dbf3b4de-06ce-46ff-9178-cc28961ab3e5
 # ╠═5ab2ce16-f52d-4107-9035-4dc47df19fcd
 # ╟─0fb73bc3-e70d-4de2-a8fa-49938c6f3a60
 # ╟─21e63aa1-c0de-4980-b973-9afd6b1dde87
 # ╟─65875093-4ff0-4684-a355-678d727f36f7
 # ╟─6d79d33f-8caa-4fa9-b1e3-baf6bb25d519
+# ╠═d465c7a3-8c83-4f99-b747-2a519a136111
+# ╠═374034ce-15d5-403d-9d2a-aa760cc0a269
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
