@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.45
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -30,6 +30,24 @@ end
 
 # ╔═╡ 01183bde-075c-4848-995a-b23ffeeb97c8
 md"## mathmatize"
+
+# ╔═╡ 73b56b54-22a2-4fa0-8eed-ab8a23cebc74
+md"# Programming Assignments With Julia"
+
+# ╔═╡ 06de9303-589d-40cf-ac95-4df2020af3a6
+cm"""
+#### Numerical Computation
+In this course, implementation and programming assignments will be carried out through Julia programming language
+
+##### Install Julia
+Download and install Julia from [HERE](https://julialang.org/downloads/)
+
+##### Learn Julia
+1.	Ben Lauwens and Allen B. Downey. [Think Julia. O’Reilly Media, June 2019.](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html)
+2.	[Other Books](https://julialang.org/learning/books/).
+
+
+"""
 
 # ╔═╡ c59dffb4-c419-461b-8096-e27171be0a87
 # cm"""
@@ -136,7 +154,7 @@ let
 	Random.seed!(0)
 	n = 3
 	A =[1 1 2 ; 2 3 5; -2 2 1] 
-	inv(A), mydet(A)
+	# inv(A), mydet(A)
 	# det(A)
 	# # A = rand(-2:5,n,n)
 	# σ= permutations(1:n,n)|>collect
@@ -145,6 +163,27 @@ let
 	# det(A),mydet
 	# parity([3,5,1,2,4])
 end
+
+# ╔═╡ 4dbfa5bd-dfcc-4195-8337-02f8bed8748a
+let
+	Random.seed!(123)
+	A= zeros(10,10)
+	CD=A[1:5,:]=rand(2:8,5,10)
+	C = CD[:,1:5]
+	E=A[6:end,6:end]=rand(2:8,5,5)
+	det(A),det(C[1:5,1:5])*det(E)
+end
+
+# ╔═╡ 49ee7daf-8b09-4303-8aa6-05ae57977688
+let 
+	# example
+	A = [2 1;-1 3]
+	# eigen(A)
+	x=[1;-1]
+	b = A*x
+	A,b
+end
+	
 
 # ╔═╡ 21e63aa1-c0de-4980-b973-9afd6b1dde87
 md"## Eigenvalues, Eigenvectors and Eigenpairs"
@@ -179,20 +218,71 @@ where the trace of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is the sum of 
 - The matrix ``A`` is singular if and only if zero is an eigenvalue.
 """
 
-# ╔═╡ d465c7a3-8c83-4f99-b747-2a519a136111
-let
-	A =[1 1 2 ; 2 3 5; -2 2 1] 
-	@variables λ
-	f(x)=substitute(expand(simplify(mydet([1-λ 1 2
-		2 3-λ 5
-		-2 2 1-λ
-	]))),Dict(λ=>x))
+# ╔═╡ 374034ce-15d5-403d-9d2a-aa760cc0a269
+md"# Chapter 2: Diagonally Dominant Tridiagonal Matrices"
 
-	find_zeros(f,-10,50)
+# ╔═╡ e06e478f-b2a9-4b33-8a36-3bc87e53f62a
+md"##  2.2 ATwoPointBoundaryValue Problem"
+
+# ╔═╡ 8d801c77-08e3-45c0-b27c-0d36f0bfb29e
+cm"""
+Consider the simple two point boundary value problem
+
+$(texeq"-u^{\prime \prime}(x)=f(x), \quad x \in[0,1], \quad u(0)=0, u(1)=0\label{1dpp}\tag{1-D Poisson}")
+
+"""
+
+# ╔═╡ 41e2ac3f-5488-4506-9278-b7857d8ad4e7
+md"## LU Factorization of a Tridiagonal System"
+
+# ╔═╡ d5e9beb5-56a9-4a99-903d-719dc18cf710
+cm"""
+Consider a tridiagonal linear system ``Ax = b`` where ``A = \operatorname{tridiag}(a_i,d_i,c_i) \in \mathbb{C}^{n\times n}``.
+
+Construct ``L`` and ``U`` such that ``A=LU``. Then we have 
+$(texeq"\left[\begin{array}{lllll}d_1 & c_1 & & & \\ a_1 & d_2 & c_2 & & \\ & \ddots & \ddots & \ddots & \\ & & a_{n-2} & d_{n-1} & c_{n-1} \\ & & & a_{n-1} & d_n\end{array}\right]=\left[\begin{array}{cccc}1 & & & \\ l_1 & 1 & \\ & \ddots & \ddots & \\ & & l_{n-1} & 1\end{array}\right]\left[\begin{array}{cccc}u_1 & c_1 & & \\ & \ddots & \ddots & \\ & & u_{n-1} & c_{n-1} \\ & & & u_n\end{array}\right]\label{lufactor}")
+"""
+
+# ╔═╡ 9a95f3c9-0e47-422a-9b0e-35fc8c528308
+md"##  2.4 TheEigenpairs of the 1D Test Matrix"
+
+# ╔═╡ 918ca6c0-ac2d-4072-b7d9-b73de95248fd
+cm"""
+The second derivative matrix ``\boldsymbol{T}=\operatorname{tridiag}(-1,2,-1)`` is a special case of the tridiagonal matrix
+```math
+\boldsymbol{T}_1:=\operatorname{tridiag}(a, d, a)
+```
+where ``a, d \in \mathbb{R}``. We call this the 1D test matrix. 
+- It is symmetric and 
+- strictly diagonally dominant if ``|d|>2|a|``.
+- the eigenvectors are the columns of the sine matrix defined by
+```math
+\boldsymbol{S}=\left[\sin \frac{j k \pi}{m+1}\right]_{j, k=1}^m \in \mathbb{R}^{m \times m}
+```
+- the eigenvalues are given by
+```math
+\lambda_j=d+2 a \cos (j \pi /(m+1)), \quad j=1,\cdots, m.
+```
+- The eigenvalues of a Hermitian matrix are real. Moreover, eigenvectors corresponding to distinct eigen values are orthogonal.
+"""
+
+# ╔═╡ a5240ee4-1f4d-4229-95f4-fe115645c92c
+begin
+	triadiag(a,d,m) =diagm(0=>repeat([d],m),-1=>repeat([a],m-1),1=>repeat([a],m-1))
 end
 
-# ╔═╡ 374034ce-15d5-403d-9d2a-aa760cc0a269
+# ╔═╡ 05dfaf81-8b67-43de-b249-f1e23c3664f2
+let
+	a,d,m = -1,3,3
+	A = triadiag(a,d,m)
+	E,V = eigen(A)
+	E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
+	V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
+	E, E2, -(√2/2)*V1, V
+end
 
+# ╔═╡ 77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
+md"##  2.5 Block Multiplicationand Triangular Matrices"
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -496,6 +586,47 @@ where the matrix ``\operatorname{adj}(\boldsymbol{A}) \in \mathbb{C}^{n \times n
 
 """
 
+# ╔═╡ 0beeed3b-905e-4ac1-b19c-a06cec3f160f
+cm"""
+📑 __finite difference method__ can use to approximate the solution.
+```math
+\begin{array}{lcl}
+u'(x) &=& \displaystyle\lim_{h\to 0} \frac{u(x+h/2)-u(x-h/2)}{h}\\
+u''(x) &=&\displaystyle \lim_{h\to 0} \frac{u(x+h)-2u(x)+u(x-h)}{h^2}\\
+\end{array}
+```
+Let ``m`` be a positive integer, and 
+- ``h:=1 /(m+1)`` be the discretization parameter, and 
+- replace the interval ``[0,1]`` by grid points 
+```math
+x_j:=j h \quad \text{  for  } \quad j=0,1, \ldots, m+1. 
+```
+We then obtain approximations ``v_j`` to the exact solution ``u\left(x_j\right)`` for ``j=1, \ldots, m`` by replacing the differential equation by the difference equation
+```math
+\frac{-v_{j-1}+2 v_j-v_{j+1}}{h^2}=f(j h), \quad j=1, \ldots, m, \quad v_0=v_{m+1}=0
+```
+
+Moving the ``h^2`` factor to the right hand side this can be written as an ``m \times m`` linear system
+$(post_img("https://www.dropbox.com/scl/fi/d2wh1w0zrcuid54h3euh3/eq_2_21.png?rlkey=7zdri03ldvs6si9a1iyf4w8vb&dl=1"))
+
+- The matrix ``\boldsymbol{T}`` is called the __second derivative matrix__ and will occur frequently in this course. 
+```math
+\boldsymbol{T}=\operatorname{tridiag}\left(a_i, d_i, c_i\right) \in \mathbb{R}^{m \times m},
+```
+$(add_space(10))where in this case ``a_i=c_i=-1`` and ``d_i=2`` for all ``i``.
+"""
+
+# ╔═╡ 7513851f-48f8-4e2f-8c97-baee10e9e4c7
+cm"""
+$(bbl("Definition","(Diagonal Dominance)"))
+The matrix ``\boldsymbol{A}=\left[a_{i j}\right] \in \mathbb{C}^{n \times n}`` is __weakly diagonally dominant__ if
+```math
+\left|a_{i i}\right| \geq \sum_{j \neq i}\left|a_{i j}\right|, i=1, \ldots, n
+```
+$(ebl())
+- If ``\boldsymbol{A}=\operatorname{tridiag}\left(a_i, d_i, c_i\right) \in`` ``\mathbb{C}^{n \times n}`` is tridiagonal and weakly diagonally dominant. If in addition ``\left|d_1\right|>\left|c_1\right|`` and ``a_i \neq 0`` for ``i=1, \ldots, n-2``, then ``\boldsymbol{A}`` has a unique ``L U`` factorization $(eqref("lufactor")). If in addition ``d_n \neq 0``, then ``\boldsymbol{A}`` is nonsingular.
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -541,7 +672,7 @@ Symbolics = "~5.35.1"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.4"
+julia_version = "1.10.5"
 manifest_format = "2.0"
 project_hash = "ed431b402d73b8c6440b3ee125486d75a4458251"
 
@@ -2497,7 +2628,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+1"
+version = "5.11.0+0"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]
@@ -2581,6 +2712,8 @@ version = "1.4.1+1"
 # ╟─c6241f8a-60ff-44c0-b363-f2d91b2c5eb0
 # ╟─01183bde-075c-4848-995a-b23ffeeb97c8
 # ╟─a8e556ea-48ca-4a43-914a-7171a6491186
+# ╟─73b56b54-22a2-4fa0-8eed-ab8a23cebc74
+# ╟─06de9303-589d-40cf-ac95-4df2020af3a6
 # ╟─c59dffb4-c419-461b-8096-e27171be0a87
 # ╟─a8948e17-2846-431f-9765-6359eaeb20a9
 # ╟─db84f278-2b61-40fd-b0a8-bb132cff5f18
@@ -2602,11 +2735,23 @@ version = "1.4.1+1"
 # ╠═dbf3b4de-06ce-46ff-9178-cc28961ab3e5
 # ╠═5ab2ce16-f52d-4107-9035-4dc47df19fcd
 # ╟─0fb73bc3-e70d-4de2-a8fa-49938c6f3a60
+# ╠═4dbfa5bd-dfcc-4195-8337-02f8bed8748a
+# ╠═49ee7daf-8b09-4303-8aa6-05ae57977688
 # ╟─21e63aa1-c0de-4980-b973-9afd6b1dde87
 # ╟─65875093-4ff0-4684-a355-678d727f36f7
 # ╟─6d79d33f-8caa-4fa9-b1e3-baf6bb25d519
-# ╠═d465c7a3-8c83-4f99-b747-2a519a136111
-# ╠═374034ce-15d5-403d-9d2a-aa760cc0a269
+# ╟─374034ce-15d5-403d-9d2a-aa760cc0a269
+# ╟─e06e478f-b2a9-4b33-8a36-3bc87e53f62a
+# ╟─8d801c77-08e3-45c0-b27c-0d36f0bfb29e
+# ╟─0beeed3b-905e-4ac1-b19c-a06cec3f160f
+# ╟─41e2ac3f-5488-4506-9278-b7857d8ad4e7
+# ╟─d5e9beb5-56a9-4a99-903d-719dc18cf710
+# ╟─7513851f-48f8-4e2f-8c97-baee10e9e4c7
+# ╟─9a95f3c9-0e47-422a-9b0e-35fc8c528308
+# ╠═918ca6c0-ac2d-4072-b7d9-b73de95248fd
+# ╠═a5240ee4-1f4d-4229-95f4-fe115645c92c
+# ╠═05dfaf81-8b67-43de-b249-f1e23c3664f2
+# ╟─77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
