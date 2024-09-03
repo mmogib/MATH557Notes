@@ -222,7 +222,7 @@ where the trace of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is the sum of 
 md"# Chapter 2: Diagonally Dominant Tridiagonal Matrices"
 
 # ╔═╡ e06e478f-b2a9-4b33-8a36-3bc87e53f62a
-md"##  2.2 ATwoPointBoundaryValue Problem"
+md"##  2.2 A Two Point Boundary Value Problem"
 
 # ╔═╡ 8d801c77-08e3-45c0-b27c-0d36f0bfb29e
 cm"""
@@ -244,7 +244,7 @@ $(texeq"\left[\begin{array}{lllll}d_1 & c_1 & & & \\ a_1 & d_2 & c_2 & & \\ & \d
 """
 
 # ╔═╡ 9a95f3c9-0e47-422a-9b0e-35fc8c528308
-md"##  2.4 TheEigenpairs of the 1D Test Matrix"
+md"##  2.4 The Eigen pairs of the 1D Test Matrix"
 
 # ╔═╡ 918ca6c0-ac2d-4072-b7d9-b73de95248fd
 cm"""
@@ -275,14 +275,64 @@ end
 let
 	a,d,m = -1,3,3
 	A = triadiag(a,d,m)
-	E,V = eigen(A)
-	E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
-	V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
-	E, E2, -(√2/2)*V1, V
+	# E,V = eigen(A)
+	# E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
+	# V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
+	# E, E2, -(√2/2)*V1, V
 end
 
 # ╔═╡ 77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
 md"##  2.5 Block Multiplicationand Triangular Matrices"
+
+# ╔═╡ 1a8d7932-4363-4749-ab31-a8ecf5288169
+cm"""
+4. If ``\boldsymbol{B}=\left[\boldsymbol{B}_1, \boldsymbol{B}_2\right]``, where ``\boldsymbol{B}_1 \in \mathbb{C}^{p \times r}`` and ``\boldsymbol{B}_2 \in \mathbb{C}^{p \times(n-r)}`` then
+```math
+\boldsymbol{A}\left[\boldsymbol{B}_1, \boldsymbol{B}_2\right]=\left[\boldsymbol{A} \boldsymbol{B}_1, \boldsymbol{A} \boldsymbol{B}_2\right]
+```
+
+5. If ``\boldsymbol{A}=\left[\begin{array}{l}\boldsymbol{A}_1 \\ \boldsymbol{A}_2\end{array}\right]``, where ``\boldsymbol{A}_1 \in \mathbb{C}^{k \times p}`` and ``\boldsymbol{A}_2 \in \mathbb{C}^{(m-k) \times p}`` then
+```math
+\left[\begin{array}{l}
+\boldsymbol{A}_1 \\
+\boldsymbol{A}_2
+\end{array}\right] \boldsymbol{B}=\left[\begin{array}{l}
+\boldsymbol{A}_1 \boldsymbol{B} \\
+\boldsymbol{A}_2 \boldsymbol{B}
+\end{array}\right]
+```
+"""
+
+# ╔═╡ 4486fd72-e3f4-4e78-bc57-db8474dca974
+cm"""
+6. If ``\boldsymbol{A}=\left[\boldsymbol{A}_1, \boldsymbol{A}_2\right]`` and ``\boldsymbol{B}=\left[\begin{array}{l}\boldsymbol{B}_1 \\ \boldsymbol{B}_2\end{array}\right]``, where ``\boldsymbol{A}_1 \in \mathbb{C}^{m \times s}, \boldsymbol{A}_2 \in \mathbb{C}^{m \times(p-s)}, \boldsymbol{B}_1 \in`` ``\mathbb{C}^{s \times n}`` and ``\boldsymbol{B}_2 \in \mathbb{C}^{(p-s) \times n}`` then
+```math
+\left[\boldsymbol{A}_1, \boldsymbol{A}_2\right]\left[\begin{array}{l}
+\boldsymbol{B}_1 \\
+\boldsymbol{B}_2
+\end{array}\right]=\left[\boldsymbol{A}_1 \boldsymbol{B}_1+\boldsymbol{A}_2 \boldsymbol{B}_2\right]
+```
+"""
+
+# ╔═╡ 50ac8333-8f68-4f85-be14-dc99ba7fc398
+cm"""
+7. If ``\boldsymbol{A}=\left[\begin{array}{ll}\boldsymbol{A}_{11} & \boldsymbol{A}_{12} \\ \boldsymbol{A}_{21} & \boldsymbol{A}_{22}\end{array}\right]`` and ``\boldsymbol{B}=\left[\begin{array}{ll}\boldsymbol{B}_{11} & \boldsymbol{B}_{12} \\ \boldsymbol{B}_{21} & \boldsymbol{B}_{22}\end{array}\right]`` then
+```math
+\left[\begin{array}{ll}
+\boldsymbol{A}_{11} & \boldsymbol{A}_{12} \\
+\boldsymbol{A}_{21} & \boldsymbol{A}_{22}
+\end{array}\right]\left[\begin{array}{ll}
+\boldsymbol{B}_{11} & \boldsymbol{B}_{12} \\
+\boldsymbol{B}_{21} & \boldsymbol{B}_{22}
+\end{array}\right]=\left[\begin{array}{ll}
+\boldsymbol{A}_{11} \boldsymbol{B}_{11}+\boldsymbol{A}_{12} \boldsymbol{B}_{21} & \boldsymbol{A}_{11} \boldsymbol{B}_{12}+\boldsymbol{A}_{12} \boldsymbol{B}_{22} \\
+\boldsymbol{A}_{21} \boldsymbol{B}_{11}+\boldsymbol{A}_{22} \boldsymbol{B}_{21} & \boldsymbol{A}_{21} \boldsymbol{B}_{12}+\boldsymbol{A}_{22} \boldsymbol{B}_{22}
+\end{array}\right],
+```
+"""
+
+# ╔═╡ 519206e2-863d-4099-9f20-11cdad64a5e0
+md"## 2.5.2 Triangular Matrices"
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -625,6 +675,107 @@ The matrix ``\boldsymbol{A}=\left[a_{i j}\right] \in \mathbb{C}^{n \times n}`` i
 ```
 $(ebl())
 - If ``\boldsymbol{A}=\operatorname{tridiag}\left(a_i, d_i, c_i\right) \in`` ``\mathbb{C}^{n \times n}`` is tridiagonal and weakly diagonally dominant. If in addition ``\left|d_1\right|>\left|c_1\right|`` and ``a_i \neq 0`` for ``i=1, \ldots, n-2``, then ``\boldsymbol{A}`` has a unique ``L U`` factorization $(eqref("lufactor")). If in addition ``d_n \neq 0``, then ``\boldsymbol{A}`` is nonsingular.
+"""
+
+# ╔═╡ 3dcc9b0b-2daa-4695-9e77-311672ac511b
+cm"""
+##### Properties of Block Multiplication
+
+Assume that ``\boldsymbol{A} \in \mathbb{C}^{m \times p}`` and ``\boldsymbol{B} \in \mathbb{C}^{p \times n}``. Then
+
+1. If ``\boldsymbol{B}=\left[\boldsymbol{b}_{: 1}, \ldots, \boldsymbol{b}_{: n}\right]`` is partitioned into columns then the partition of the product ``\boldsymbol{A} \boldsymbol{B}`` into columns is
+```math
+\boldsymbol{A B}=\left[\boldsymbol{A} \boldsymbol{b}_{: 1}, \boldsymbol{A} \boldsymbol{b}_{: 2}, \ldots, \boldsymbol{A} \boldsymbol{b}_{: n}\right]
+```
+$(add_space(12))In particular, if ``\boldsymbol{I}`` is the identity matrix of order ``p`` then
+```math
+\boldsymbol{A}=\boldsymbol{A} \boldsymbol{I}=\boldsymbol{A}\left[\boldsymbol{e}_1, \boldsymbol{e}_2, \ldots, \boldsymbol{e}_p\right]=\left[\boldsymbol{A} \boldsymbol{e}_1, \boldsymbol{A} \boldsymbol{e}_2, \ldots, \boldsymbol{A} \boldsymbol{e}_p\right]
+```
+$(add_space(12))and we see that column ``j`` of ``\boldsymbol{A}`` can be written ``\boldsymbol{A} \boldsymbol{e}_j`` for ``j=1, \ldots, p``.
+
+2. Similarly, if ``\boldsymbol{A}`` is partitioned into rows then
+```math
+\boldsymbol{A} \boldsymbol{B}=\left[\begin{array}{c}
+a_{1:}^T \\
+a_{2:}^T \\
+\vdots \\
+a_{m:}^T
+\end{array}\right] \boldsymbol{B}=\left[\begin{array}{c}
+a_{1:}^T \boldsymbol{B} \\
+a_{2:}^T \boldsymbol{B} \\
+\vdots \\
+a_{m:}^T \boldsymbol{B}
+\end{array}\right]
+```
+
+3. It is often useful to write the matrix-vector product ``\boldsymbol{A x}`` as a linear combination of the columns of ``\boldsymbol{A}``
+```math
+\boldsymbol{A x}=x_1 \boldsymbol{a}_{: 1}+x_2 \boldsymbol{a}_{: 2}+\cdots+x_p \boldsymbol{a}_{: p}
+```
+"""
+
+# ╔═╡ 3f43de8a-b6b4-4d53-aad4-bd3356f2d2a8
+cm"""
+8. Consider finally the general case. If all the matrix products ``\boldsymbol{A}_{i k} \boldsymbol{B}_{k j}`` in
+```math
+\boldsymbol{C}_{i j}=\sum_{k=1}^s \boldsymbol{A}_{i k} \boldsymbol{B}_{k j}, \quad i=1, \ldots, p, j=1, \ldots, q
+```
+$(add_space(10))are well defined then
+```math
+\left[\begin{array}{cccc}
+\boldsymbol{A}_{11} & \cdots & \boldsymbol{A}_{1 s} \\
+\vdots & & \vdots \\
+\boldsymbol{A}_{p 1} & \cdots & \boldsymbol{A}_{p s}
+\end{array}\right]\left[\begin{array}{ccc}
+\boldsymbol{B}_{11} & \cdots & \boldsymbol{B}_{1 q} \\
+\vdots & & \vdots \\
+\boldsymbol{B}_{s 1} & \cdots & \boldsymbol{B}_{s q}
+\end{array}\right]=\left[\begin{array}{ccc}
+\boldsymbol{C}_{11} & \cdots & \boldsymbol{C}_{1 q} \\
+\vdots & & \vdots \\
+\boldsymbol{C}_{p 1} & \cdots & \boldsymbol{C}_{p q}
+\end{array}\right]
+```
+
+##### The requirements are that
+- the number of columns in ``\boldsymbol{A}`` is equal to the number of rows in ``\boldsymbol{B}``.
+- the position of the vertical partition lines in ``\boldsymbol{A}`` has to mach the position of the horizontal partition lines in ``\boldsymbol{B}``. The horizontal lines in ``\boldsymbol{A}`` and the vertical lines in ``\boldsymbol{B}`` can be anywhere.
+"""
+
+# ╔═╡ 29f4fc5f-9f93-4004-9089-061fc14517f9
+cm"""
+$(bbl("Inverse of a Block Triangular Matrix")) Suppose
+```math
+\boldsymbol{A}=\left[\begin{array}{cc}
+\boldsymbol{A}_{11} & \boldsymbol{A}_{12} \\
+\mathbf{0} & \boldsymbol{A}_{22}
+\end{array}\right]
+```
+where ``\boldsymbol{A}, \boldsymbol{A}_{11}`` and ``\boldsymbol{A}_{22}`` are square matrices. Then ``\boldsymbol{A}`` is nonsingular if and only if both ``\boldsymbol{A}_{11}`` and ``\boldsymbol{A}_{22}`` are nonsingular. In that case
+```math
+\boldsymbol{A}^{-1}=\left[\begin{array}{cc}
+\boldsymbol{A}_{11}^{-1} & \boldsymbol{C} \\
+\mathbf{0} & \boldsymbol{A}_{22}^{-1}
+\end{array}\right]
+```
+for some matrix ``\boldsymbol{C}``.
+"""
+
+# ╔═╡ 1740ab31-1c55-4bfc-a34e-dc10852de7ff
+cm"""
+$(bbl("Inverse of a Triangular Matrix")) An upper (lower) triangular matrix ``\boldsymbol{A}=\left[a_{i j}\right] \in \mathbb{C}^{n \times n}`` is nonsingular if and only if the diagonal elements ``a_{i i}``, ``i=1, \ldots, n`` are nonzero. In that case the inverse is upper (lower) triangular with diagonal elements ``a_{i i}^{-1}, i=1, \ldots, n``.
+"""
+
+# ╔═╡ 45ef1c9d-1052-4656-b4e5-1704c39013ee
+cm"""
+$(bbl("Product of Triangular Matrices")) The product ``\boldsymbol{C}=\boldsymbol{A} \boldsymbol{B}=\left(c_{i j}\right)`` of two upper (lower) triangular matrices ``\boldsymbol{A}=\left(a_{i j}\right)`` and ``\boldsymbol{B}=\left(b_{i j}\right)`` is upper (lower) triangular with diagonal elements ``c_{i i}=a_{i i} b_{i i}`` for all ``i``.
+"""
+
+# ╔═╡ cda6aea6-61ca-483f-98f9-2274ef50e049
+cm"""
+$(bbl("Unit Triangular Matrices")) For a unit upper (lower) triangular (i.e. ``1'``s on the diagonal) matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` :
+1. ``\boldsymbol{A}`` is nonsingular and the inverse is unit upper(lower) triangular.
+2. The product of two unit upper (lower) triangular matrices is unit upper (lower) triangular.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2748,10 +2899,20 @@ version = "1.4.1+1"
 # ╟─d5e9beb5-56a9-4a99-903d-719dc18cf710
 # ╟─7513851f-48f8-4e2f-8c97-baee10e9e4c7
 # ╟─9a95f3c9-0e47-422a-9b0e-35fc8c528308
-# ╠═918ca6c0-ac2d-4072-b7d9-b73de95248fd
-# ╠═a5240ee4-1f4d-4229-95f4-fe115645c92c
+# ╟─918ca6c0-ac2d-4072-b7d9-b73de95248fd
+# ╟─a5240ee4-1f4d-4229-95f4-fe115645c92c
 # ╠═05dfaf81-8b67-43de-b249-f1e23c3664f2
 # ╟─77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
+# ╟─3dcc9b0b-2daa-4695-9e77-311672ac511b
+# ╟─1a8d7932-4363-4749-ab31-a8ecf5288169
+# ╟─4486fd72-e3f4-4e78-bc57-db8474dca974
+# ╟─50ac8333-8f68-4f85-be14-dc99ba7fc398
+# ╟─3f43de8a-b6b4-4d53-aad4-bd3356f2d2a8
+# ╟─519206e2-863d-4099-9f20-11cdad64a5e0
+# ╟─29f4fc5f-9f93-4004-9089-061fc14517f9
+# ╟─1740ab31-1c55-4bfc-a34e-dc10852de7ff
+# ╟─45ef1c9d-1052-4656-b4e5-1704c39013ee
+# ╟─cda6aea6-61ca-483f-98f9-2274ef50e049
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
