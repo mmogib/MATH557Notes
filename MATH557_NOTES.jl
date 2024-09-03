@@ -1,6 +1,13 @@
 ### A Pluto.jl notebook ###
 # v0.19.46
 
+#> [frontmatter]
+#> title = "TETM241 | MATH557 | NOTES"
+#> 
+#>     [[frontmatter.author]]
+#>     name = "Dr. Mohammed Alshahrani"
+#>     url = "https://mshahrani.website/"
+
 using Markdown
 using InteractiveUtils
 
