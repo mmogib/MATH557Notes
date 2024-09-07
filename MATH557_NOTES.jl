@@ -282,10 +282,10 @@ end
 let
 	a,d,m = -1,3,3
 	A = triadiag(a,d,m)
-	# E,V = eigen(A)
-	# E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
-	# V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
-	# E, E2, -(√2/2)*V1, V
+	E,V = eigen(A) # using LinearAlgebra
+	E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
+	V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
+	E, E2, -(√2/2)*V1, V
 end
 
 # ╔═╡ 77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
@@ -2907,7 +2907,7 @@ version = "1.4.1+1"
 # ╟─7513851f-48f8-4e2f-8c97-baee10e9e4c7
 # ╟─9a95f3c9-0e47-422a-9b0e-35fc8c528308
 # ╟─918ca6c0-ac2d-4072-b7d9-b73de95248fd
-# ╟─a5240ee4-1f4d-4229-95f4-fe115645c92c
+# ╠═a5240ee4-1f4d-4229-95f4-fe115645c92c
 # ╠═05dfaf81-8b67-43de-b249-f1e23c3664f2
 # ╟─77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
 # ╟─3dcc9b0b-2daa-4695-9e77-311672ac511b
