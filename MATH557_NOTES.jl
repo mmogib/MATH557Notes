@@ -341,6 +341,247 @@ cm"""
 # ╔═╡ 519206e2-863d-4099-9f20-11cdad64a5e0
 md"## 2.5.2 Triangular Matrices"
 
+# ╔═╡ 0ec8c4e5-ba42-48c9-95ef-47457451e372
+md"# Chapter 3: Gaussian Elimination and LU Factorizations"
+
+# ╔═╡ adc9275a-493c-40c8-9b9a-05d38e43036e
+cm"""
+Thefollowing are called __elementary row operations__ applied on a  matrix:
+1. Type 1: Exchanging two rows;    ``R_i \leftrightarrow`` ``R_j``
+2. Type 2: Multiplying a row by a nonzero scalar; ``\lambda R_i \rightarrow R_i``
+3. Type 3: Adding to a row a nonzero scalar multiple of another row. ``R_i+\lambda R_j \rightarrow`` ``R_i``.
+"""
+
+# ╔═╡ da8fd297-56f4-4175-8694-093de356dff9
+md"## 3.2 Gauss and LU"
+
+# ╔═╡ 71a38e11-f634-4e57-a277-e9eecd324381
+cm"""
+__Gaussian elimination without row interchanges__
+(to slve a linear system ``\boldsymbol{A} \boldsymbol{x}=\boldsymbol{b}``) generates a sequence of equivalent systems 
+- ``\boldsymbol{A}^{(k)} \boldsymbol{x}=\boldsymbol{b}^{(k)}`` for ``k=`` ``1, \ldots, n``, 
+
+where ``\boldsymbol{A}^{(1)}=\boldsymbol{A}, \boldsymbol{b}^{(1)}=\boldsymbol{b}``, and ``\boldsymbol{A}^{(k)}`` has zeros under the diagonal in its first ``k-1`` columns. Thus ``\boldsymbol{A}^{(n)}`` is upper triangular and the system ``\boldsymbol{A}^{(n)} \boldsymbol{x}=\boldsymbol{b}^{(n)}`` is easy to solve. 
+
+The matrix ``\boldsymbol{A}^{(k)}`` takes the form
+```math
+\boldsymbol{A}^{(k)}=\left[\begin{array}{ccc|ccccc}a_{1,1}^{(1)} & \cdots & a_{1, k-1}^{(1)} & a_{1, k}^{(1)} & \cdots & a_{1, j}^{(1)} & \cdots & a_{1, n}^{(1)} \\ & \ddots & \vdots & \vdots & & \vdots & & \vdots \\ & & a_{k-1, k-1}^{(k-1)} & a_{k-1, k}^{(k-1)} & \cdots & a_{k-1, j}^{(k-1)} & \cdots & a_{k-1, n}^{(k-1)} \\ \hline & & & a_{k, k}^{(k)} & \cdots & a_{k, j}^{(k)} & \cdots & a_{k, n}^{(k)} \\ & & & \vdots & & \vdots & & \vdots \\ & & & a_{i, k}^{(k)} & \cdots & a_{i, j}^{(k)} & \cdots & a_{i, n}^{(k)} \\ & & & \vdots & & \vdots & & \vdots \\ & & & a_{n, k}^{(k)} & \cdots & a_{n, j}^{(k)} & \cdots & a_{n, n}^{(k)}\end{array}\right].
+```
+"""
+
+# ╔═╡ 8daf8b4c-39ed-47d2-932d-28b4c31ad6f7
+let
+	A = [1 1 0 3 
+		 2 1 -1 1
+		3 -1 -1 2
+		-1 2 3 -1
+	]
+	b = [4;1;-3;4]
+	L =[
+		1 0 0 0
+		2 1 0 0
+		3 4 1 0
+		-1 -3 0 1
+	]
+	U = [1 1 0 3;0 -1 -1 -5;0 0 3 13;0 0 0 -13]
+	A , L*U
+	# y =L\b
+	# x = U\y
+end
+
+# ╔═╡ 420504bd-7c7b-4a09-a0c1-203b36ed340e
+function lps(A,k)
+	_,n = size(A)
+	B = copy(A)
+	for i in (k+1):n
+		l=B[i,k]/B[k,k]
+		for j in k:n
+			B[i,j]=B[i,j]-l*B[k,j]
+		end
+	end
+	B,B[1:k,1:k]
+end
+
+# ╔═╡ e9ab9e3f-47ae-48e7-ae3d-4afe1618919a
+let
+	A = [1 1 0 3 
+		 2 1 -1 1
+		3 -1 -1 2
+		-1 2 3 -1
+	]
+	# b = [4;1;-3;4]
+	# _,n =size(A) 
+	# for k=1:1
+	# 	for i in (k+1):n
+	# 		l=A[i,k]/A[k,k]
+	# 		for j in k:n
+	# 			A[i,j]=A[i,j]-l*A[k,j]
+	# 		end
+	# 	end
+	# end
+	A1=A
+	A2,=lps(A,1)
+	A3, = lps(A2,2)
+	A3
+end
+
+# ╔═╡ 6ed68d7b-7c50-4150-86f0-905fe6fd6a25
+let
+	A = [1 1 0 3 
+		 2 1 -1 1
+		3 -1 -1 2
+		-1 2 3 -1
+	]
+	A1,Ak1=lps(A,1)
+	A2,Ak2=lps(A1,2)
+	A3,Ak3=lps(A2,3)
+end
+
+# ╔═╡ dff54fcc-2793-41d9-826a-8321e536b7d7
+cm"""
+- The complexity of an algorithm and say that the complexity of LU factorization of a full matrix is ``O\left(n^3\right)`` or more precisely ``\frac{2}{3} n^3``.
+- that LU factorization is an ``O(n^3)``.
+- solving a triangular system requires ``O(n^2)`` arithmetic operations.
+
+"""
+
+# ╔═╡ 953f4449-9dff-4275-b32b-075d727d2d2e
+md"## 3.4 The PLU Factorization"
+
+# ╔═╡ 2e68ed26-ae75-42f7-bc5d-fb23348e6711
+md"### Pivoting"
+
+# ╔═╡ d312c0d7-f80b-4da7-9ae3-9cdb2f783635
+cm"""
+- ``\boldsymbol{A} \boldsymbol{P}=\boldsymbol{A}(:, \boldsymbol{p})`` (Permutation of columns)
+- ``\boldsymbol{P}^T \boldsymbol{A}=\boldsymbol{A}(\boldsymbol{p},:)`` (Permutation of rows)
+- ``\boldsymbol{P}^T\boldsymbol{P} = \boldsymbol{I}=\boldsymbol{P}\boldsymbol{P}^T``
+
+"""
+
+# ╔═╡ 9521e54d-5a82-44f8-a4b6-94b229a58ec5
+let
+	Random.seed!(123)
+	A = rand(-3:8,3,3)
+	perms = collect(permutations(1:3))
+	p = rand(perms,1)[1]
+	A, A[:,p], A[p,:]
+	P=I(3)[:,p]
+	# P=P[p,:]
+	# P*P'
+end
+
+# ╔═╡ b9a41148-048e-463c-b0c1-85de79ec6ee1
+cm"""
+- ``\boldsymbol{I}_{i k}^2=\boldsymbol{I}`` (interchange matrix is symmetric and equal to its own inverse.)
+- We can keep track of the row interchanges using pivot vectors ``\boldsymbol{p}_k``. We define 
+```math
+\boldsymbol{p}:=\boldsymbol{p}_n, \text{ where } \boldsymbol{p}_1:=[1,2, \ldots, n]^T, \text{ and } \boldsymbol{p}_{k+1}:=\boldsymbol{I}_{r_k, k} \boldsymbol{p}_k \text{ for } k=1, \ldots, n-1
+```
+"""
+
+# ╔═╡ aa5e1849-e9e4-4b2f-90b7-9716ad441a85
+cm"""
+```math
+\boldsymbol{P}^T=\boldsymbol{P}_{n-1} \cdots \boldsymbol{P}_1=\boldsymbol{I}(\boldsymbol{p},:), \quad \boldsymbol{P}=\boldsymbol{P}_1 \boldsymbol{P}_2 \cdots \boldsymbol{P}_{n-1}=\boldsymbol{I}(:, \boldsymbol{p})
+```
+
+Instead of interchanging the rows of ``\boldsymbol{A}`` during elimination we can keep track of the ordering of the rows using the pivot vectors ``\boldsymbol{p}_k``. Gaussian elimination with row pivoting starting with ``a_{i j}^{(1)}=a_{i j}`` can be described as follows:
+```math
+\begin{aligned}
+& \boldsymbol{p}=[1, \ldots, n]^T \\
+& \text { for } k=1: n-1 \\
+& \text { choose } r_k \geq k \text { so that } a_{p_{r_k}, k}^{(k)} \neq 0 \\
+& \quad \boldsymbol{p}=I_{r_k, k} \boldsymbol{p} \\
+& \text { for } i=k+1: n \\
+& \qquad a_{p_i, k}^{(k)}=a_{p_i, k}^{(k)} / a_{p_k, k}^{(k)} \\
+& \text { for } j=k: n \\
+& \qquad a_{p_i, j}^{(k+1)}=a_{p_i, j}^{(k)}-a_{p_i, k}^{(k)} a_{p_k, j}^{(k)}
+\end{aligned}
+```
+"""
+
+# ╔═╡ 8816f81b-3f55-49e0-ae40-ff6672c951a9
+cm"""
+- The PLU factorization can also be written ``\boldsymbol{P}^T \boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}``.
+"""
+
+# ╔═╡ 2d53670e-772e-41b3-9076-3193b40a5c09
+md"###  Pivot Strategie"
+
+# ╔═╡ 12e05a32-7a96-420c-a90b-1b76748cb09f
+cm"""
+In __partial pivoting__ we select the __largest element__
+```math
+\left|a_{r_k, k}^{(k)}\right|:=\max \left\{\left|a_{i, k}^{(k)}\right|: k \leq i \leq n\right\}
+```
+with ``r_k`` the smallest such index in case of a tie. The following example illustrating that small pivots should be avoided.
+"""
+
+# ╔═╡ b96f87dd-14b9-49ce-970a-b5093fc13e94
+let
+	A = [1 1 0 3 
+		 2 1 -1 1
+		3 -1 -1 2
+		-1 2 3 -1
+	]
+	F = lu(A)
+	L1,U1,pt = F.L, F.U, F.p 
+	P1 = I(4)[:,pt]
+	A≈ P1*L1*U1
+	B = copy(Rational.(A))
+	B[1,:],B[3,:]=B[3,:],B[1,:]
+	B[2,:]=-(2//3)*B[1,:]+B[2,:]
+	B[3,:]=-(1//3)*B[1,:]+B[3,:]
+	B[4,:]=(1//3)*B[1,:]+B[4,:]
+	B[3,:]=-(4//5)*B[2,:]+B[3,:]
+	B[4,:]=-B[2,:]+B[4,:]
+	B[3,:],B[4,:]=B[4,:],B[3,:]
+	B[4,:]=-1//5*B[3,:]+B[4,:]
+	B
+	U = B
+	L =[1 0 0 0;
+		2//3 1 0 0;
+		-1//3 1 1 0;
+		1//3 4//5 1//5 1]
+	p2=[4,2,1,3]
+	P2 = I(4)[p2,:]
+	A,P2*L*B
+	# B,U1
+	P2
+	# p2,pt
+	# U1,Float64.(U)
+	
+end
+
+# ╔═╡ a78b0614-3a52-4fb8-acc7-147707e1d456
+let
+	A=[1 -1 1 2
+	-2 1 1 1
+	2 -1 2 3
+	-4 1 0 2
+	]
+	B = Rational.(copy(A))
+	B[4,:],B[1,:]=B[1,:],B[4,:]
+	B[2,:] = -(1//2)*B[1,:]+B[2,:]
+	B[3,:] = (1//2)*B[1,:]+B[3,:]
+	B[4,:] = (1//4)*B[1,:]+B[4,:]
+	B[2,:],B[4,:]=B[4,:],B[2,:]
+	B[3,:] = -(2//3)*B[2,:]+B[3,:]
+	B[4,:] = (2//3)*B[2,:]+B[4,:]
+	B[3,:],B[4,:]=B[4,:],B[3,:]
+	B[4,:] = -(4//5)*B[3,:]+B[4,:]
+	pt =[2,3,4,1]
+	P = I(4)[pt,:]
+	L =[
+		1 0 0 0
+		-1//4 1 0 0
+		 1//2 -2//3 1 0
+		-1//2 2//3 4//5 1
+	]
+	P*L*B,A
+end
+
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
 
@@ -783,6 +1024,153 @@ cm"""
 $(bbl("Unit Triangular Matrices")) For a unit upper (lower) triangular (i.e. ``1'``s on the diagonal) matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` :
 1. ``\boldsymbol{A}`` is nonsingular and the inverse is unit upper(lower) triangular.
 2. The product of two unit upper (lower) triangular matrices is unit upper (lower) triangular.
+"""
+
+# ╔═╡ 58451143-9990-4426-9d42-50a5d3d9849b
+cm"""
+$(ex(1))
+Using Gaussian Elemination (without row exchange) solve the system
+```math
+\begin{array}{lcllcllcllcllcllcllcl} 
+x_1&+&x_2&&&+&3 x_4&= & 4 \\ 
+2 x_1&+&x_2&-&x_3&+&x_4&=& 1 \\ 
+3 x_1&-&x_2&-&x_3&+&2 x_4&=& -3 \\ 
+-x_1&+&2 x_2&+&3 x_3&-&x_4&= & 4
+\end{array}
+```
+"""
+
+# ╔═╡ 5fef6c3a-9809-4906-b5b8-4d00c72439a8
+cm"""
+$(bbl("Remarks",""))
+- Gauss elimination leads to an ``LU`` __factorization__. 
+- Solving ``Ly=b`` is called __forward substitution__.
+- Solving ``Uy=y`` is called __backward substitution__.
+- 
+"""
+
+# ╔═╡ b5c0a76a-dc08-46f9-9b2d-f1b528f1aa87
+cm"""
+The process transforming ``\boldsymbol{A}^{(k)}`` into ``\boldsymbol{A}^{(k+1)}`` for ``k=1, \ldots, n-1`` can be described as follows.
+```math
+\begin{aligned}
+& \text { for } i=k+1: n \\
+& l_{i k}^{(k)}=a_{i k}^{(k)} / a_{k k}^{(k)} \\
+& \text { for } j=k: n \\
+& \quad a_{i j}^{(k+1)}=a_{i j}^{(k)}-l_{i k}^{(k)} a_{k j}^{(k)}
+\end{aligned}
+```
+
+$(post_img("https://www.dropbox.com/scl/fi/p7pgghrjx7pn7xra4ks6k/fig3_1.png?rlkey=k12xy1j7quuf4tugjvwfcvl0k&dl=1",500))
+"""
+
+# ╔═╡ e141f527-3783-4293-a890-10c05aa166dd
+cm"""
+- ``\boldsymbol{A}^{(k+1)}`` will have zeros under the diagonal in its first ``k`` columns and the elimination is carried one step further. 
+- The numbers ``l_{i k}^{(k)}`` in (3.2) are called multipliers.
+
+__Gaussian elimination with no row interchanges is valid if and only if the pivots ``a_{k k}^{(k)}`` are nonzero for ``k=1, \ldots, n-1``__. 
+
+$(define("3.1 (Principal Submatrix)")) 
+For ``k=1, \ldots, n`` the matrices ``\boldsymbol{A}_{[k]} \in \mathbb{C}^{k \times k}`` given by
+```math
+\boldsymbol{A}_{[k]}:=\boldsymbol{A}(1: k, 1: k)=\left[\begin{array}{ccc}
+a_{11} & \cdots & a_{k 1} \\
+\vdots & & \vdots \\
+a_{k 1} & \cdots & a_{k k}
+\end{array}\right]
+```
+are called the __leading principal submatrices__ of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. More generally, a matrix ``\boldsymbol{B} \in \mathbb{C}^{k \times k}`` is called a __principal submatrix__ of ``\boldsymbol{A}`` if ``\boldsymbol{B}=\boldsymbol{A}(\boldsymbol{r}, \boldsymbol{r})``, where ``\boldsymbol{r}=\left[r_1, \ldots, r_k\right]`` for some ``1 \leq r_1< \cdots< r_k \leq n``. Thus,
+```math
+b_{i, j}=a_{r_i, r_j}, \quad i, j=1, \ldots, k
+```
+
+The determinant of a (leading) principal submatrix is called a __(leading) principal minor__.
+"""
+
+# ╔═╡ 6d5bf021-a49e-4726-a446-900422cc6703
+cm"""
+$(bth("3.1")) We have ``a_{k, k}^{(k)} \neq 0`` for ``k=1, \ldots, n-1`` if and only if the leading principal submatrices ``\boldsymbol{A}_{[k]}`` of ``\boldsymbol{A}`` are nonsingular for ``k=1, \ldots, n-1``. Moreover
+```math
+\operatorname{det}\left(\boldsymbol{A}_{[k]}\right)=a_{11}^{(1)} a_{22}^{(2)} \cdots a_{k k}^{(k)}, \quad k=1, \ldots, n
+```
+"""
+
+# ╔═╡ a4226ef9-8d8f-4508-9e88-6dc09f6410be
+cm"""
+$(bth("3.2"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` and that the leading principal submatrices ``\boldsymbol{A}_{[k]}`` are nonsingular for ``k=1, \ldots, n-1``. Then Gaussian elimination with no row interchanges results in an ``L U`` factorization of ``\boldsymbol{A}``. In particular ``\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}``, where
+```math
+\boldsymbol{L}=\left[\begin{array}{cccc}
+1 & & & \\
+l_{21}^{(1)} & 1 & & \\
+\vdots & & \ddots \\
+l_{n 1}^{(1)} & l_{n 2}^{(2)} & \cdots & 1
+\end{array}\right], \quad \boldsymbol{U}=\left[\begin{array}{ccc}
+a_{11}^{(1)} & \cdots & a_{1 n}^{(1)} \\
+& \ddots & \vdots \\
+& & a_{n n}^{(n)}
+\end{array}\right]
+```
+where the ``l_{i j}^{(j)}`` and ``a_{i j}^{(i)}`` are given by 
+```math
+\begin{aligned}
+ l_{i j}^{(j)}&=a_{i j}^{(j)} / a_{j j}^{(j)} \\
+ \quad a_{i j}^{(j+1)}&=a_{i j}^{(j)}-l_{i j}^{(j)} a_{j j}^{(j)}
+\end{aligned}
+```
+"""
+
+# ╔═╡ 6897cf15-2370-4114-a574-ea137096a175
+cm"""
+- Any nonsingular linear system can be solved by Gaussian elimination if we incorporate row interchanges
+- Interchanging two rows(and/or two columns) during Gaussian elimination is known
+ as __pivoting__. 
+
+$(define("3.3")) A permutation matrix is a matrix of the form
+```math
+\boldsymbol{P}=\boldsymbol{I}(:, \boldsymbol{p})=\left[\boldsymbol{e}_{i_1}, \boldsymbol{e}_{i_2}, \ldots, \boldsymbol{e}_{i_n}\right] \in \mathbb{R}^{n \times n}
+```
+where ``\boldsymbol{e}_{i_1}, \ldots, \boldsymbol{e}_{i_n}`` is a permutation of the unit vectors ``\boldsymbol{e}_1, \ldots, \boldsymbol{e}_n \in \mathbb{R}^n``.
+"""
+
+# ╔═╡ a0560ea2-1ab5-425a-a418-92e196b51f92
+cm"""
+$(define(3.4))
+We define a ``(j, k)``-Interchange matrix ``\boldsymbol{I}_{j k}`` by interchanging column ``j`` and ``k`` of the identity matrix.
+"""
+
+# ╔═╡ 82c571b9-23a6-48b6-b58c-a42269bfa429
+cm"""
+$(bth("3.3"))
+Gaussian elimination with row pivoting on a nonsingular matrix ``\boldsymbol{A} \in`` ``\mathbb{C}^{n \times n}`` leads to the factorization ``\boldsymbol{A}=\boldsymbol{P} \boldsymbol{L} \boldsymbol{U}``, where ``\boldsymbol{P}`` is a permutation matrix, ``\boldsymbol{L}`` is lower triangular with ones on the diagonal, and ``\boldsymbol{U}`` is upper triangular. More explicitly, ``\boldsymbol{P}=\boldsymbol{I}(:, \boldsymbol{p})``, where ``\boldsymbol{p}=\boldsymbol{I}_{r_{n-1}, n-1} \cdots \boldsymbol{I}_{r_1, 1}[1, \ldots, n]^T``, and
+```math
+\boldsymbol{L}=\left[\begin{array}{ccc}
+1 & & \\
+a_{p_2, 1}^{(1)} & 1 & \\
+\vdots & & \ddots \\
+a_{p_n, 1}^{(1)} & a_{p_n, 2}^{(2)} & \cdots
+\end{array}\right], \quad \boldsymbol{U}=\left[\begin{array}{ccc}
+a_{p_1, 1}^{(1)} & \cdots & a_{p_1, n}^{(1)} \\
+& \ddots & \vdots \\
+& & a_{p_n, n}^{(n)}
+\end{array}\right]
+```
+"""
+
+# ╔═╡ d068efed-78d5-4913-a96c-3ec28e5988f7
+cm"""
+- __Scaled partial pivoting__. Here ``r_k`` is the smallest index such that
+```math
+\frac{\left|a_{r_k, k}^{(k)}\right|}{s_k}:=\max \left\{\frac{\left|a_{i, k}^{(k)}\right|}{s_k}: k \leq i \leq n\right\}, \quad s_k:=\max _{1 \leq j \leq n}\left|a_{k j}\right|
+```
+-  __Complete Pivoting__
+```math
+a_{r_k, s_k}^{(k)}:=\max \left\{\left|a_{i, j}^{(k)}\right|: k \leq i, j \leq n\right\}
+```
+$(add_space(10))with ``r_k``, ``s_k`` the smallest such indices in case of a tie, is known as. 
+
+- Complete pivoting is known to be more numerically stable than partial pivoting, but requires a lot of search and is seldom used in practice.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2920,6 +3308,36 @@ version = "1.4.1+1"
 # ╟─1740ab31-1c55-4bfc-a34e-dc10852de7ff
 # ╟─45ef1c9d-1052-4656-b4e5-1704c39013ee
 # ╟─cda6aea6-61ca-483f-98f9-2274ef50e049
+# ╟─0ec8c4e5-ba42-48c9-95ef-47457451e372
+# ╟─adc9275a-493c-40c8-9b9a-05d38e43036e
+# ╟─58451143-9990-4426-9d42-50a5d3d9849b
+# ╟─5fef6c3a-9809-4906-b5b8-4d00c72439a8
+# ╟─da8fd297-56f4-4175-8694-093de356dff9
+# ╟─71a38e11-f634-4e57-a277-e9eecd324381
+# ╠═8daf8b4c-39ed-47d2-932d-28b4c31ad6f7
+# ╟─b5c0a76a-dc08-46f9-9b2d-f1b528f1aa87
+# ╠═420504bd-7c7b-4a09-a0c1-203b36ed340e
+# ╠═e9ab9e3f-47ae-48e7-ae3d-4afe1618919a
+# ╟─e141f527-3783-4293-a890-10c05aa166dd
+# ╟─6d5bf021-a49e-4726-a446-900422cc6703
+# ╠═6ed68d7b-7c50-4150-86f0-905fe6fd6a25
+# ╟─a4226ef9-8d8f-4508-9e88-6dc09f6410be
+# ╟─dff54fcc-2793-41d9-826a-8321e536b7d7
+# ╟─953f4449-9dff-4275-b32b-075d727d2d2e
+# ╟─2e68ed26-ae75-42f7-bc5d-fb23348e6711
+# ╟─6897cf15-2370-4114-a574-ea137096a175
+# ╟─d312c0d7-f80b-4da7-9ae3-9cdb2f783635
+# ╠═9521e54d-5a82-44f8-a4b6-94b229a58ec5
+# ╟─a0560ea2-1ab5-425a-a418-92e196b51f92
+# ╟─b9a41148-048e-463c-b0c1-85de79ec6ee1
+# ╟─aa5e1849-e9e4-4b2f-90b7-9716ad441a85
+# ╟─82c571b9-23a6-48b6-b58c-a42269bfa429
+# ╟─8816f81b-3f55-49e0-ae40-ff6672c951a9
+# ╟─2d53670e-772e-41b3-9076-3193b40a5c09
+# ╟─12e05a32-7a96-420c-a90b-1b76748cb09f
+# ╟─d068efed-78d5-4913-a96c-3ec28e5988f7
+# ╠═b96f87dd-14b9-49ce-970a-b5093fc13e94
+# ╠═a78b0614-3a52-4fb8-acc7-147707e1d456
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
