@@ -580,7 +580,32 @@ let
 		-1//2 2//3 4//5 1
 	]
 	P*L*B,A
+	# L,U,p = lu(A)
+	# P=I(4)[p,:]
+	# p
 end
+
+# ╔═╡ fd98de8b-bb26-4c7c-8b65-d16f3fe57a09
+cm"""
+Use Julia `lu` for PLU factorization:
+```julia
+
+L,U,p = lu(A)
+P = I[p,:]
+```
+"""
+
+# ╔═╡ 7f2f4c83-63c9-401f-b6c5-25722674a68c
+md"## 3.5 The LU and LDU Factorizations"
+
+# ╔═╡ c4ec32de-d6e1-4ef4-b870-cd5c5e7f77fa
+cm"""
+Gaussian elimination without row interchanges is one way of computing an LU factorization of a matrix. 
+There are other ways that can be advantageous for certain problems:
+- __L1U__: ``\quad l_{i i}=1`` all ``i``,
+- __LU1__: ``u_{i i}=1`` all ``i``,
+- __LDU__: ``\quad \boldsymbol{A}=\boldsymbol{L} \boldsymbol{D} \boldsymbol{U}, l_{i i}=u_{i i}=1`` all ``i, \boldsymbol{D}=\operatorname{diag}\left(d_{11}, \ldots, d_{n n}\right)``.
+"""
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -1171,6 +1196,11 @@ a_{r_k, s_k}^{(k)}:=\max \left\{\left|a_{i, j}^{(k)}\right|: k \leq i, j \leq n\
 $(add_space(10))with ``r_k``, ``s_k`` the smallest such indices in case of a tie, is known as. 
 
 - Complete pivoting is known to be more numerically stable than partial pivoting, but requires a lot of search and is seldom used in practice.
+"""
+
+# ╔═╡ 7090fc3e-97e5-4819-af88-1bb2dd51d7ec
+cm"""
+$(bbl("Lemma","3.1 (L1U of Leading Principal Submatrices)")) Suppose ``\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}`` is an L1 ``U`` factorization of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. For ``k=1, \ldots, n`` let ``\boldsymbol{A}_{[k]}, \boldsymbol{L}_{[k]}, \boldsymbol{U}_{[k]}`` be the leading principal submatrices of ``\boldsymbol{A}, \boldsymbol{L}, \boldsymbol{U}``, respectively. Then ``\boldsymbol{A}_{[k]}=\boldsymbol{L}_{[k]} \boldsymbol{U}_{[k]}`` is an ``L 1 U`` factorization of ``\boldsymbol{A}_{[k]}`` for ``k=1, \ldots, n``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3338,6 +3368,10 @@ version = "1.4.1+1"
 # ╟─d068efed-78d5-4913-a96c-3ec28e5988f7
 # ╠═b96f87dd-14b9-49ce-970a-b5093fc13e94
 # ╠═a78b0614-3a52-4fb8-acc7-147707e1d456
+# ╟─fd98de8b-bb26-4c7c-8b65-d16f3fe57a09
+# ╟─7f2f4c83-63c9-401f-b6c5-25722674a68c
+# ╟─c4ec32de-d6e1-4ef4-b870-cd5c5e7f77fa
+# ╟─7090fc3e-97e5-4819-af88-1bb2dd51d7ec
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
