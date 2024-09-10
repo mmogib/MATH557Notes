@@ -519,40 +519,40 @@ with ``r_k`` the smallest such index in case of a tie. The following example ill
 """
 
 # ╔═╡ b96f87dd-14b9-49ce-970a-b5093fc13e94
-let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	F = lu(A)
-	L1,U1,pt = F.L, F.U, F.p 
-	P1 = I(4)[:,pt]
-	A≈ P1*L1*U1
-	B = copy(Rational.(A))
-	B[1,:],B[3,:]=B[3,:],B[1,:]
-	B[2,:]=-(2//3)*B[1,:]+B[2,:]
-	B[3,:]=-(1//3)*B[1,:]+B[3,:]
-	B[4,:]=(1//3)*B[1,:]+B[4,:]
-	B[3,:]=-(4//5)*B[2,:]+B[3,:]
-	B[4,:]=-B[2,:]+B[4,:]
-	B[3,:],B[4,:]=B[4,:],B[3,:]
-	B[4,:]=-1//5*B[3,:]+B[4,:]
-	B
-	U = B
-	L =[1 0 0 0;
-		2//3 1 0 0;
-		-1//3 1 1 0;
-		1//3 4//5 1//5 1]
-	p2=[4,2,1,3]
-	P2 = I(4)[p2,:]
-	A,P2*L*B
-	# B,U1
-	P2
-	# p2,pt
-	# U1,Float64.(U)
+# let
+# 	A = [1 1 0 3 
+# 		 2 1 -1 1
+# 		3 -1 -1 2
+# 		-1 2 3 -1
+# 	]
+# 	F = lu(A)
+# 	L1,U1,pt = F.L, F.U, F.p 
+# 	P1 = I(4)[:,pt]
+# 	A≈ P1*L1*U1
+# 	B = copy(Rational.(A))
+# 	B[1,:],B[3,:]=B[3,:],B[1,:]
+# 	B[2,:]=-(2//3)*B[1,:]+B[2,:]
+# 	B[3,:]=-(1//3)*B[1,:]+B[3,:]
+# 	B[4,:]=(1//3)*B[1,:]+B[4,:]
+# 	B[3,:]=-(4//5)*B[2,:]+B[3,:]
+# 	B[4,:]=-B[2,:]+B[4,:]
+# 	B[3,:],B[4,:]=B[4,:],B[3,:]
+# 	B[4,:]=-1//5*B[3,:]+B[4,:]
+# 	B
+# 	U = B
+# 	L =[1 0 0 0;
+# 		2//3 1 0 0;
+# 		-1//3 1 1 0;
+# 		1//3 4//5 1//5 1]
+# 	p2=[4,2,1,3]
+# 	P2 = I(4)[p2,:]
+# 	A,P2*L*B
+# 	# B,U1
+# 	P2
+# 	# p2,pt
+# 	# U1,Float64.(U)
 	
-end
+# end
 
 # ╔═╡ a78b0614-3a52-4fb8-acc7-147707e1d456
 let
@@ -561,25 +561,25 @@ let
 	2 -1 2 3
 	-4 1 0 2
 	]
-	B = Rational.(copy(A))
-	B[4,:],B[1,:]=B[1,:],B[4,:]
-	B[2,:] = -(1//2)*B[1,:]+B[2,:]
-	B[3,:] = (1//2)*B[1,:]+B[3,:]
-	B[4,:] = (1//4)*B[1,:]+B[4,:]
-	B[2,:],B[4,:]=B[4,:],B[2,:]
-	B[3,:] = -(2//3)*B[2,:]+B[3,:]
-	B[4,:] = (2//3)*B[2,:]+B[4,:]
-	B[3,:],B[4,:]=B[4,:],B[3,:]
-	B[4,:] = -(4//5)*B[3,:]+B[4,:]
-	pt =[2,3,4,1]
-	P = I(4)[pt,:]
-	L =[
-		1 0 0 0
-		-1//4 1 0 0
-		 1//2 -2//3 1 0
-		-1//2 2//3 4//5 1
-	]
-	P*L*B,A
+	# B = Rational.(copy(A))
+	# B[4,:],B[1,:]=B[1,:],B[4,:]
+	# B[2,:] = -(1//2)*B[1,:]+B[2,:]
+	# B[3,:] = (1//2)*B[1,:]+B[3,:]
+	# B[4,:] = (1//4)*B[1,:]+B[4,:]
+	# B[2,:],B[4,:]=B[4,:],B[2,:]
+	# B[3,:] = -(2//3)*B[2,:]+B[3,:]
+	# B[4,:] = (2//3)*B[2,:]+B[4,:]
+	# B[3,:],B[4,:]=B[4,:],B[3,:]
+	# B[4,:] = -(4//5)*B[3,:]+B[4,:]
+	# pt =[2,3,4,1]
+	# P = I(4)[pt,:]
+	# L =[
+	# 	1 0 0 0
+	# 	-1//4 1 0 0
+	# 	 1//2 -2//3 1 0
+	# 	-1//2 2//3 4//5 1
+	# ]
+	# P*L*B,A
 	# L,U,p = lu(A)
 	# P=I(4)[p,:]
 	# p
@@ -605,6 +605,47 @@ There are other ways that can be advantageous for certain problems:
 - __L1U__: ``\quad l_{i i}=1`` all ``i``,
 - __LU1__: ``u_{i i}=1`` all ``i``,
 - __LDU__: ``\quad \boldsymbol{A}=\boldsymbol{L} \boldsymbol{D} \boldsymbol{U}, l_{i i}=u_{i i}=1`` all ``i, \boldsymbol{D}=\operatorname{diag}\left(d_{11}, \ldots, d_{n n}\right)``.
+"""
+
+# ╔═╡ d5dd27d9-16dc-44b0-9128-63e16cc9db10
+let
+	Random.seed!(286)
+	A = rand(-2:0.2:4,10,10)
+	j =rand(1:10,10)
+	foreach(j) do i
+	A[i,i]=0
+	end
+	A
+	minors =[det(A[1:i,1:i]) for i in 1:9]
+end
+
+# ╔═╡ 93c8a52c-e3d9-42a5-b9be-11e6a090fa55
+md"## 3.6 Block LU Factorization"
+
+# ╔═╡ c9344f33-0372-48de-ae18-819e05d5852f
+cm"""
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is a block matrix of the form
+```math
+\boldsymbol{A}:=\left[\begin{array}{ccc}
+\boldsymbol{A}_{11} & \cdots & \boldsymbol{A}_{1 m} \\
+\vdots & & \vdots \\
+\boldsymbol{A}_{m 1} & \cdots & \boldsymbol{A}_{m m}
+\end{array}\right]
+```
+where each diagonal block ``\boldsymbol{A}_{i i}`` is square. We call the factorization
+```math
+\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}=\left[\begin{array}{ccccc}
+\boldsymbol{I} & & & \\
+\boldsymbol{L}_{21} & \boldsymbol{I} & & \\
+\vdots & & \ddots & \\
+\boldsymbol{L}_{m 1} & \cdots & \boldsymbol{L}_{m, m-1} & \boldsymbol{I}
+\end{array}\right]\left[\begin{array}{cccc}
+\boldsymbol{U}_{11} & & \cdots & \boldsymbol{U}_{1 m} \\
+& \boldsymbol{U}_{22} & \cdots & \boldsymbol{U}_{2 m} \\
+& & \ddots & \vdots \\
+& & \boldsymbol{U}_{m m}
+\end{array}\right]
+```
 """
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -690,7 +731,8 @@ begin
         beginTheorem(s)
     end
     eth() = endTheorem()
-    ex(n::Int; s::String="") = ex("Example $n", s)
+	ex() = example("Example","")
+	ex(n::Int; s::String="") = ex("Example $n", s)
     ex(t, s) = example(t, s)
     function beginBlock(title, subtitle)
         """<div style="box-sizing: border-box;">
@@ -1198,9 +1240,35 @@ $(add_space(10))with ``r_k``, ``s_k`` the smallest such indices in case of a tie
 - Complete pivoting is known to be more numerically stable than partial pivoting, but requires a lot of search and is seldom used in practice.
 """
 
+# ╔═╡ e0504a1a-d598-4ca7-9023-77d5d57814e0
+cm"""
+$(ex())Find PLU factorization of
+```math
+A=\left[\begin{array}{cccc}1 & -1 & 1 & 2 \\ -2 & 1 & 1 & 1 \\ 2 & -1 & 2 & 3 \\ -4 & 1 & 0 & 2\end{array}\right]
+```
+"""
+
 # ╔═╡ 7090fc3e-97e5-4819-af88-1bb2dd51d7ec
 cm"""
 $(bbl("Lemma","3.1 (L1U of Leading Principal Submatrices)")) Suppose ``\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}`` is an L1 ``U`` factorization of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. For ``k=1, \ldots, n`` let ``\boldsymbol{A}_{[k]}, \boldsymbol{L}_{[k]}, \boldsymbol{U}_{[k]}`` be the leading principal submatrices of ``\boldsymbol{A}, \boldsymbol{L}, \boldsymbol{U}``, respectively. Then ``\boldsymbol{A}_{[k]}=\boldsymbol{L}_{[k]} \boldsymbol{U}_{[k]}`` is an ``L 1 U`` factorization of ``\boldsymbol{A}_{[k]}`` for ``k=1, \ldots, n``.
+"""
+
+# ╔═╡ 802688ba-a8f5-419b-a135-b6525679fb42
+cm"""
+$(bth("3.4 (LU Theorem)")) A square matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has a unique ``L 1 U`` (LU1, ``L D U)`` factorization if and only if the leading principal submatrices ``\boldsymbol{A}_{[k]}`` of ``\boldsymbol{A}`` are nonsingular for ``k=1, \ldots, n-1``.
+"""
+
+# ╔═╡ 81cb8f6c-d82b-41eb-bd06-f4a601954785
+cm"""
+$(bth("3.5 (Block LU Theorem)")) Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is a block matrix of the form (3.19). Then ``\boldsymbol{A}`` has a unique block ``L U`` factorization (3.20) if and only if the leading principal block submatrices
+```math
+\boldsymbol{A}_{\{k\}}:=\left[\begin{array}{ccc}
+\boldsymbol{A}_{11} & \cdots & \boldsymbol{A}_{1 k} \\
+\vdots & & \vdots \\
+\boldsymbol{A}_{k 1} & \cdots & \boldsymbol{A}_{k k}
+\end{array}\right]
+```
+are nonsingular for ``k=1, \ldots, m-1``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3366,12 +3434,18 @@ version = "1.4.1+1"
 # ╟─2d53670e-772e-41b3-9076-3193b40a5c09
 # ╟─12e05a32-7a96-420c-a90b-1b76748cb09f
 # ╟─d068efed-78d5-4913-a96c-3ec28e5988f7
-# ╠═b96f87dd-14b9-49ce-970a-b5093fc13e94
+# ╟─b96f87dd-14b9-49ce-970a-b5093fc13e94
+# ╟─e0504a1a-d598-4ca7-9023-77d5d57814e0
 # ╠═a78b0614-3a52-4fb8-acc7-147707e1d456
 # ╟─fd98de8b-bb26-4c7c-8b65-d16f3fe57a09
 # ╟─7f2f4c83-63c9-401f-b6c5-25722674a68c
 # ╟─c4ec32de-d6e1-4ef4-b870-cd5c5e7f77fa
 # ╟─7090fc3e-97e5-4819-af88-1bb2dd51d7ec
+# ╟─802688ba-a8f5-419b-a135-b6525679fb42
+# ╠═d5dd27d9-16dc-44b0-9128-63e16cc9db10
+# ╟─93c8a52c-e3d9-42a5-b9be-11e6a090fa55
+# ╟─c9344f33-0372-48de-ae18-819e05d5852f
+# ╟─81cb8f6c-d82b-41eb-bd06-f4a601954785
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
