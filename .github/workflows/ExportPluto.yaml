@@ -57,7 +57,7 @@ jobs:
                     Export_cache_dir="pluto_state_cache",
                     Export_baked_notebookfile=false,
                     Export_baked_state=false,
-                    # Export_output_dir="/docs",
+                    Export_output_dir="./docs",
                     # more parameters can go here
                   )'
 
