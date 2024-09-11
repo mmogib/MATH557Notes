@@ -23,20 +23,21 @@ begin
     using Symbolics, SymbolicUtils
     using QRCoders
     using PrettyTables
-	using Combinatorics
-	using Roots
-	# using SymPy as sp
+    using Combinatorics
+    using Roots
+    # fff
+    # using SymPy as sp
     # using NonlinearSolve
     # using ForwardDiff
     # using Integrals
-	# using OrdinaryDiffEq
-	# using DifferentialEquations
-	# using ModelingToolkit
-	
+    # using OrdinaryDiffEq
+    # using DifferentialEquations
+    # using ModelingToolkit
+
 end
 
 # ╔═╡ 01183bde-075c-4848-995a-b23ffeeb97c8
-md"## mathmatize"
+md"## mathmatize --"
 
 # ╔═╡ 73b56b54-22a2-4fa0-8eed-ab8a23cebc74
 md"# Programming Assignments With Julia"
@@ -80,17 +81,17 @@ md"## Column Space, Row Sapce, Null Space, Inner Product and Norm"
 # using LinearAlgebra
 
 # ╔═╡ 5356f40b-2cc7-4490-9752-115cae126839
-let 
-	X = [
-	1 2 3 4 1
-	1 6 6 9 4
-	1 5 6 3 9]
-	rank(X)
-	# nullspace(X)
+let
+    X = [
+        1 2 3 4 1
+        1 6 6 9 4
+        1 5 6 3 9]
+    rank(X)
+    # nullspace(X)
 end
 
 # ╔═╡ e3e2f379-f7bb-4ccf-85e0-378ff479f3de
-1+2im
+1 + 2im
 
 # ╔═╡ 6ccfccef-09cc-42d1-a5c8-3899801b4438
 
@@ -100,17 +101,17 @@ end
 
 # ╔═╡ 30bc89ef-58af-4bed-b172-aa6b4e2c8491
 let
-	X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
-	# x₁,x₂,x₃,x₄ = eachcol(X)
-	# combs = combinations([1,2,3,4],3)
-	# for a in combs
-	# 	@show det(X[:,a])
-	# end
-	# nullspace(X)
-	# Y = X'
-	# nullspace(Y)
-	# Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
-	
+    X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
+    # x₁,x₂,x₃,x₄ = eachcol(X)
+    # combs = combinations([1,2,3,4],3)
+    # for a in combs
+    # 	@show det(X[:,a])
+    # end
+    # nullspace(X)
+    # Y = X'
+    # nullspace(Y)
+    # Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
+
 end
 
 # ╔═╡ 7e88c07e-394e-46eb-b1e5-89fb65287e36
@@ -151,46 +152,46 @@ For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` the determinant of ``\bol
 
 # ╔═╡ dbf3b4de-06ce-46ff-9178-cc28961ab3e5
 function mydet(A)
-	n,=size(A)
-	σ= permutations(1:n,n)
-	map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+    n, = size(A)
+    σ = permutations(1:n, n)
+    map(x -> (x, parity(x)), σ) |> d -> map(x -> (-1)^(x[2]) * prod(A[x[1][i], i] for i in 1:n), d) |> sum
 end
 
 # ╔═╡ 5ab2ce16-f52d-4107-9035-4dc47df19fcd
 let
-	Random.seed!(0)
-	n = 3
-	A =[1 1 2 ; 2 3 5; -2 2 1] 
-	# inv(A), mydet(A)
-	# det(A)
-	# # A = rand(-2:5,n,n)
-	# σ= permutations(1:n,n)|>collect
-	# [(s,prod(A[s[i],i] for i in 1:n)) for s in σ]
-	# mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
-	# det(A),mydet
-	# parity([3,5,1,2,4])
+    Random.seed!(0)
+    n = 3
+    A = [1 1 2; 2 3 5; -2 2 1]
+    # inv(A), mydet(A)
+    # det(A)
+    # # A = rand(-2:5,n,n)
+    # σ= permutations(1:n,n)|>collect
+    # [(s,prod(A[s[i],i] for i in 1:n)) for s in σ]
+    # mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+    # det(A),mydet
+    # parity([3,5,1,2,4])
 end
 
 # ╔═╡ 4dbfa5bd-dfcc-4195-8337-02f8bed8748a
 let
-	Random.seed!(123)
-	A= zeros(10,10)
-	CD=A[1:5,:]=rand(2:8,5,10)
-	C = CD[:,1:5]
-	E=A[6:end,6:end]=rand(2:8,5,5)
-	det(A),det(C[1:5,1:5])*det(E)
+    Random.seed!(123)
+    A = zeros(10, 10)
+    CD = A[1:5, :] = rand(2:8, 5, 10)
+    C = CD[:, 1:5]
+    E = A[6:end, 6:end] = rand(2:8, 5, 5)
+    det(A), det(C[1:5, 1:5]) * det(E)
 end
 
 # ╔═╡ 49ee7daf-8b09-4303-8aa6-05ae57977688
-let 
-	# example
-	A = [2 1;-1 3]
-	# eigen(A)
-	x=[1;-1]
-	b = A*x
-	A,b
+let
+    # example
+    A = [2 1; -1 3]
+    # eigen(A)
+    x = [1; -1]
+    b = A * x
+    A, b
 end
-	
+
 
 # ╔═╡ 21e63aa1-c0de-4980-b973-9afd6b1dde87
 md"## Eigenvalues, Eigenvectors and Eigenpairs"
@@ -275,17 +276,17 @@ where ``a, d \in \mathbb{R}``. We call this the 1D test matrix.
 
 # ╔═╡ a5240ee4-1f4d-4229-95f4-fe115645c92c
 begin
-	triadiag(a,d,m) =diagm(0=>repeat([d],m),-1=>repeat([a],m-1),1=>repeat([a],m-1))
+    triadiag(a, d, m) = diagm(0 => repeat([d], m), -1 => repeat([a], m - 1), 1 => repeat([a], m - 1))
 end
 
 # ╔═╡ 05dfaf81-8b67-43de-b249-f1e23c3664f2
 let
-	a,d,m = -1,3,3
-	A = triadiag(a,d,m)
-	E,V = eigen(A) # using LinearAlgebra
-	E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
-	V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
-	E, E2, -(√2/2)*V1, V
+    a, d, m = -1, 3, 3
+    A = triadiag(a, d, m)
+    E, V = eigen(A) # using LinearAlgebra
+    E2 = [d + 2 * a * cos(j * π / (m + 1)) for j in 1:m]
+    V1 = [sin(j * k * π / (m + 1)) for j in 1:m, k in 1:m]
+    E, E2, -(√2 / 2) * V1, V
 end
 
 # ╔═╡ 77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
@@ -371,70 +372,70 @@ The matrix ``\boldsymbol{A}^{(k)}`` takes the form
 
 # ╔═╡ 8daf8b4c-39ed-47d2-932d-28b4c31ad6f7
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	b = [4;1;-3;4]
-	L =[
-		1 0 0 0
-		2 1 0 0
-		3 4 1 0
-		-1 -3 0 1
-	]
-	U = [1 1 0 3;0 -1 -1 -5;0 0 3 13;0 0 0 -13]
-	A , L*U
-	# y =L\b
-	# x = U\y
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    b = [4; 1; -3; 4]
+    L = [
+        1 0 0 0
+        2 1 0 0
+        3 4 1 0
+        -1 -3 0 1
+    ]
+    U = [1 1 0 3; 0 -1 -1 -5; 0 0 3 13; 0 0 0 -13]
+    A, L * U
+    # y =L\b
+    # x = U\y
 end
 
 # ╔═╡ 420504bd-7c7b-4a09-a0c1-203b36ed340e
-function lps(A,k)
-	_,n = size(A)
-	B = copy(A)
-	for i in (k+1):n
-		l=B[i,k]/B[k,k]
-		for j in k:n
-			B[i,j]=B[i,j]-l*B[k,j]
-		end
-	end
-	B,B[1:k,1:k]
+function lps(A, k)
+    _, n = size(A)
+    B = copy(A)
+    for i in (k+1):n
+        l = B[i, k] / B[k, k]
+        for j in k:n
+            B[i, j] = B[i, j] - l * B[k, j]
+        end
+    end
+    B, B[1:k, 1:k]
 end
 
 # ╔═╡ e9ab9e3f-47ae-48e7-ae3d-4afe1618919a
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	# b = [4;1;-3;4]
-	# _,n =size(A) 
-	# for k=1:1
-	# 	for i in (k+1):n
-	# 		l=A[i,k]/A[k,k]
-	# 		for j in k:n
-	# 			A[i,j]=A[i,j]-l*A[k,j]
-	# 		end
-	# 	end
-	# end
-	A1=A
-	A2,=lps(A,1)
-	A3, = lps(A2,2)
-	A3
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    # b = [4;1;-3;4]
+    # _,n =size(A) 
+    # for k=1:1
+    # 	for i in (k+1):n
+    # 		l=A[i,k]/A[k,k]
+    # 		for j in k:n
+    # 			A[i,j]=A[i,j]-l*A[k,j]
+    # 		end
+    # 	end
+    # end
+    A1 = A
+    A2, = lps(A, 1)
+    A3, = lps(A2, 2)
+    A3
 end
 
 # ╔═╡ 6ed68d7b-7c50-4150-86f0-905fe6fd6a25
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	A1,Ak1=lps(A,1)
-	A2,Ak2=lps(A1,2)
-	A3,Ak3=lps(A2,3)
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    A1, Ak1 = lps(A, 1)
+    A2, Ak2 = lps(A1, 2)
+    A3, Ak3 = lps(A2, 3)
 end
 
 # ╔═╡ dff54fcc-2793-41d9-826a-8321e536b7d7
@@ -461,14 +462,14 @@ cm"""
 
 # ╔═╡ 9521e54d-5a82-44f8-a4b6-94b229a58ec5
 let
-	Random.seed!(123)
-	A = rand(-3:8,3,3)
-	perms = collect(permutations(1:3))
-	p = rand(perms,1)[1]
-	A, A[:,p], A[p,:]
-	P=I(3)[:,p]
-	# P=P[p,:]
-	# P*P'
+    Random.seed!(123)
+    A = rand(-3:8, 3, 3)
+    perms = collect(permutations(1:3))
+    p = rand(perms, 1)[1]
+    A, A[:, p], A[p, :]
+    P = I(3)[:, p]
+    # P=P[p,:]
+    # P*P'
 end
 
 # ╔═╡ b9a41148-048e-463c-b0c1-85de79ec6ee1
@@ -551,38 +552,38 @@ with ``r_k`` the smallest such index in case of a tie. The following example ill
 # 	P2
 # 	# p2,pt
 # 	# U1,Float64.(U)
-	
+
 # end
 
 # ╔═╡ a78b0614-3a52-4fb8-acc7-147707e1d456
 let
-	A=[1 -1 1 2
-	-2 1 1 1
-	2 -1 2 3
-	-4 1 0 2
-	]
-	# B = Rational.(copy(A))
-	# B[4,:],B[1,:]=B[1,:],B[4,:]
-	# B[2,:] = -(1//2)*B[1,:]+B[2,:]
-	# B[3,:] = (1//2)*B[1,:]+B[3,:]
-	# B[4,:] = (1//4)*B[1,:]+B[4,:]
-	# B[2,:],B[4,:]=B[4,:],B[2,:]
-	# B[3,:] = -(2//3)*B[2,:]+B[3,:]
-	# B[4,:] = (2//3)*B[2,:]+B[4,:]
-	# B[3,:],B[4,:]=B[4,:],B[3,:]
-	# B[4,:] = -(4//5)*B[3,:]+B[4,:]
-	# pt =[2,3,4,1]
-	# P = I(4)[pt,:]
-	# L =[
-	# 	1 0 0 0
-	# 	-1//4 1 0 0
-	# 	 1//2 -2//3 1 0
-	# 	-1//2 2//3 4//5 1
-	# ]
-	# P*L*B,A
-	# L,U,p = lu(A)
-	# P=I(4)[p,:]
-	# p
+    A = [1 -1 1 2
+        -2 1 1 1
+        2 -1 2 3
+        -4 1 0 2
+    ]
+    # B = Rational.(copy(A))
+    # B[4,:],B[1,:]=B[1,:],B[4,:]
+    # B[2,:] = -(1//2)*B[1,:]+B[2,:]
+    # B[3,:] = (1//2)*B[1,:]+B[3,:]
+    # B[4,:] = (1//4)*B[1,:]+B[4,:]
+    # B[2,:],B[4,:]=B[4,:],B[2,:]
+    # B[3,:] = -(2//3)*B[2,:]+B[3,:]
+    # B[4,:] = (2//3)*B[2,:]+B[4,:]
+    # B[3,:],B[4,:]=B[4,:],B[3,:]
+    # B[4,:] = -(4//5)*B[3,:]+B[4,:]
+    # pt =[2,3,4,1]
+    # P = I(4)[pt,:]
+    # L =[
+    # 	1 0 0 0
+    # 	-1//4 1 0 0
+    # 	 1//2 -2//3 1 0
+    # 	-1//2 2//3 4//5 1
+    # ]
+    # P*L*B,A
+    # L,U,p = lu(A)
+    # P=I(4)[p,:]
+    # p
 end
 
 # ╔═╡ fd98de8b-bb26-4c7c-8b65-d16f3fe57a09
@@ -609,14 +610,14 @@ There are other ways that can be advantageous for certain problems:
 
 # ╔═╡ d5dd27d9-16dc-44b0-9128-63e16cc9db10
 let
-	Random.seed!(286)
-	A = rand(-2:0.2:4,10,10)
-	j =rand(1:10,10)
-	foreach(j) do i
-	A[i,i]=0
-	end
-	A
-	minors =[det(A[1:i,1:i]) for i in 1:9]
+    Random.seed!(286)
+    A = rand(-2:0.2:4, 10, 10)
+    j = rand(1:10, 10)
+    foreach(j) do i
+        A[i, i] = 0
+    end
+    A
+    minors = [det(A[1:i, 1:i]) for i in 1:9]
 end
 
 # ╔═╡ 93c8a52c-e3d9-42a5-b9be-11e6a090fa55
@@ -649,7 +650,7 @@ where each diagonal block ``\boldsymbol{A}_{i i}`` is square. We call the factor
 """
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
-TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
+TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true, depth=4)
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
@@ -694,9 +695,9 @@ LocalImage("docs/imgs/mathmatize_qrcode.png")
 # ╔═╡ d779340e-4dab-45c1-b8df-c0bcbae32a90
 
 begin
-	function add_space(n=1)
-		repeat("&nbsp;",n)
-	end
+    function add_space(n=1)
+        repeat("&nbsp;", n)
+    end
     function post_img(img::String, w=500)
         res = Resource(img, :width => w)
         cm"""
@@ -724,15 +725,15 @@ begin
         beginBlock(t, s)
     end
     ebl() = endBlock()
-	function theorem(s)
-		bth(s)
-	end
+    function theorem(s)
+        bth(s)
+    end
     function bth(s)
         beginTheorem(s)
     end
     eth() = endTheorem()
-	ex() = example("Example","")
-	ex(n::Int; s::String="") = ex("Example $n", s)
+    ex() = example("Example", "")
+    ex(n::Int; s::String="") = ex("Example $n", s)
     ex(t, s) = example(t, s)
     function beginBlock(title, subtitle)
         """<div style="box-sizing: border-box;">
