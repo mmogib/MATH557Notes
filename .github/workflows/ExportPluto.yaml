@@ -69,3 +69,7 @@ jobs:
                   branch: gh-pages
                   folder: .
                   single-commit: true
+            
+            - name: Rename file 
+              uses: actions/checkout@v2
+              run: mv MATH557_NOTES.html index.html

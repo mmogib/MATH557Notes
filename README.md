@@ -1,6 +1,6 @@
 # Applied Linear Algebra - MATH 557
 
-## [GO TO COURSE MATERIAL](./MATH557_NOTES.html)
+## [GO TO COURSE MATERIAL](./docs/MATH557_NOTES.html)
 
 This repository contains the notes, assignments, and additional resources for the **Applied Linear Algebra (MATH 557)** course taught by **Dr. Mohammed Alshahrani** at **King Fahd University of Petroleum & Minerals (KFUPM)**. This course is designed for Master's level students and covers a wide range of topics in numerical linear algebra.
 
