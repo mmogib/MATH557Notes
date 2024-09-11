@@ -70,6 +70,8 @@ jobs:
                   folder: .
                   single-commit: true
             
-            - name: Rename file 
-              uses: actions/checkout@v2
-              run: mv MATH557_NOTES.html index.html
+            - name: Rename index.html 
+              run: mv ./docs/index.html ./docs/index2.html
+
+            - name: Rename Notebooks.html 
+              run: mv ./docs/MATH557_NOTES.html ./docs/index.html
