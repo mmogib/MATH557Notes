@@ -10,8 +10,8 @@ This repository contains the notes, assignments, and additional resources for th
 - **Email:** @mshahrani
 - **Office:** Building 5 – Room 201-1
 - **Office Hours:**
-  - Face-to-Face: Sunday and Tuesday after class (In-Class)
-  - Online: By appointment through TEAMS
+  - Online: Sunday and Tuesday on TEAMS at 04:15PM-05:00PM
+  - Also by appointment through TEAMS
 - **Course Website:** [mshahrani.website](https://mshahrani.website/)
 
 ## Textbook and References
