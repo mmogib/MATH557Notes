@@ -23,20 +23,21 @@ begin
     using Symbolics, SymbolicUtils
     using QRCoders
     using PrettyTables
-	using Combinatorics
-	using Roots
-	# using SymPy as sp
+    using Combinatorics
+    using Roots
+    # fff
+    # using SymPy as sp
     # using NonlinearSolve
     # using ForwardDiff
     # using Integrals
-	# using OrdinaryDiffEq
-	# using DifferentialEquations
-	# using ModelingToolkit
-	
+    # using OrdinaryDiffEq
+    # using DifferentialEquations
+    # using ModelingToolkit
+
 end
 
 # ╔═╡ 01183bde-075c-4848-995a-b23ffeeb97c8
-md"## mathmatize"
+md"## mathmatize --"
 
 # ╔═╡ 73b56b54-22a2-4fa0-8eed-ab8a23cebc74
 md"# Programming Assignments With Julia"
@@ -80,17 +81,17 @@ md"## Column Space, Row Sapce, Null Space, Inner Product and Norm"
 # using LinearAlgebra
 
 # ╔═╡ 5356f40b-2cc7-4490-9752-115cae126839
-let 
-	X = [
-	1 2 3 4 1
-	1 6 6 9 4
-	1 5 6 3 9]
-	rank(X)
-	# nullspace(X)
+let
+    X = [
+        1 2 3 4 1
+        1 6 6 9 4
+        1 5 6 3 9]
+    rank(X)
+    # nullspace(X)
 end
 
 # ╔═╡ e3e2f379-f7bb-4ccf-85e0-378ff479f3de
-1+2im
+1 + 2im
 
 # ╔═╡ 6ccfccef-09cc-42d1-a5c8-3899801b4438
 
@@ -100,17 +101,17 @@ end
 
 # ╔═╡ 30bc89ef-58af-4bed-b172-aa6b4e2c8491
 let
-	X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
-	# x₁,x₂,x₃,x₄ = eachcol(X)
-	# combs = combinations([1,2,3,4],3)
-	# for a in combs
-	# 	@show det(X[:,a])
-	# end
-	# nullspace(X)
-	# Y = X'
-	# nullspace(Y)
-	# Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
-	
+    X = [1 1 2 1; 2 3 5 2; -2 2 1 -3]
+    # x₁,x₂,x₃,x₄ = eachcol(X)
+    # combs = combinations([1,2,3,4],3)
+    # for a in combs
+    # 	@show det(X[:,a])
+    # end
+    # nullspace(X)
+    # Y = X'
+    # nullspace(Y)
+    # Z = [1+im 1 2 1;2 3 5 2;-2 2 1 -3]
+
 end
 
 # ╔═╡ 7e88c07e-394e-46eb-b1e5-89fb65287e36
@@ -151,46 +152,46 @@ For any ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` the determinant of ``\bol
 
 # ╔═╡ dbf3b4de-06ce-46ff-9178-cc28961ab3e5
 function mydet(A)
-	n,=size(A)
-	σ= permutations(1:n,n)
-	map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+    n, = size(A)
+    σ = permutations(1:n, n)
+    map(x -> (x, parity(x)), σ) |> d -> map(x -> (-1)^(x[2]) * prod(A[x[1][i], i] for i in 1:n), d) |> sum
 end
 
 # ╔═╡ 5ab2ce16-f52d-4107-9035-4dc47df19fcd
 let
-	Random.seed!(0)
-	n = 3
-	A =[1 1 2 ; 2 3 5; -2 2 1] 
-	# inv(A), mydet(A)
-	# det(A)
-	# # A = rand(-2:5,n,n)
-	# σ= permutations(1:n,n)|>collect
-	# [(s,prod(A[s[i],i] for i in 1:n)) for s in σ]
-	# mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
-	# det(A),mydet
-	# parity([3,5,1,2,4])
+    Random.seed!(0)
+    n = 3
+    A = [1 1 2; 2 3 5; -2 2 1]
+    # inv(A), mydet(A)
+    # det(A)
+    # # A = rand(-2:5,n,n)
+    # σ= permutations(1:n,n)|>collect
+    # [(s,prod(A[s[i],i] for i in 1:n)) for s in σ]
+    # mydet = map(x->(x,parity(x)),σ) |> d -> map(x->(-1)^(x[2])*prod(A[x[1][i],i] for i in 1:n),d) |> sum
+    # det(A),mydet
+    # parity([3,5,1,2,4])
 end
 
 # ╔═╡ 4dbfa5bd-dfcc-4195-8337-02f8bed8748a
 let
-	Random.seed!(123)
-	A= zeros(10,10)
-	CD=A[1:5,:]=rand(2:8,5,10)
-	C = CD[:,1:5]
-	E=A[6:end,6:end]=rand(2:8,5,5)
-	det(A),det(C[1:5,1:5])*det(E)
+    Random.seed!(123)
+    A = zeros(10, 10)
+    CD = A[1:5, :] = rand(2:8, 5, 10)
+    C = CD[:, 1:5]
+    E = A[6:end, 6:end] = rand(2:8, 5, 5)
+    det(A), det(C[1:5, 1:5]) * det(E)
 end
 
 # ╔═╡ 49ee7daf-8b09-4303-8aa6-05ae57977688
-let 
-	# example
-	A = [2 1;-1 3]
-	# eigen(A)
-	x=[1;-1]
-	b = A*x
-	A,b
+let
+    # example
+    A = [2 1; -1 3]
+    # eigen(A)
+    x = [1; -1]
+    b = A * x
+    A, b
 end
-	
+
 
 # ╔═╡ 21e63aa1-c0de-4980-b973-9afd6b1dde87
 md"## Eigenvalues, Eigenvectors and Eigenpairs"
@@ -275,17 +276,17 @@ where ``a, d \in \mathbb{R}``. We call this the 1D test matrix.
 
 # ╔═╡ a5240ee4-1f4d-4229-95f4-fe115645c92c
 begin
-	triadiag(a,d,m) =diagm(0=>repeat([d],m),-1=>repeat([a],m-1),1=>repeat([a],m-1))
+    triadiag(a, d, m) = diagm(0 => repeat([d], m), -1 => repeat([a], m - 1), 1 => repeat([a], m - 1))
 end
 
 # ╔═╡ 05dfaf81-8b67-43de-b249-f1e23c3664f2
 let
-	a,d,m = -1,3,3
-	A = triadiag(a,d,m)
-	E,V = eigen(A) # using LinearAlgebra
-	E2 = [d + 2*a*cos(j*π/(m+1)) for j in 1:m]
-	V1= [sin(j*k*π/(m+1)) for j in 1:m,  k in 1:m]
-	E, E2, -(√2/2)*V1, V
+    a, d, m = -1, 3, 3
+    A = triadiag(a, d, m)
+    E, V = eigen(A) # using LinearAlgebra
+    E2 = [d + 2 * a * cos(j * π / (m + 1)) for j in 1:m]
+    V1 = [sin(j * k * π / (m + 1)) for j in 1:m, k in 1:m]
+    E, E2, -(√2 / 2) * V1, V
 end
 
 # ╔═╡ 77b036e6-7ddb-4a8e-8da5-3e0d1c9305ca
@@ -371,70 +372,70 @@ The matrix ``\boldsymbol{A}^{(k)}`` takes the form
 
 # ╔═╡ 8daf8b4c-39ed-47d2-932d-28b4c31ad6f7
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	b = [4;1;-3;4]
-	L =[
-		1 0 0 0
-		2 1 0 0
-		3 4 1 0
-		-1 -3 0 1
-	]
-	U = [1 1 0 3;0 -1 -1 -5;0 0 3 13;0 0 0 -13]
-	A , L*U
-	# y =L\b
-	# x = U\y
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    b = [4; 1; -3; 4]
+    L = [
+        1 0 0 0
+        2 1 0 0
+        3 4 1 0
+        -1 -3 0 1
+    ]
+    U = [1 1 0 3; 0 -1 -1 -5; 0 0 3 13; 0 0 0 -13]
+    A, L * U
+    # y =L\b
+    # x = U\y
 end
 
 # ╔═╡ 420504bd-7c7b-4a09-a0c1-203b36ed340e
-function lps(A,k)
-	_,n = size(A)
-	B = copy(A)
-	for i in (k+1):n
-		l=B[i,k]/B[k,k]
-		for j in k:n
-			B[i,j]=B[i,j]-l*B[k,j]
-		end
-	end
-	B,B[1:k,1:k]
+function lps(A, k)
+    _, n = size(A)
+    B = copy(A)
+    for i in (k+1):n
+        l = B[i, k] / B[k, k]
+        for j in k:n
+            B[i, j] = B[i, j] - l * B[k, j]
+        end
+    end
+    B, B[1:k, 1:k]
 end
 
 # ╔═╡ e9ab9e3f-47ae-48e7-ae3d-4afe1618919a
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	# b = [4;1;-3;4]
-	# _,n =size(A) 
-	# for k=1:1
-	# 	for i in (k+1):n
-	# 		l=A[i,k]/A[k,k]
-	# 		for j in k:n
-	# 			A[i,j]=A[i,j]-l*A[k,j]
-	# 		end
-	# 	end
-	# end
-	A1=A
-	A2,=lps(A,1)
-	A3, = lps(A2,2)
-	A3
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    # b = [4;1;-3;4]
+    # _,n =size(A) 
+    # for k=1:1
+    # 	for i in (k+1):n
+    # 		l=A[i,k]/A[k,k]
+    # 		for j in k:n
+    # 			A[i,j]=A[i,j]-l*A[k,j]
+    # 		end
+    # 	end
+    # end
+    A1 = A
+    A2, = lps(A, 1)
+    A3, = lps(A2, 2)
+    A3
 end
 
 # ╔═╡ 6ed68d7b-7c50-4150-86f0-905fe6fd6a25
 let
-	A = [1 1 0 3 
-		 2 1 -1 1
-		3 -1 -1 2
-		-1 2 3 -1
-	]
-	A1,Ak1=lps(A,1)
-	A2,Ak2=lps(A1,2)
-	A3,Ak3=lps(A2,3)
+    A = [1 1 0 3
+        2 1 -1 1
+        3 -1 -1 2
+        -1 2 3 -1
+    ]
+    A1, Ak1 = lps(A, 1)
+    A2, Ak2 = lps(A1, 2)
+    A3, Ak3 = lps(A2, 3)
 end
 
 # ╔═╡ dff54fcc-2793-41d9-826a-8321e536b7d7
@@ -461,14 +462,14 @@ cm"""
 
 # ╔═╡ 9521e54d-5a82-44f8-a4b6-94b229a58ec5
 let
-	Random.seed!(123)
-	A = rand(-3:8,3,3)
-	perms = collect(permutations(1:3))
-	p = rand(perms,1)[1]
-	A, A[:,p], A[p,:]
-	P=I(3)[:,p]
-	# P=P[p,:]
-	# P*P'
+    Random.seed!(123)
+    A = rand(-3:8, 3, 3)
+    perms = collect(permutations(1:3))
+    p = rand(perms, 1)[1]
+    A, A[:, p], A[p, :]
+    P = I(3)[:, p]
+    # P=P[p,:]
+    # P*P'
 end
 
 # ╔═╡ b9a41148-048e-463c-b0c1-85de79ec6ee1
@@ -551,42 +552,38 @@ with ``r_k`` the smallest such index in case of a tie. The following example ill
 # 	P2
 # 	# p2,pt
 # 	# U1,Float64.(U)
-	
+
 # end
 
 # ╔═╡ a78b0614-3a52-4fb8-acc7-147707e1d456
 let
-	A=[1 -1 1 2
-	-2 1 1 1
-	2 -1 2 3
-	-4 1 0 2
-	]
-	B = Rational.(copy(A))
-	B[4,:],B[1,:]=B[1,:],B[4,:]
-	B[2,:] = -(1//2)*B[1,:]+B[2,:]
-	B[3,:] = (1//2)*B[1,:]+B[3,:]
-	B[4,:] = (1//4)*B[1,:]+B[4,:]
-	B[2,:],B[4,:]=B[4,:],B[2,:]
-	B[3,:] = -(2//3)*B[2,:]+B[3,:]
-	B[4,:] = (2//3)*B[2,:]+B[4,:]
-	B[3,:],B[4,:]=B[4,:],B[3,:]
-	B[4,:] = -(4//5)*B[3,:]+B[4,:]
-	pt =[4,1,2,3]
-	P = I(4)[:,pt]
-	# L =[
-	# 	1 0 0 0
-	# 	-1//4 1 0 0
-	# 	 1//2 -2//3 1 0
-	# 	-1//2 2//3 4//5 1
-	# ]
-	# P*L*B , A
-	L,U,p = lu(Rational.(A))
-	L
-	U
-	# p
-	# P=I(4)[p,:]
-	# p
-	# B
+    A = [1 -1 1 2
+        -2 1 1 1
+        2 -1 2 3
+        -4 1 0 2
+    ]
+    # B = Rational.(copy(A))
+    # B[4,:],B[1,:]=B[1,:],B[4,:]
+    # B[2,:] = -(1//2)*B[1,:]+B[2,:]
+    # B[3,:] = (1//2)*B[1,:]+B[3,:]
+    # B[4,:] = (1//4)*B[1,:]+B[4,:]
+    # B[2,:],B[4,:]=B[4,:],B[2,:]
+    # B[3,:] = -(2//3)*B[2,:]+B[3,:]
+    # B[4,:] = (2//3)*B[2,:]+B[4,:]
+    # B[3,:],B[4,:]=B[4,:],B[3,:]
+    # B[4,:] = -(4//5)*B[3,:]+B[4,:]
+    # pt =[2,3,4,1]
+    # P = I(4)[pt,:]
+    # L =[
+    # 	1 0 0 0
+    # 	-1//4 1 0 0
+    # 	 1//2 -2//3 1 0
+    # 	-1//2 2//3 4//5 1
+    # ]
+    # P*L*B,A
+    # L,U,p = lu(A)
+    # P=I(4)[p,:]
+    # p
 end
 
 # ╔═╡ fd98de8b-bb26-4c7c-8b65-d16f3fe57a09
@@ -613,14 +610,14 @@ There are other ways that can be advantageous for certain problems:
 
 # ╔═╡ d5dd27d9-16dc-44b0-9128-63e16cc9db10
 let
-	Random.seed!(286)
-	A = rand(-2:0.2:4,10,10)
-	j =rand(1:10,10)
-	foreach(j) do i
-	A[i,i]=0
-	end
-	A
-	minors =[det(A[1:i,1:i]) for i in 1:9]
+    Random.seed!(286)
+    A = rand(-2:0.2:4, 10, 10)
+    j = rand(1:10, 10)
+    foreach(j) do i
+        A[i, i] = 0
+    end
+    A
+    minors = [det(A[1:i, 1:i]) for i in 1:9]
 end
 
 # ╔═╡ 93c8a52c-e3d9-42a5-b9be-11e6a090fa55
@@ -652,51 +649,8 @@ where each diagonal block ``\boldsymbol{A}_{i i}`` is square. We call the factor
 ```
 """
 
-# ╔═╡ 91739d93-dfda-4599-9c4b-68c6ee7f8df1
-md"# Chapter 4: LDL* Factorization and Positive Definite Matrices"
-
-# ╔═╡ e440727e-955e-4db6-a9d5-c1125917f56e
-md"##  4.1 The LDL* sFactorization"
-
-# ╔═╡ 43ffc137-855c-4e16-8ebd-ce2f73ad7161
-md"## 4.2 Positive Definite and Semidefinite Matrices"
-
-# ╔═╡ aee4e1e3-7ce8-48a9-b258-b0ab46d52925
-let
-	Random.seed!(123)
-	x = rand(Complex{Int8},2,1)
-	y = rand(Complex{Int8},2,1)
-	conj(x⋅y),y⋅x
-end
-
-# ╔═╡ 380db7d1-9bb6-44e3-9063-6d98bceaf15f
-cm"""
-- If ``f:\Omega\subset \mathbb{R}^n\to \mathbb{R}``, then
-```math
-\nabla f(\boldsymbol{x})=\left[\begin{array}{c}\frac{\partial f(\boldsymbol{x})}{\partial x_1} \\ \vdots \\ \frac{\partial f(\boldsymbol{x})}{\partial x_n}\end{array}\right] \in \mathbb{R}^n, \quad H f(\boldsymbol{x})=\left[\begin{array}{ccc}\frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_1} & \cdots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_n} \\ \vdots & \vdots \\ \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_1} & \ldots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_n}\end{array}\right] \in \mathbb{R}^{n \times n}
-```
-"""
-
-# ╔═╡ faf07e34-58fd-4be3-a81d-9fddd668e582
-md"##  4.2.1 The Cholesky Factorization"
-
-# ╔═╡ e9ea8099-acfd-4df4-a19a-f510888e1f98
-let
-	
-	# A = [2 4 -3;4 2 -3;-3 -3 9]
-	# L1,U1 = lu(A,NoPivot())
-	# L,U = cholesky(A)
-	# L, U
-	# U12=deepcopy(U1)
-	# D = diagm(0=>diag(U1))
-	# U12=stack(map(x->U1[:,x[1]] ./ diag(U1),enumerate(eachrow(U1))))
-	# L1,U12
-	
-	# U12',L1
-end
-
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
-TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
+TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true, depth=4)
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
@@ -741,9 +695,9 @@ LocalImage("docs/imgs/mathmatize_qrcode.png")
 # ╔═╡ d779340e-4dab-45c1-b8df-c0bcbae32a90
 
 begin
-	function add_space(n=1)
-		repeat("&nbsp;",n)
-	end
+    function add_space(n=1)
+        repeat("&nbsp;", n)
+    end
     function post_img(img::String, w=500)
         res = Resource(img, :width => w)
         cm"""
@@ -771,15 +725,15 @@ begin
         beginBlock(t, s)
     end
     ebl() = endBlock()
-	function theorem(s)
-		bth(s)
-	end
+    function theorem(s)
+        bth(s)
+    end
     function bth(s)
         beginTheorem(s)
     end
     eth() = endTheorem()
-	ex() = example("Example","")
-	ex(n::Int; s::String="") = ex("Example $n", s)
+    ex() = example("Example", "")
+    ex(n::Int; s::String="") = ex("Example $n", s)
     ex(t, s) = example(t, s)
     function beginBlock(title, subtitle)
         """<div style="box-sizing: border-box;">
@@ -1316,126 +1270,6 @@ $(bth("3.5 (Block LU Theorem)")) Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \tim
 \end{array}\right]
 ```
 are nonsingular for ``k=1, \ldots, m-1``.
-"""
-
-# ╔═╡ fb35d4ab-fc81-4618-be09-4a2911ff4566
-cm"""
-There are special versions of the LU factorization for Hermitian and positive definite. __The most important ones are__
-1. the __LDL* factorization__ which is an LDU factorization with ``\boldsymbol{U}=\boldsymbol{L}^*`` and ``\boldsymbol{D}`` a diagonal matrix with real diagonal elements
-2. the __LL* factorization__  (called a __Cholesky factorization__) which is an LU factorization with ``\boldsymbol{U}=\boldsymbol{L}^*`` and ``l_{i i}>0`` all ``i``.
-
-A matrix ``\boldsymbol{A}`` having an LDL* factorization must be Hermitian since ``\boldsymbol{D}`` is real so that ``\boldsymbol{A}^*=\left(\boldsymbol{L} \boldsymbol{D} \boldsymbol{L}^*\right)^*=\boldsymbol{L} \boldsymbol{D}^* \boldsymbol{L}^*=\boldsymbol{A}``. The LL* factorization is .
-
-$(ex(1)) (LDL* of ``2 \times 2`` Hermitian Matrix) Let ``a, d \in \mathbb{R}`` and ``b \in \mathbb{C}``. An LDL* factorization of a ``2 \times 2`` Hermitian matrix must satisfy the equations
-```math
-\left[\begin{array}{ll}
-a & \bar{b} \\
-b & d
-\end{array}\right]=\left[\begin{array}{ll}
-1 & 0 \\
-l_1 & 1
-\end{array}\right]\left[\begin{array}{cc}
-d_1 & 0 \\
-0 & d_2
-\end{array}\right]\left[\begin{array}{ll}
-1 & \overline{l_1} \\
-0 & 1
-\end{array}\right]=\left[\begin{array}{cc}
-d_1 & d_1 \overline{l_1} \\
-d_1 l_1 & d_1\left|l_1\right|^2+d_2
-\end{array}\right]
-```
-"""
-
-# ╔═╡ 2ad11900-f756-4600-9565-55108bd0e296
-cm"""
-$(bbl("Lemma","4.1 (LDL* of Leading Principal Sub Matrices)"))
-Suppose ``\boldsymbol{A}=\boldsymbol{L} \boldsymbol{D} \boldsymbol{L}^*`` is an ``L D L^*`` factorization of ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. For ``k=1, \ldots, n`` let ``\boldsymbol{A}_{[k]}, \boldsymbol{L}_{[k]}`` and ``\boldsymbol{D}_{[k]}`` be the leading principal submatrices of ``\boldsymbol{A}, \boldsymbol{L}`` and ``\boldsymbol{D}``, respectively. Then ``\boldsymbol{A}_{[k]}=`` ``\boldsymbol{L}_{[k]} \boldsymbol{D}_{[k]} \boldsymbol{L}_{[k]}^*`` is an ``L D L^*`` factorization of ``\boldsymbol{A}_{[k]}`` for ``k=1, \ldots, n``
-"""
-
-# ╔═╡ 3b933d21-8ea9-4790-8588-4662a84481ba
-cm"""
-$(bth("4.1 (LDL* Theorem)"))
-The matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has a unique ``L D L^*`` factorization if and only if ``\boldsymbol{A}=\boldsymbol{A}^*`` and ``\boldsymbol{A}_{[k]}`` is nonsingular for ``k=1, \ldots, n-1``.
-"""
-
-# ╔═╡ e90b24e7-1c5a-4190-9af6-34fe939ad47c
-cm"""
-Given ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. The function ``f: \mathbb{C}^n \rightarrow \mathbb{R}`` given by
-```math
-f(\boldsymbol{x})=\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x}=\sum_{i=1}^n \sum_{j=1}^n a_{i j} \bar{x}_i x_j
-```
-is called a __quadratic form__. 
-- Note that ``f`` is real valued if ``\boldsymbol{A}`` is Hermitian. Indeed, ``\overline{f(\boldsymbol{x})}=\overline{\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x}}=\left(\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x}\right)^*=\boldsymbol{x}^* \boldsymbol{A}^* \boldsymbol{x}=f(\boldsymbol{x})``.
-
-$(define("4.1 (Positive Definite Matrix)"))
-We say that a matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is
-
-1. __positive definite__ if ``\boldsymbol{A}^*=\boldsymbol{A}`` and ``\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x}>0`` for all nonzero ``\boldsymbol{x} \in \mathbb{C}^n``;
-2. __positive semidefinite__ if ``\boldsymbol{A}^*=\boldsymbol{A}`` and ``\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x} \geq 0`` for all ``\boldsymbol{x} \in \mathbb{C}^n``;
-3. __negative (semi)definite__ if ``-\boldsymbol{A}`` is positive (semi)definite.
-"""
-
-
-# ╔═╡ 32228ef3-45bb-473c-9a04-21070b475b19
-cm"""
-$(bbl("Remarks",""))
-1. The ``\mathbf{0}`` is positive semidefinite, while the ``\boldsymbol{I}`` is positive definite.
-2. The matrix ``\boldsymbol{A}`` is positive definite ``\Longleftrightarrow`` it is positive semidefinite and ``\boldsymbol{x}^* \boldsymbol{A x}=0 \Longrightarrow \boldsymbol{x}=\mathbf{0}``.
-3. A positive definite matrix ``\boldsymbol{A}`` is nonsingular. For if ``\boldsymbol{A} \boldsymbol{x}=\mathbf{0}`` then ``\boldsymbol{x}^* \boldsymbol{A} \boldsymbol{x}=0`` and this implies that ``\boldsymbol{x}=\mathbf{0}``.
-4. It follows from Lemma 4.6 (below) that a nonsingular positive semidefinite matrix is positive definite.
-5. If ``\boldsymbol{A}`` is real then it is enough to show definiteness for real vectors only. Indeed, if ``\boldsymbol{A} \in \mathbb{R}^{n \times n}, \boldsymbol{A}^T=\boldsymbol{A}`` and ``\boldsymbol{x}^T \boldsymbol{A} \boldsymbol{x}>0`` for all nonzero ``\boldsymbol{x} \in \mathbb{R}^n`` then ``\boldsymbol{z}^* \boldsymbol{A} \boldsymbol{z}>0`` for all nonzero ``z \in \mathbb{C}^n``. For if ``\boldsymbol{z}=\boldsymbol{x}+i \boldsymbol{y} \neq \mathbf{0}`` with ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{R}^n`` then
-```math
-\begin{aligned}
-z^* \boldsymbol{A} z & =(\boldsymbol{x}-i \boldsymbol{y})^T \boldsymbol{A}(\boldsymbol{x}+i \boldsymbol{y})=\boldsymbol{x}^T \boldsymbol{A} \boldsymbol{x}-i \boldsymbol{y}^T \boldsymbol{A} \boldsymbol{x}+i \boldsymbol{x}^T \boldsymbol{A} \boldsymbol{y}-i^2 \boldsymbol{y}^T \boldsymbol{A} \boldsymbol{y} \\
-& =\boldsymbol{x}^T \boldsymbol{A} \boldsymbol{x}+\boldsymbol{y}^T \boldsymbol{A} \boldsymbol{y}
-\end{aligned}
-```
-and this is positive since at least one of the real vectors ``\boldsymbol{x}, \boldsymbol{y}`` is nonzero.
-"""
-
-# ╔═╡ f7f904ea-2c8b-473f-a37f-53e6ed627a77
-cm"""
-$(bbl("Lemma","4.2 The Matrix A*A")) The matrix ``\boldsymbol{A}^* \boldsymbol{A}`` is positive semidefinite for any ``m, n \in \mathbb{N}`` and ``\boldsymbol{A} \in \mathbb{C}^{m \times n}``. It is positive definite if and only if ``\boldsymbol{A}`` has linearly independent columns or equivalently rank ``n``.
-"""
-
-# ╔═╡ 5225f24c-d76d-4011-8fd3-8c9e16e886c6
-cm"""
-$(bbl("Lemma","4.3 T is Positive Definite")) The second derivative matrix ``\boldsymbol{T}=`` ``\operatorname{tridiag}(-1,2,-1) \in \mathbb{R}^{n \times n}`` is positive definite.
-"""
-
-# ╔═╡ ea4df632-2f6f-4cde-acf7-348b8ebbfb63
-cm"""
-- Recall that a principal submatrix ``\boldsymbol{B}=\boldsymbol{A}(\boldsymbol{r}, \boldsymbol{r}) \in \mathbb{C}^{k \times k}`` of a matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has elements ``b_{i, j}=a_{r_i, r_j}`` for ``i, j=1, \ldots, k``, where ``1 \leq r_1< \cdots< r_k \leq n``. It is a leading principal submatrix, denoted ``\boldsymbol{A}_{[k]}`` if ``\boldsymbol{r}=[1,2, \ldots, k]^T``. We have
-```math
-\boldsymbol{A}(\boldsymbol{r}, \boldsymbol{r})=\boldsymbol{X}^* \boldsymbol{A} \boldsymbol{X}, \quad \boldsymbol{X}:=\left[\boldsymbol{e}_{r_1}, \ldots, \boldsymbol{e}_{r_k}\right] \in \mathbb{C}^{n \times k}
-```
-
-$(bbl("Lemma","4.4 (Submatrices)"))
-Any principal submatrix of a positive (semi)definite matrix is positive (semi)definite.
-"""
-
-# ╔═╡ 3a9f7288-bcac-451e-b361-86102a018c3f
-cm"""
-$(bth("4.2 (LDL* and LL*)")) The following is equivalent for a matrix ``\boldsymbol{A} \in`` ``\mathbb{C}^{n \times n}``.
-1. A is positive definite,
-2. ``\boldsymbol{A}`` has an ``L D L^*`` factorization with positive diagonal elements in ``\boldsymbol{D}``,
-3. A has a Cholesky factorization.
-
-If the Cholesky factorization exists it is unique.
-"""
-
-# ╔═╡ dc85a1f4-bff2-466b-98a8-44328d6cf7c1
-cm"""
-$(ex())
-Find the LDL* for the matrix 
-```math
-A = \begin{bmatrix}
-2 &4 &-3\\
-4 &2 &-3\\
--3& -3& 9
-\end{bmatrix}
-```
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3613,23 +3447,6 @@ version = "1.4.1+1"
 # ╟─93c8a52c-e3d9-42a5-b9be-11e6a090fa55
 # ╟─c9344f33-0372-48de-ae18-819e05d5852f
 # ╟─81cb8f6c-d82b-41eb-bd06-f4a601954785
-# ╟─91739d93-dfda-4599-9c4b-68c6ee7f8df1
-# ╟─e440727e-955e-4db6-a9d5-c1125917f56e
-# ╟─fb35d4ab-fc81-4618-be09-4a2911ff4566
-# ╟─2ad11900-f756-4600-9565-55108bd0e296
-# ╟─3b933d21-8ea9-4790-8588-4662a84481ba
-# ╟─43ffc137-855c-4e16-8ebd-ce2f73ad7161
-# ╟─e90b24e7-1c5a-4190-9af6-34fe939ad47c
-# ╠═aee4e1e3-7ce8-48a9-b258-b0ab46d52925
-# ╟─32228ef3-45bb-473c-9a04-21070b475b19
-# ╟─380db7d1-9bb6-44e3-9063-6d98bceaf15f
-# ╟─f7f904ea-2c8b-473f-a37f-53e6ed627a77
-# ╟─5225f24c-d76d-4011-8fd3-8c9e16e886c6
-# ╟─faf07e34-58fd-4be3-a81d-9fddd668e582
-# ╟─ea4df632-2f6f-4cde-acf7-348b8ebbfb63
-# ╟─3a9f7288-bcac-451e-b361-86102a018c3f
-# ╟─dc85a1f4-bff2-466b-98a8-44328d6cf7c1
-# ╟─e9ea8099-acfd-4df4-a19a-f510888e1f98
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
