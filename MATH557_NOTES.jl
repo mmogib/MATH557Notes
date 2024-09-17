@@ -580,9 +580,17 @@ let
 	# 	-1//2 2//3 4//5 1
 	# ]
 	# P*L*B , A
-	L,U,p = lu(Rational.(A))
-	L
-	U
+	L,U,p = lu(Rational.(A),NoPivot())
+	# P=I(4)[p,:]
+	# L=L*diagm(0=>diag(U))
+	
+	# U[1,:]=U[1,:]//U[1,1]
+	# U[2,:]=U[2,:]//U[2,2]
+	# U[3,:]=U[3,:]//U[3,3]
+	# U[4,:]=U[4,:]//U[4,4]
+	
+	# L*U,A
+	L, U
 	# p
 	# P=I(4)[p,:]
 	# p
@@ -673,7 +681,7 @@ end
 cm"""
 - If ``f:\Omega\subset \mathbb{R}^n\to \mathbb{R}``, then
 ```math
-\nabla f(\boldsymbol{x})=\left[\begin{array}{c}\frac{\partial f(\boldsymbol{x})}{\partial x_1} \\ \vdots \\ \frac{\partial f(\boldsymbol{x})}{\partial x_n}\end{array}\right] \in \mathbb{R}^n, \quad H f(\boldsymbol{x})=\left[\begin{array}{ccc}\frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_1} & \cdots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_n} \\ \vdots & \vdots \\ \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_1} & \ldots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_n}\end{array}\right] \in \mathbb{R}^{n \times n}
+\nabla f(\boldsymbol{x})=\left[\begin{array}{c}\frac{\partial f(\boldsymbol{x})}{\partial x_1} \\ \vdots \\ \frac{\partial f(\boldsymbol{x})}{\partial x_n}\end{array}\right] \in \mathbb{R}^n, \quad H f(\boldsymbol{x})=\left[\begin{array}{ccc}\frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_1} & \cdots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_1} \\ \vdots & \vdots \\ \frac{\partial^2 f(\boldsymbol{x})}{\partial x_1 \partial x_n} & \ldots & \frac{\partial^2 f(\boldsymbol{x})}{\partial x_n \partial x_n}\end{array}\right] \in \mathbb{R}^{n \times n}
 ```
 """
 
@@ -683,9 +691,19 @@ md"##  4.2.1 The Cholesky Factorization"
 # ╔═╡ e9ea8099-acfd-4df4-a19a-f510888e1f98
 let
 	
-	# A = [2 4 -3;4 2 -3;-3 -3 9]
-	# L1,U1 = lu(A,NoPivot())
-	# L,U = cholesky(A)
+	Ao = Rational.([2 4 -3;4 14 -9;-3 -9 12])
+	A = deepcopy(Ao)
+	# A[2,:] = -2A[1,:]+A[2,:]
+	# A[3,:] = (3//2)A[1,:]+A[3,:]
+	# A[3,:] = (1//2)A[2,:]+A[3,:]
+	A
+	# L1,U1 = lu(Ao,NoPivot())
+	# L1,U1
+	# D =diagm(0=>[2;6;6])
+	# U=L1'
+	# A = L1*D*U
+	# L,U = cholesky(Ao)
+	# L,U
 	# L, U
 	# U12=deepcopy(U1)
 	# D = diagm(0=>diag(U1))
@@ -693,6 +711,32 @@ let
 	# L1,U12
 	
 	# U12',L1
+end
+
+# ╔═╡ 0275d178-b918-445a-be9e-eac9c7aaa471
+md"## 4.2.2 Positive Definite and Positive Semidefinite Criteria"
+
+# ╔═╡ 6d988a2c-f6ae-418d-9cd4-11207ec7a2ce
+cm"""
+Consider 
+```math
+A= \begin{bmatrix}
+20 & 6 - 3i & 1 + 1i & 4 + 4i \\ 
+6 + 3i & 24 & 6 - 1i & 6 + 1i \\ 
+1 - 1i & 6 + 1i & 20 & -4 - 2i \\ 
+4 - 4i & 6 - 1i & -4 + 2i & 16  
+\end{bmatrix}
+```
+"""
+
+# ╔═╡ 02c7ec2d-e57f-49d5-a8c3-a6f0637e026f
+let
+	Random.seed!(122)
+	# A = rand(-2:4,4,4)
+	A = [20 + 0im 6 - 3im 1 + 1im 4 + 4im; 6 + 3im 24 + 0im 6 - 1im 6 + 1im; 1 - 1im 6 + 1im 20 + 0im -4 - 2im; 4 - 4im 6 - 1im -4 + 2im 16 + 0im]
+	
+	# isposdef(A)
+	# sqrt(24*20),4*sqrt(30),3sqrt(5)
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -1432,10 +1476,40 @@ Find the LDL* for the matrix
 ```math
 A = \begin{bmatrix}
 2 &4 &-3\\
-4 &2 &-3\\
--3& -3& 9
+4 &14 &-9\\
+-3& -9& 12
 \end{bmatrix}
 ```
+"""
+
+# ╔═╡ f68a295a-8fe6-47d1-9ca6-9b6199163ed7
+cm"""
+$(bth("4.3 (Necessary Conditions for Positive (Semi)Definiteness)")) If ``\boldsymbol{A} \in`` ``\mathbb{C}^{n \times n}`` is positive (semi)definite then for all ``i, j`` with ``i \neq j``
+1. ``a_{i i}>0,\left(a_{i i} \geq 0\right)``,
+2. ``\left|\operatorname{Re}\left(a_{i j}\right)\right|<\left(a_{i i}+a_{j j}\right) / 2,\left(\left|\operatorname{Re}\left(a_{i j}\right)\right| \leq\left(a_{i i}+a_{j j}\right) / 2\right)``,
+3. ``\left|a_{i j}\right|<\sqrt{a_{i i} a_{j j}},\left(\left|a_{i j}\right| \leq \sqrt{a_{i i} a_{j j}}\right)``
+4. If ``\boldsymbol{A}`` is positive semidefinite and ``a_{i i}=0`` for some ``i`` then ``a_{i j}=a_{j i}=0`` for ``j=1, \ldots, n``.
+"""
+
+# ╔═╡ 27e009e2-2e77-4e58-a2d8-50a9efb99e32
+cm"""
+$(bbl("Lemma","4.5 (Positive Eigenvalues)"))
+A matrix is positive (semi)definite if and only if it is Hermitian and all its eigenvalues are positive (nonnegative).
+"""
+
+# ╔═╡ 9579da39-7241-4266-918a-0c46b656cbf3
+cm"""
+$(bbl("Lemma","4.6 (Positive Semidefinite and Nonsingular)")) A matrix is positive definite if and only if it is positive semidefinite and nonsingular.
+"""
+
+# ╔═╡ 6e8ecdb1-7d32-429f-9d23-8b79db0cc75d
+cm"""
+$(bth("4.4 (Positive Definite Characterization)"))
+The following statements are equivalent for a matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``.
+1. ``\boldsymbol{A}`` is positive definite.
+2. ``\boldsymbol{A}`` is Hermitian with only positive eigenvalues.
+3. ``\boldsymbol{A}`` is Hermitian and all leading principal submatrices have a positive determinant.
+4. ``\boldsymbol{A}=\boldsymbol{B} \boldsymbol{B}^*`` for a nonsingular ``\boldsymbol{B} \in \mathbb{C}^{n \times n}``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3630,6 +3704,13 @@ version = "1.4.1+1"
 # ╟─3a9f7288-bcac-451e-b361-86102a018c3f
 # ╟─dc85a1f4-bff2-466b-98a8-44328d6cf7c1
 # ╟─e9ea8099-acfd-4df4-a19a-f510888e1f98
+# ╟─0275d178-b918-445a-be9e-eac9c7aaa471
+# ╟─f68a295a-8fe6-47d1-9ca6-9b6199163ed7
+# ╠═6d988a2c-f6ae-418d-9cd4-11207ec7a2ce
+# ╠═02c7ec2d-e57f-49d5-a8c3-a6f0637e026f
+# ╟─27e009e2-2e77-4e58-a2d8-50a9efb99e32
+# ╟─9579da39-7241-4266-918a-0c46b656cbf3
+# ╟─6e8ecdb1-7d32-429f-9d23-8b79db0cc75d
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
