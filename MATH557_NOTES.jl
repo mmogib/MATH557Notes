@@ -11,6 +11,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 begin
     using CommonMark
@@ -737,6 +747,112 @@ let
 	
 	# isposdef(A)
 	# sqrt(24*20),4*sqrt(30),3sqrt(5)
+end
+
+# ╔═╡ 41526c5c-0be0-4bef-af4c-557c28b918cd
+md"# Chapter 5: Orthonormal and Unitary Transformations"
+ # 5.1− 5.4, 5.6
+
+# ╔═╡ 694c5383-28cf-4e69-90bc-366a40c1e0a9
+md"##  5.1 Inner Products, Orthogonality and Unitary Matrices"
+
+# ╔═╡ b012a15b-be75-4cb4-96ff-d679ed4376d1
+md"### Orthogonality"
+
+# ╔═╡ 8509b4b9-b4c8-47e5-84ae-c21b47eafa16
+let
+	s1 =[1;2;-2]
+	s2=[1;3;2]
+	s3 =[2;5;1]
+# 	v1=s1
+# 	v2 = s2 -v1*(s2⋅v1)/(norm(v1))^2
+# 	v3 = s3 - v1*(s3⋅v1)/(norm(v1))^2 - v2*(s3⋅v2)/(norm(v2))^2
+# 	v1=normalize(v1)
+# 	v2=normalize(v2)
+# 	v3=normalize(v3)
+# 	norm.(eachcol([v1 v2 v3]))
+end
+
+# ╔═╡ 2bebb2e6-55b6-4a33-9409-2b901b6dfc5e
+md"### Sumof Subspaces and Orthogonal Projections"
+
+# ╔═╡ 5e8ea837-cd68-4dd1-9d4b-925223fc63f9
+cm"""
+Suppose ``\mathcal{S}`` and ``\mathcal{T}`` are subspaces of a real or complex vector space ``\mathcal{V}`` endowed with an inner product ``\langle\boldsymbol{x}, \boldsymbol{y}\rangle``. We define
+- Sum: ``\mathcal{S}+\mathcal{T}:=\{s+t: s \in \mathcal{S}`` and ``t \in \mathcal{T}\}``,
+- ``\operatorname{direct} \operatorname{sum} \mathcal{S} \oplus \mathcal{T}`` : a sum where ``\mathcal{S} \cap \mathcal{T}=\{0\}``,
+- orthogonal sum ``\mathcal{S} \stackrel{\perp}{\oplus} \mathcal{T}`` : a sum where ``\langle\boldsymbol{s}, \boldsymbol{t}\rangle=0`` for all ``s \in \mathcal{S}`` and ``\boldsymbol{t} \in \mathcal{T}``.
+"""
+
+# ╔═╡ 17312234-ed45-4e26-868e-3f25c14f73bd
+cm"### Unitary and Orthogonal Matrices"
+
+# ╔═╡ a916bede-5304-4120-a929-979d8fbff63c
+md"## 5.2 The Householder Transformation"
+
+# ╔═╡ 9d950ca7-0162-41a6-b59f-ba2d64d48f4e
+cm"""
+- If ``\boldsymbol{x}=0`` then ``\boldsymbol{H} \boldsymbol{x}=\mathbf{0}`` and ``a=0``. Any ``\boldsymbol{u}`` with ``\|\boldsymbol{u}\|_2=\sqrt{2}`` will work, and we choose ``\boldsymbol{u}:=\sqrt{2} \boldsymbol{e}_1`` in this case. 
+- For ``\boldsymbol{x} \neq \mathbf{0}`` we define
+```math
+\boldsymbol{u}:=\frac{\boldsymbol{z}+\boldsymbol{e}_1}{\sqrt{1+z_1}}, \text { where } \boldsymbol{z}:=\bar{\rho} \boldsymbol{x} /\|\boldsymbol{x}\|_2 .
+```
+"""
+
+# ╔═╡ 7e6ce1a2-8de1-4170-9585-62b25311e646
+begin
+	function housegen(x::Vector{T}) where T
+	    # Initialize variables
+	    a = norm(x)
+	    
+	    # If the norm is zero, handle this edge case
+	    if a == 0
+	        u = copy(x)
+	        u[1] = sqrt(2)
+	        return u, a
+	    end
+	
+	    # Determine r based on the sign of x[1]
+	    if x[1] == 0
+	        ρ = one(T)  # ρ = 1
+	    else
+	        ρ = x[1] / abs(x[1])
+	    end
+	
+	    # Compute u and a
+	    u = conj(ρ) * x / a
+	    u[1] = u[1] + 1
+	    u = u/sqrt(abs(u[1]))
+	    a = -ρ * a
+	    
+	    return u, a
+	end
+	H(u)= x->x-(u'*x)*u
+end
+
+# ╔═╡ d94ca4da-f011-4c8c-b92e-985d29c4f3e5
+let
+	x =[-1,2]
+	u,a = housegen(x)
+	
+	H(u)(x)
+end
+
+# ╔═╡ 0865697a-e057-4be3-9aa9-a1bf8831829d
+cm"""
+ - Householder transformations can also be used to zero out only the lower part of
+ a vector.
+"""
+
+# ╔═╡ 7c3661da-0ee8-4877-8d50-07c6704dbbb0
+let
+	y=[1,2]
+	z = [-2,3]
+	x = [y;z]
+	us,a = housegen(z)
+	u=[zeros(2);us]
+	u'*u
+	H(u)(x),	a*[1,0]
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -1510,6 +1626,237 @@ The following statements are equivalent for a matrix ``\boldsymbol{A} \in \mathb
 2. ``\boldsymbol{A}`` is Hermitian with only positive eigenvalues.
 3. ``\boldsymbol{A}`` is Hermitian and all leading principal submatrices have a positive determinant.
 4. ``\boldsymbol{A}=\boldsymbol{B} \boldsymbol{B}^*`` for a nonsingular ``\boldsymbol{B} \in \mathbb{C}^{n \times n}``.
+"""
+
+# ╔═╡ a3a98e03-e9ea-424e-972d-f8367cd52642
+cm"""
+$(define("5.1 (Inner Product)")) An inner product in a complex vector space ``\mathcal{V}`` is a function ``\mathcal{V} \times \mathcal{V} \rightarrow \mathbb{C}`` satisfying for all ``\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{z} \in \mathcal{V}`` and all ``a, b \in \mathbb{C}`` the following conditions: 
+1. ``\langle\boldsymbol{x}, \boldsymbol{x}\rangle \geq 0`` with equality if and only if ``\boldsymbol{x}=\mathbf{0}``.
+(positivity)
+2. ``\langle\boldsymbol{x}, \boldsymbol{y}\rangle=\overline{\langle\boldsymbol{y}, \boldsymbol{x}\rangle}``
+(skew symmetry)
+3. ``\langle a \boldsymbol{x}+b \boldsymbol{y}, \boldsymbol{z}\rangle=a\langle\boldsymbol{x}, \boldsymbol{z}\rangle+b\langle\boldsymbol{y}, \boldsymbol{z}\rangle``.
+(linearity)
+"""
+
+# ╔═╡ 35e8b2a4-06d7-4fa4-9b02-63cdffaf1961
+cm"""
+$(bbl("Remarks",""))
+- Recall that  the __standard inner product in ``\mathbb{C}^n``__ is given by
+```math
+\langle\boldsymbol{x}, \boldsymbol{y}\rangle:=\boldsymbol{y}^* \boldsymbol{x}=\boldsymbol{x}^T \overline{\boldsymbol{y}}=\sum_{j=1}^n x_j \overline{y_j}
+```
+
+Note the complex conjugate on ``\boldsymbol{y}``. It is clearly an inner product in ``\mathbb{C}^n``.
+
+- The function
+```math
+\|\cdot\|: \mathcal{V} \rightarrow \mathbb{R}, \quad x \longmapsto\|x\|:=\sqrt{\langle x, x\rangle}
+```
+$(add_space(11))is called the inner product norm.
+
+- The inner product norm for the standard inner product is the Euclidian norm ``\|x\|=\|x\|_2=\sqrt{x^* x}``.
+"""
+
+# ╔═╡ c0f9964e-b8f8-4eca-8126-64a139e20afc
+cm"""
+$(bth("5.1 (Cauchy-Schwarz Inequality)")) For any ``\boldsymbol{x}, \boldsymbol{y}`` in a real or complex inner product space
+```math
+|\langle\boldsymbol{x}, \boldsymbol{y}\rangle| \leq\|\boldsymbol{x}\|\|\boldsymbol{y}\|
+```
+with equality if and only if ``\boldsymbol{x}`` and ``\boldsymbol{y}`` are linearly dependent.
+"""
+
+# ╔═╡ b66c037a-d1cc-42d2-a45c-9f0190b8f28d
+cm"""
+$(bth("5.2 (Inner Product Norm)")) For all ``\boldsymbol{x}, \boldsymbol{y}`` in an inner product space and all a in ``\mathbb{C}`` we have
+1. ``\|\boldsymbol{x}\| \geq 0`` with equality if and only if ``\boldsymbol{x}=\mathbf{0}``.
+(positivity)
+2. ``\|a \boldsymbol{x}\|=|a|\|x\|``.
+(homogeneity)
+3. ``\|x+y\| \leq\|x\|+\|y\|``,
+(subadditivity)
+where ``\|\boldsymbol{x}\|:=\sqrt{\langle\boldsymbol{x}, \boldsymbol{x}\rangle}``.
+"""
+
+# ╔═╡ ff626183-36f2-455a-b141-1b9725219f41
+cm"""
+$(bbl("Remark",""))
+In the real case the Cauchy-Schwarz inequality implies that ``-1 \leq \frac{\langle\boldsymbol{x}, \boldsymbol{y}\rangle}{\|\boldsymbol{x}\|\|\boldsymbol{y}\|} \leq 1`` for nonzero ``\boldsymbol{x}`` and ``\boldsymbol{y}``, so there is a unique angle ``\theta`` in ``[0, \pi]`` such that
+```math
+\cos \theta=\frac{\langle\boldsymbol{x}, \boldsymbol{y}\rangle}{\|\boldsymbol{x}\|\|\boldsymbol{y}\|}
+```
+
+This defines the angle between vectors in a real inner product space.
+"""
+
+# ╔═╡ e42b6939-e52d-4b9b-adba-02f4549fd08b
+cm"""
+$(define("5.2 (Orthogonality)"))
+Two vectors ``\boldsymbol{x}, \boldsymbol{y}`` in a real or complex inner product space are orthogonal or perpendicular, denoted as ``\boldsymbol{x} \perp \boldsymbol{y}``, if ``\langle\boldsymbol{x}, \boldsymbol{y}\rangle=0``. The vectors are orthonormal if in addition ``\|\boldsymbol{x}\|=\|\boldsymbol{y}\|=1``.
+$(ebl())
+
+$(bth("5.3 (Pythagoras)")) For a real or complex inner product space
+```math
+\|x+y\|^2=\|x\|^2+\|y\|^2, \quad \text { if } \quad x \perp y
+```
+$(eth())
+
+$(define("5.3 (Orthogonal- and Orthonormal Bases)")) A set of nonzero vectors ``\left\{\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k\right\}`` in a subspace ``\mathcal{S}`` of a real or complex inner product space is an orthogonal basis for ``\mathcal{S}`` if it is a basis for ``\mathcal{S}`` and ``\left\langle\boldsymbol{v}_i, \boldsymbol{v}_j\right\rangle=0`` for ``i \neq j``. It is an orthonormal basis for ``\mathcal{S}`` if it is a basis for ``\mathcal{S}`` and ``\left\langle\boldsymbol{v}_i, \boldsymbol{v}_j\right\rangle=\delta_{i j}`` for all ``i, j``.
+"""
+
+# ╔═╡ e53a67cc-c38f-4006-8d20-7bbc17e26f66
+cm"""
+$(bth("(Gram-Schmidt)")) Let ``\left\{s_1, \ldots, s_k\right\}`` be a basis for a real or complex inner product space ``(\mathcal{S},\langle\cdot, \cdot\rangle)``. Define
+```math
+\boldsymbol{v}_1:=\boldsymbol{s}_1, \quad \boldsymbol{v}_j:=\boldsymbol{s}_j-\sum_{i=1}^{j-1} \frac{\left\langle\boldsymbol{s}_j, \boldsymbol{v}_i\right\rangle}{\left\langle\boldsymbol{v}_i, \boldsymbol{v}_i\right\rangle} \boldsymbol{v}_i, \quad j=2, \ldots, k
+```
+
+Then ``\left\{\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k\right\}`` is an orthogonal basis for ``\mathcal{S}`` and the normalized vectors
+```math
+\left\{\boldsymbol{u}_1, \ldots, \boldsymbol{u}_k\right\}:=\left\{\frac{\boldsymbol{v}_1}{\left\|\boldsymbol{v}_1\right\|}, \ldots, \frac{\boldsymbol{v}_k}{\left\|\boldsymbol{v}_k\right\|}\right\}
+```
+form an orthonormal basis for ``\mathcal{S}``.
+"""
+
+# ╔═╡ 57a9ebc0-a35f-4900-ba3f-9a7df19ecfbf
+cm"""
+$(bth("5.5 (Orthogonal Extension of Basis)"))
+Suppose ``\mathcal{S} \subset \mathcal{T}`` are finite dimensional subspaces of a vector space ``\mathcal{V}``. An orthogonal basis for ``\mathcal{S}`` can always be extended to an orthogonal basis for ``\mathcal{T}``.
+"""
+
+# ╔═╡ 6de81e3d-53b3-458c-a9cf-edcef35e0db3
+cm"""
+$(bbl("Corollary","5.1 (Extending Orthogonal Vectors to a Basis)")) For ``1 \leq k< n``, a set ``\left\{s_1, \ldots, s_k\right\}`` of nonzero orthogonal vectors in ``\mathbb{R}^n`` or ``\mathbb{C}^n`` can be extended to an orthogonal basis for the whole space.
+"""
+
+# ╔═╡ a4a31455-1959-4af0-9b56-ec9dec4c94d5
+cm"""
+$(bbl("Remarks",""))
+- ``\mathcal{S}+\mathcal{T}`` is a vector space.
+- Every ``\boldsymbol{v} \in \mathcal{S} \oplus \mathcal{T}`` can be decomposed __uniquely__ in the form ``\boldsymbol{v}=\boldsymbol{s}+\boldsymbol{t}``, where ``\boldsymbol{s} \in \mathcal{S}`` and ``\boldsymbol{t} \in \mathcal{T}``.
+
+- We have
+```math
+\operatorname{dim}(\mathcal{S} \oplus \mathcal{T})=\operatorname{dim}(\mathcal{S})+\operatorname{dim}(\mathcal{T})
+```
+
+- The subspaces ``\mathcal{S}`` and ``\mathcal{T}`` in a direct sum are called __complementary subspaces__.
+- An orthogonal sum is a direct sum. For if ``\boldsymbol{v} \in \mathcal{S} \cap \mathcal{T}`` then ``\boldsymbol{v}`` is orthogonal to itself, ``\langle\boldsymbol{v}, \boldsymbol{v}\rangle=0``, which implies that ``\boldsymbol{v}=0``. We often write ``\mathcal{T}:=\mathcal{S}^{\perp}``.
+- Suppose ``\boldsymbol{v}=\boldsymbol{s}_0+\boldsymbol{t}_0 \in \mathcal{S} \oplus \mathcal{T}``, where ``\boldsymbol{s}_0 \in \mathcal{S}`` and ``\boldsymbol{t}_0 \in \mathcal{T}``. The vector ``\boldsymbol{s}_0`` is called the __oblique projection__ of ``\boldsymbol{v}`` into ``\mathcal{S}`` along ``\mathcal{T}``. Similarly, the vector ``\boldsymbol{t}_0`` is called the __oblique projection__ of ``v`` into ``\mathcal{T}`` along ``\mathcal{S}``. If ``\mathcal{S} \oplus \mathcal{T}`` is an orthogonal sum then ``\boldsymbol{s}_0`` is called the __orthogonal projection__ of ``\boldsymbol{v}`` into ``\mathcal{S}``. Similarly, ``\boldsymbol{t}_0`` is called the __orthogonal projection__ of ``v`` in ``\mathcal{T}=\mathcal{S}^{\perp}``. The orthogonal projections are illustrated in Fig. 5.2.
+"""
+
+# ╔═╡ 489d96e6-14b8-4096-829f-71059ad6d25c
+cm"""
+$(bth("5.6 (Orthogonal Projection)")) Let ``\mathcal{S}`` and ``\mathcal{T}`` be subspaces of a finite dimensional real or complex vector space ``\mathcal{V}`` with an inner product ``\langle\cdot, \cdot\rangle``. The orthogonal projections ``\boldsymbol{s}_0`` of ``\boldsymbol{v} \in \mathcal{S} \stackrel{\perp}{\oplus} \mathcal{T}`` into ``\mathcal{S}`` and ``\boldsymbol{t}_0`` of ``\boldsymbol{v} \in \mathcal{S} \stackrel{\perp}{\oplus} \mathcal{T}`` into ``\mathcal{T}`` satisfy ``v=s_0+t_0``, and
+
+```math
+\left\langle\boldsymbol{s}_0, \boldsymbol{s}\right\rangle=\langle\boldsymbol{v}, \boldsymbol{s}\rangle, \quad \text{for all}\quad \boldsymbol{s} \in \mathcal{S}, \quad\left\langle\boldsymbol{t}_0, \boldsymbol{t}\right\rangle=\langle\boldsymbol{v}, \boldsymbol{t}\rangle, \quad\text{for all}\quad\boldsymbol{t} \in \mathcal{T}.
+```
+Moreover, if ``\left\{\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k\right\}`` is an orthogonal basis for ``\boldsymbol{S}`` then
+```math
+\boldsymbol{s}_0=\sum_{i=1}^k \frac{\left\langle\boldsymbol{v}, \boldsymbol{v}_i\right\rangle}{\left\langle\boldsymbol{v}_i, \boldsymbol{v}_i\right\rangle} \boldsymbol{v}_i
+```
+"""
+
+# ╔═╡ 614c7edf-1133-4e93-a5d0-77747b840ca7
+cm"""
+$(bbl("Corollary","5.2 (Best Approximation)"))
+Let ``\mathcal{S}`` be a subspaces of a finite dimensional real or complex vector space ``\mathcal{V}`` with an inner product ``\langle\cdot, \cdot\rangle`` and corresponding norm ``\|\boldsymbol{v}\|:=\sqrt{\langle\boldsymbol{v}, \boldsymbol{v}\rangle}``. If ``\boldsymbol{s}_0 \in \mathcal{S}`` is the orthogonal projection of ``\boldsymbol{v} \in \mathcal{V}`` then
+```math
+\left\|v-s_0\right\|<\|v-s\|, \text { for all } s \in \mathcal{S}, \boldsymbol{s} \neq s_0
+```
+$(ebl())
+
+__Proof__ Let ``s_0 \neq s \in \mathcal{S}`` and ``0 \neq u:=s_0-\boldsymbol{s} \in \mathcal{S}``. It follows from (5.9) that ``\left\langle\boldsymbol{v}-\boldsymbol{s}_0, \boldsymbol{u}\right\rangle=0``. By (5.7) (Pythagoras) we obtain
+```math
+\|\boldsymbol{v}-\boldsymbol{s}\|^2=\left\|\boldsymbol{v}-\boldsymbol{s}_0+\boldsymbol{u}\right\|^2=\left\|\boldsymbol{v}-\boldsymbol{s}_0\right\|^2+\|\boldsymbol{u}\|^2>\left\|\boldsymbol{v}-\boldsymbol{s}_0\right\|^2
+```
+"""
+
+# ╔═╡ 310f6fa8-f185-4901-8368-b2b268e40bca
+cm"""
+$(bbl("Lemma","5.1"))
+Let ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` and ``\langle\boldsymbol{x}, \boldsymbol{y}\rangle`` be the standard inner product in ``\mathbb{C}^n``. Then
+1. ``\boldsymbol{A}^T=\boldsymbol{A} \Longleftrightarrow\langle\boldsymbol{A} \boldsymbol{x}, \boldsymbol{y}\rangle=\langle\boldsymbol{x}, \overline{\boldsymbol{A}} \boldsymbol{y}\rangle`` for all ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n``.
+2. ``\boldsymbol{A}^*=\boldsymbol{A} \Longleftrightarrow\langle\boldsymbol{A} \boldsymbol{x}, \boldsymbol{y}\rangle=\langle\boldsymbol{x}, \boldsymbol{A} \boldsymbol{y}\rangle`` for all ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n``.
+"""
+
+# ╔═╡ ef18b323-485f-48f4-95d0-9063bb6ef2e1
+cm"""
+- A square matrix ``\boldsymbol{U} \in \mathbb{C}^{n \times n}`` is __unitary__ if 
+
+```math
+\boldsymbol{U}^* \boldsymbol{U}=\boldsymbol{I}.
+```
+
+- If ``\boldsymbol{U}`` is real then ``\boldsymbol{U}^T \boldsymbol{U}=`` ``\boldsymbol{I}`` and ``\boldsymbol{U}`` is called an orthogonal matrix. Unitary and orthogonal matrices have orthonormal columns.
+
+- If ``\boldsymbol{U}^* \boldsymbol{U}=\boldsymbol{I}`` the matrix ``\boldsymbol{U}`` is nonsingular, ``\boldsymbol{U}^{-1}=\boldsymbol{U}^*`` and therefore ``\boldsymbol{U} \boldsymbol{U}^*=`` ``\boldsymbol{U} \boldsymbol{U}^{-1}=\boldsymbol{I}`` as well. Moreover, both the columns and rows of a unitary matrix of order ``n`` form orthonormal bases for ``\mathbb{C}^n``. We also note that the product of two unitary matrices is unitary. Indeed, if ``\boldsymbol{U}_1^* \boldsymbol{U}_1=\boldsymbol{I}`` and ``\boldsymbol{U}_2^* \boldsymbol{U}_2=\boldsymbol{I}`` then ``\left(\boldsymbol{U}_1 \boldsymbol{U}_2\right)^*\left(\boldsymbol{U}_1 \boldsymbol{U}_2\right)=`` ``\boldsymbol{U}_2^* \boldsymbol{U}_1^* \boldsymbol{U}_1 \boldsymbol{U}_2=\boldsymbol{I}``
+
+$(bth("5.7 (Unitary Matrix)"))
+The matrix ``\boldsymbol{U} \in \mathbb{C}^{n \times n}`` is unitary if and only if ``\langle\boldsymbol{U} \boldsymbol{x}, \boldsymbol{U} \boldsymbol{y}\rangle=\langle\boldsymbol{x}, \boldsymbol{y}\rangle`` for all ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n``. In particular, if ``\boldsymbol{U}`` is unitary then ``\|\boldsymbol{U} \boldsymbol{x}\|_2=`` ``\|\boldsymbol{x}\|_2`` for all ``\boldsymbol{x} \in \mathbb{C}^n``.
+"""
+
+# ╔═╡ 5ae18425-3dde-487d-80f7-127d59a18bbb
+cm"""
+$(define("5.4 (Householder Transformation)"))
+A matrix ``\boldsymbol{H} \in \mathbb{C}^{n \times n}`` of the form
+```math
+\boldsymbol{H}:=\boldsymbol{I}-\boldsymbol{u} \boldsymbol{u}^*, \text { where } \boldsymbol{u} \in \mathbb{C}^n \text { and } \boldsymbol{u}^* \boldsymbol{u}=2
+```
+is called a Householder transformation. The name __elementary reflector__ is also used.
+"""
+
+# ╔═╡ e28d00ed-710d-4c08-af2e-0f9562d64be2
+cm"""
+$(bbl("Lemma","5.2"))
+Suppose ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n`` are two vectors such that ``\|\boldsymbol{x}\|_2=\|\boldsymbol{y}\|_2, \boldsymbol{y}^* \boldsymbol{x}`` is real and ``v:=\boldsymbol{x}-\boldsymbol{y} \neq \mathbf{0}``. Then ``\left(\boldsymbol{I}-2 \frac{v v^*}{v^* v}\right) x=y``.
+"""
+
+# ╔═╡ 7627739e-9f51-4197-8ece-ad3e17b0f906
+begin
+	s52_s = @bind s52s Slider(-4:0.1:5, show_value=true, default=1)
+	s52_t = @bind s52t Slider(-4:0.1:5, show_value=true, default=1)
+	s52_show =@bind s52show CheckBox(default=false)
+	cm"""
+	``v_1=`` $(s52_s) 	$(add_space(20))		``v_2=`` $(s52_t)
+
+	Show Zeros of vector ``x`` $(s52_show)
+	"""
+end
+
+# ╔═╡ a6148859-78c2-4c40-aa0e-0373870a74b8
+let
+	v=[s52s,s52t]
+	u=√2*v/norm(v)
+	H(u)=I-2*u*u'/(u'*u)
+	x =[-1,2]
+	y = H(u)*x
+	f(x)=-u[1]*x/u[2]
+	p = plot(;frame_style=:origin,xlims=(-5,5),ylims=(-5,5))
+	if s52show
+	p = plot(p,[0,norm(x)],[0,0],arrow=true,color=:purple,linewidth=2,label="")
+	end
+	p = plot(p,[0,v[1]],[0,v[2]],arrow=true,color=:red,linewidth=2,label="")
+	p = plot(p,[0,x[1]],[0,x[2]],arrow=true,color=:black,linewidth=2,label="")
+	p = plot(p,[0,y[1]],[0,y[2]],arrow=true,color=:blue,linewidth=2,label="")
+	p = plot(p,z->f(z),c=:green)
+	annotate!([(x[1],0.2+x[2],L"x"),(y[1],y[2]-0.2,L"Hx"),(-4.5,f(-4.5),("Mirror",:green)),(v[1],v[2]+0.2,(L"v",:red))])
+	if s52show
+	annotate!([((norm(x)*1.2,0.2,L"\|x\|e_1"))])
+	end
+	p
+	
+end
+
+# ╔═╡ c5077118-527a-448b-bfbc-ad5f00082b7b
+cm"""
+$(bth("5.8 (Zeros in Vectors)"))
+For any ``\boldsymbol{x} \in \mathbb{C}^n`` there is a Householder transformation ``\boldsymbol{H} \in \mathbb{C}^{n \times n}`` such that
+```math
+\boldsymbol{H} \boldsymbol{x}=a \boldsymbol{e}_1, \quad a=-\rho\|\boldsymbol{x}\|_2, \quad \rho:= \begin{cases}x_1 /\left|x_1\right|, & \text { if } x_1 \neq 0 \\ 1, & \text { otherwise }\end{cases}
+```
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3599,7 +3946,7 @@ version = "1.4.1+1"
 # ╟─a8e556ea-48ca-4a43-914a-7171a6491186
 # ╟─73b56b54-22a2-4fa0-8eed-ab8a23cebc74
 # ╟─06de9303-589d-40cf-ac95-4df2020af3a6
-# ╟─c59dffb4-c419-461b-8096-e27171be0a87
+# ╠═c59dffb4-c419-461b-8096-e27171be0a87
 # ╟─a8948e17-2846-431f-9765-6359eaeb20a9
 # ╟─db84f278-2b61-40fd-b0a8-bb132cff5f18
 # ╟─df6c46d3-fa32-4709-a392-463167b33c46
@@ -3706,11 +4053,43 @@ version = "1.4.1+1"
 # ╟─e9ea8099-acfd-4df4-a19a-f510888e1f98
 # ╟─0275d178-b918-445a-be9e-eac9c7aaa471
 # ╟─f68a295a-8fe6-47d1-9ca6-9b6199163ed7
-# ╠═6d988a2c-f6ae-418d-9cd4-11207ec7a2ce
+# ╟─6d988a2c-f6ae-418d-9cd4-11207ec7a2ce
 # ╠═02c7ec2d-e57f-49d5-a8c3-a6f0637e026f
 # ╟─27e009e2-2e77-4e58-a2d8-50a9efb99e32
 # ╟─9579da39-7241-4266-918a-0c46b656cbf3
 # ╟─6e8ecdb1-7d32-429f-9d23-8b79db0cc75d
+# ╟─41526c5c-0be0-4bef-af4c-557c28b918cd
+# ╟─694c5383-28cf-4e69-90bc-366a40c1e0a9
+# ╟─a3a98e03-e9ea-424e-972d-f8367cd52642
+# ╟─35e8b2a4-06d7-4fa4-9b02-63cdffaf1961
+# ╟─c0f9964e-b8f8-4eca-8126-64a139e20afc
+# ╟─b66c037a-d1cc-42d2-a45c-9f0190b8f28d
+# ╟─ff626183-36f2-455a-b141-1b9725219f41
+# ╟─b012a15b-be75-4cb4-96ff-d679ed4376d1
+# ╟─e42b6939-e52d-4b9b-adba-02f4549fd08b
+# ╟─e53a67cc-c38f-4006-8d20-7bbc17e26f66
+# ╠═8509b4b9-b4c8-47e5-84ae-c21b47eafa16
+# ╟─57a9ebc0-a35f-4900-ba3f-9a7df19ecfbf
+# ╟─6de81e3d-53b3-458c-a9cf-edcef35e0db3
+# ╟─2bebb2e6-55b6-4a33-9409-2b901b6dfc5e
+# ╟─5e8ea837-cd68-4dd1-9d4b-925223fc63f9
+# ╟─a4a31455-1959-4af0-9b56-ec9dec4c94d5
+# ╟─489d96e6-14b8-4096-829f-71059ad6d25c
+# ╟─614c7edf-1133-4e93-a5d0-77747b840ca7
+# ╟─17312234-ed45-4e26-868e-3f25c14f73bd
+# ╟─310f6fa8-f185-4901-8368-b2b268e40bca
+# ╟─ef18b323-485f-48f4-95d0-9063bb6ef2e1
+# ╟─a916bede-5304-4120-a929-979d8fbff63c
+# ╟─5ae18425-3dde-487d-80f7-127d59a18bbb
+# ╟─e28d00ed-710d-4c08-af2e-0f9562d64be2
+# ╟─7627739e-9f51-4197-8ece-ad3e17b0f906
+# ╟─a6148859-78c2-4c40-aa0e-0373870a74b8
+# ╟─c5077118-527a-448b-bfbc-ad5f00082b7b
+# ╟─9d950ca7-0162-41a6-b59f-ba2d64d48f4e
+# ╠═7e6ce1a2-8de1-4170-9585-62b25311e646
+# ╠═d94ca4da-f011-4c8c-b92e-985d29c4f3e5
+# ╟─0865697a-e057-4be3-9aa9-a1bf8831829d
+# ╠═7c3661da-0ee8-4877-8d50-07c6704dbbb0
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
