@@ -764,6 +764,8 @@ let
 	s1 =[1;2;-2]
 	s2=[1;3;2]
 	s3 =[2;5;1]
+	# det([s1 s2 s3])
+	s3 	⋅s2
 # 	v1=s1
 # 	v2 = s2 -v1*(s2⋅v1)/(norm(v1))^2
 # 	v3 = s3 - v1*(s3⋅v1)/(norm(v1))^2 - v2*(s3⋅v2)/(norm(v2))^2
@@ -774,7 +776,7 @@ let
 end
 
 # ╔═╡ 2bebb2e6-55b6-4a33-9409-2b901b6dfc5e
-md"### Sumof Subspaces and Orthogonal Projections"
+md"### Sum of Subspaces and Orthogonal Projections"
 
 # ╔═╡ 5e8ea837-cd68-4dd1-9d4b-925223fc63f9
 cm"""
@@ -853,6 +855,80 @@ let
 	u=[zeros(2);us]
 	u'*u
 	H(u)(x),	a*[1,0]
+end
+
+# ╔═╡ 8acef7cd-a100-46be-b3ce-6b00ab56f479
+md"# 5.3 Householder Triangulation"
+
+# ╔═╡ 864a50be-eabc-44be-891e-64d7caa2d8ef
+md"## The Algorithm"
+
+# ╔═╡ 7fd8fae9-c083-46c7-a0b9-1c8317641669
+cm"""
+Let ``A\in \mathbb{C}^{m\times n}``. We need to transform it into upper trapezoidal form using Householder transformations.
+
+- If ``m>n`` (TALL MATRIX), We find 
+```math
+\boldsymbol{A}_{n+1}:=\boldsymbol{H}_n \boldsymbol{H}_{n-1} \cdots \boldsymbol{H}_1 \boldsymbol{A}=\left[\begin{array}{c}
+\boldsymbol{R}_1 \\
+\mathbf{0}
+\end{array}\right]=\boldsymbol{R}
+```
+and where ``\boldsymbol{R}_1`` is square and upper triangular. We define
+```math
+\boldsymbol{A}_1:=\boldsymbol{A}, \quad \boldsymbol{A}_{k+1}=\boldsymbol{H}_k \boldsymbol{A}_k, \quad k=1,2, \ldots, n
+```
+"""
+
+# ╔═╡ dca4ccc0-bb15-41b3-9fb5-a3d74bf552c9
+begin
+	function housetriang(A)
+		m,n = size(A)
+		for k in 1:min(n,m-1)
+			v, a = housegen(A[k:m,k])
+			A[k,k]=a
+			C = A[k:m,k+1:n]
+			A[k:m,k+1:n]=C-v*(v'*C)
+		end
+		R = triu(A[:,1:n])
+		R
+	end
+	function housetriang(A,B)
+		m,n = size(A)
+		r=size(B,2)
+		A=[A B]
+		for k in 1:min(n,m-1)
+			v, a = housegen(A[k:m,k])
+			A[k,k]=a
+			C = A[k:m,k+1:n+r]
+			A[k:m,k+1:n+r]=C-v*(v'*C)
+		end
+		R = triu(A[:,1:n])
+		C = A[:,n+1:n+r]
+		R,C
+	end
+end
+
+# ╔═╡ f79e868a-5ed7-4439-ac3c-9229f64360d2
+let
+	A = rand(-1:6,6,4)
+	R = housetriang(Float64.(A))
+end
+
+# ╔═╡ 3ba9e235-869c-4011-afeb-c09385260140
+let
+	A = [1.0  2  1  
+	3  8  7     
+	2  7  9  
+	]
+	b= [4;20;23.0]
+	R = housetriang(A)
+	R
+	# bb= C*b
+	# x3 = bb[end]/R[end,end]
+	# x2 = (bb[2]-R[2,3]*x3)/R[2,2]
+	# x1 = (bb[1]-R[1,3]*x3-R[1,2]*x2)/R[1,1]
+	
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -1814,6 +1890,11 @@ $(bbl("Lemma","5.2"))
 Suppose ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n`` are two vectors such that ``\|\boldsymbol{x}\|_2=\|\boldsymbol{y}\|_2, \boldsymbol{y}^* \boldsymbol{x}`` is real and ``v:=\boldsymbol{x}-\boldsymbol{y} \neq \mathbf{0}``. Then ``\left(\boldsymbol{I}-2 \frac{v v^*}{v^* v}\right) x=y``.
 """
 
+# ╔═╡ 4eade3b9-589f-492a-9965-03eb74afd493
+cm"""
+$(post_img("https://www.dropbox.com/scl/fi/cjgji3nv7csvhfmplnxg3/fig5_3.png?rlkey=fbn2wzn62q3ni3gmfxpepq96m&raw=1"))
+"""
+
 # ╔═╡ 7627739e-9f51-4197-8ece-ad3e17b0f906
 begin
 	s52_s = @bind s52s Slider(-4:0.1:5, show_value=true, default=1)
@@ -1856,6 +1937,29 @@ $(bth("5.8 (Zeros in Vectors)"))
 For any ``\boldsymbol{x} \in \mathbb{C}^n`` there is a Householder transformation ``\boldsymbol{H} \in \mathbb{C}^{n \times n}`` such that
 ```math
 \boldsymbol{H} \boldsymbol{x}=a \boldsymbol{e}_1, \quad a=-\rho\|\boldsymbol{x}\|_2, \quad \rho:= \begin{cases}x_1 /\left|x_1\right|, & \text { if } x_1 \neq 0 \\ 1, & \text { otherwise }\end{cases}
+```
+"""
+
+# ╔═╡ a71dc775-4826-494d-8b83-62274561e6be
+cm"""
+$(define("Upper Trapezoidal Matrices"))
+We say that a matrix ``\boldsymbol{R} \in \mathbb{C}^{m \times n}`` is upper trapezoidal, if ``r_{i, j}=0`` for ``j< i`` and ``i=2,3 \ldots, m``. Upper trapezoidal matrices corresponding to ``m< n, m=n``, and ``m>n`` look as follows:
+```math
+\left[\begin{array}{llll}
+x & x & x & x \\
+0 & x & x & x \\
+0 & 0 & x & x
+\end{array}\right], \quad\left[\begin{array}{llll}
+x & x & x & x \\
+0 & x & x & x \\
+0 & 0 & x & x \\
+0 & 0 & 0 & x
+\end{array}\right], \quad\left[\begin{array}{lll}
+x & x & x \\
+0 & x & x \\
+0 & 0 & x \\
+0 & 0 & 0
+\end{array}\right] .
 ```
 """
 
@@ -4082,6 +4186,7 @@ version = "1.4.1+1"
 # ╟─a916bede-5304-4120-a929-979d8fbff63c
 # ╟─5ae18425-3dde-487d-80f7-127d59a18bbb
 # ╟─e28d00ed-710d-4c08-af2e-0f9562d64be2
+# ╟─4eade3b9-589f-492a-9965-03eb74afd493
 # ╟─7627739e-9f51-4197-8ece-ad3e17b0f906
 # ╟─a6148859-78c2-4c40-aa0e-0373870a74b8
 # ╟─c5077118-527a-448b-bfbc-ad5f00082b7b
@@ -4090,6 +4195,13 @@ version = "1.4.1+1"
 # ╠═d94ca4da-f011-4c8c-b92e-985d29c4f3e5
 # ╟─0865697a-e057-4be3-9aa9-a1bf8831829d
 # ╠═7c3661da-0ee8-4877-8d50-07c6704dbbb0
+# ╟─8acef7cd-a100-46be-b3ce-6b00ab56f479
+# ╟─a71dc775-4826-494d-8b83-62274561e6be
+# ╟─864a50be-eabc-44be-891e-64d7caa2d8ef
+# ╟─7fd8fae9-c083-46c7-a0b9-1c8317641669
+# ╠═dca4ccc0-bb15-41b3-9fb5-a3d74bf552c9
+# ╠═f79e868a-5ed7-4439-ac3c-9229f64360d2
+# ╠═3ba9e235-869c-4011-afeb-c09385260140
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
