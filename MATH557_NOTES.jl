@@ -789,8 +789,14 @@ Suppose ``\mathcal{S}`` and ``\mathcal{T}`` are subspaces of a real or complex v
 # ╔═╡ 17312234-ed45-4e26-868e-3f25c14f73bd
 cm"### Unitary and Orthogonal Matrices"
 
+# ╔═╡ 3d678fbd-65f7-4516-a684-6724c66970de
+
+
 # ╔═╡ a916bede-5304-4120-a929-979d8fbff63c
 md"## 5.2 The Householder Transformation"
+
+# ╔═╡ b5ba03bb-8c78-4a14-91d8-f4b110db8885
+
 
 # ╔═╡ 9d950ca7-0162-41a6-b59f-ba2d64d48f4e
 cm"""
@@ -858,10 +864,10 @@ let
 end
 
 # ╔═╡ 8acef7cd-a100-46be-b3ce-6b00ab56f479
-md"# 5.3 Householder Triangulation"
+md"## 5.3 Householder Triangulation"
 
 # ╔═╡ 864a50be-eabc-44be-891e-64d7caa2d8ef
-md"## The Algorithm"
+md"### The Algorithm"
 
 # ╔═╡ 7fd8fae9-c083-46c7-a0b9-1c8317641669
 cm"""
@@ -880,18 +886,48 @@ and where ``\boldsymbol{R}_1`` is square and upper triangular. We define
 ```
 """
 
+# ╔═╡ b35a0a84-880b-4da3-a01d-f7d7fd1bb2a4
+cm"""
+Suppose ``\boldsymbol{A}_k`` has the following form
+```math
+\begin{array}{lclc}
+\boldsymbol{A}_k&=&\left[\begin{array}{ccc|ccccc}a_{1,1}^{(1)} & \cdots & a_{1, k-1}^{(1)} & a_{1, k}^{(1)} & \cdots & a_{1, j}^{(1)} & \cdots & a_{1, n}^{(1)} \\ & \ddots & \vdots & \vdots & & \vdots & & \vdots \\ & & a_{k-1, k-1}^{(k-1)} & a_{k-1, k}^{(k-1)} & \cdots & a_{k-1, j}^{(k-1)} & \cdots & a_{k-1, n}^{(k-1)} \\ \hline & & & a_{k, k}^{(k)} & \cdots & a_{k, j}^{(k)} & \cdots & a_{k, n}^{(k)} \\ & & & \vdots & & \vdots & & \vdots \\ & & & a_{i, k}^{(k)} & \cdots & a_{i, j}^{(k)} & \cdots & a_{i, n}^{(k)} \\ & & & \vdots & & \vdots & & \vdots \\ & & & a_{m, k}^{(k)} & \cdots & a_{m, j}^{(k)} & \cdots & a_{m, n}^{(k)}\end{array}\right]\\
+&=&\left[\begin{array}{cc}\boldsymbol{B}_k & \boldsymbol{C}_k \\ \mathbf{0} & \boldsymbol{D}_k\end{array}\right]
+\end{array}
+```
+
+"""
+
+# ╔═╡ 2d60f5a5-139f-4451-af2e-33ee04355709
+cm"""
+__Input__: Matrices ``A`` and ``B``
+
+__Output__: Matrices ``R`` and ``C``
+    
+__Step 1__: Get the sizes of ``A`` and ``B``
+	- m = number of rows in ``A``
+    - n = number of columns in ``A``
+    - r = number of columns in ``B``
+
+__Step 2__: Concatenate ``A`` and ``B`` horizontally into a new matrix
+
+__Step 3__: Perform Householder transformation
+        
+For each ``k`` from 1 to ``\min(n, m-1)``:
+- a. Compute the Householder vector ``v`` for the submatrix ``A(k:m, k)``
+- b. Update the submatrix ``A(k:m, k:n+r)`` using the Householder reflection
+
+__Step 4__: Extract the upper triangular part of ``A`` and assign it to ``R``
+
+__Step 5__: Extract the right part of ``A`` (from column ``n+1`` to ``n+r``) and assign it to ``C``
+    
+"""
+
 # ╔═╡ dca4ccc0-bb15-41b3-9fb5-a3d74bf552c9
 begin
 	function housetriang(A)
-		m,n = size(A)
-		for k in 1:min(n,m-1)
-			v, a = housegen(A[k:m,k])
-			A[k,k]=a
-			C = A[k:m,k+1:n]
-			A[k:m,k+1:n]=C-v*(v'*C)
-		end
-		R = triu(A[:,1:n])
-		R
+		m, = size(A)
+		housetriang(A,I(m))
 	end
 	function housetriang(A,B)
 		m,n = size(A)
@@ -915,6 +951,9 @@ let
 	R = housetriang(Float64.(A))
 end
 
+# ╔═╡ 04b6d34a-7a30-4337-a862-a84f17680ac6
+md"### Solving Linear Systems Using Unitary Transformations"
+
 # ╔═╡ 3ba9e235-869c-4011-afeb-c09385260140
 let
 	A = [1.0  2  1  
@@ -922,13 +961,84 @@ let
 	2  7  9  
 	]
 	b= [4;20;23.0]
-	R = housetriang(A)
+	R, C = housetriang(A)
 	R
-	# bb= C*b
-	# x3 = bb[end]/R[end,end]
-	# x2 = (bb[2]-R[2,3]*x3)/R[2,2]
-	# x1 = (bb[1]-R[1,3]*x3-R[1,2]*x2)/R[1,1]
+	bb= C*b
+	x3 = bb[end]/R[end,end]
+	x2 = (bb[2]-R[2,3]*x3)/R[2,2]
+	x1 = (bb[1]-R[1,3]*x3-R[1,2]*x2)/R[1,1]
+	A*[x1;x2;x3]-b
+end
+
+# ╔═╡ 7ea5927a-81bb-404a-aa62-67bce4e00313
+md"##  5.4 The QR Decomposition and QR Factorization"
+
+# ╔═╡ 211f7f09-31f4-44d5-8e8f-6bb5a2920ae7
+cm"""
+- Gaussian elimination without row interchanges results in an LU factorization 
+
+```math
+\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}\text{ of }\boldsymbol{A} \in \mathbb{C}^{n \times n}
+``` 
+- Householder triangulation of ``\boldsymbol{A}``. Applying Algorithm above gives 
+
+```math
+\boldsymbol{R}=\boldsymbol{H}_{n-1} \cdots \boldsymbol{H}_1 \boldsymbol{A}
+```
+- That is 
+```math
+\boldsymbol{A}=\boldsymbol{Q} \boldsymbol{R}, \text{ where } \boldsymbol{Q}=\boldsymbol{H}_1 \cdots \boldsymbol{H}_{n-1}
+\text{ is unitary and }\boldsymbol{R} \text{ is upper triangular.}
+```
+
+> This is known as a __QR factorization__ of ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ ca414318-5a80-423e-b4a3-561e282e4111
+let
+	A=[1  3  1. 
+	1  3  7 
+	1  -1  -4 
+	1  -1  2]
+	Q,R = qr(A)
+	collect(Q)
+	Q[:,1:3]*R[1:3,:],A
+	R
+end
+
+# ╔═╡ cc72a9e5-1f40-496e-8f87-79cf6734da89
+md"##  5.5 QR and Gram-Schmid"
+
+# ╔═╡ fbf9565f-f1d6-4a50-b81d-4863eff22d3b
+function QRFactor(A)
+	m,n =size(A)
+	vjs = Vector{Vector{<:Real}}(undef,n)
+	foreach(enumerate(eachcol(A))) do (j,a)
+		 vj=if j==1
+			 a
+		 else
+			 a - sum(vjs[i]*dot(vjs[i],a)/dot(vjs[i],vjs[i]) for i in 1:j-1)
+		 end
+		vjs[j]=[vj...]
+	end
+	vjs_norms = map(norm,vjs)
+	Q1 = stack(vjs ./ vjs_norms)
+	dict = [i=>map(j->dot(A[:,j+i],Q1[:,j]),1:n-i) for i in 1:n-1]
+	R1 =diagm(0=>vjs_norms, dict...)
 	
+	Q1, R1
+end
+
+# ╔═╡ c6576e1e-f86f-46a4-bd2f-7b82550c231d
+let
+	A=[1  3  1. 
+	1  3  7 
+	1  -1  -4 
+	1  -1  2]
+	Q1,R1= QRFactor(A)
+	# dot(Q[:,2],Q[:,3])
+	A,Q1,R1
+
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -1943,7 +2053,7 @@ For any ``\boldsymbol{x} \in \mathbb{C}^n`` there is a Householder transformatio
 # ╔═╡ a71dc775-4826-494d-8b83-62274561e6be
 cm"""
 $(define("Upper Trapezoidal Matrices"))
-We say that a matrix ``\boldsymbol{R} \in \mathbb{C}^{m \times n}`` is upper trapezoidal, if ``r_{i, j}=0`` for ``j< i`` and ``i=2,3 \ldots, m``. Upper trapezoidal matrices corresponding to ``m< n, m=n``, and ``m>n`` look as follows:
+We say that a matrix ``\boldsymbol{R} \in \mathbb{C}^{m \times n}`` is __upper trapezoidal__, if ``r_{i, j}=0`` for ``j< i`` and ``i=2,3 \ldots, m``. Upper trapezoidal matrices corresponding to ``m< n, m=n``, and ``m>n`` look as follows:
 ```math
 \left[\begin{array}{llll}
 x & x & x & x \\
@@ -1961,6 +2071,67 @@ x & x & x \\
 0 & 0 & 0
 \end{array}\right] .
 ```
+"""
+
+# ╔═╡ 188ddb61-6cba-4485-83a0-ff37870cebed
+cm"""
+$(define("QR Decomposition")) Let ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` with ``m, n \in \mathbb{N}``. We say that ``\boldsymbol{A}=\boldsymbol{Q R}`` is a ``\mathbf{Q R}`` decomposition of ``\boldsymbol{A}`` if ``\boldsymbol{Q} \in \mathbb{C}^{m, m}`` is square and unitary and ``\boldsymbol{R} \in \mathbb{C}^{m \times n}`` is upper trapezoidal. If ``m \geq n`` then ``\boldsymbol{R}`` takes the form
+```math
+\boldsymbol{R}=\left[\begin{array}{c}
+\boldsymbol{R}_1 \\
+\mathbf{0}_{m-n, n}
+\end{array}\right]
+```
+where ``\boldsymbol{R}_1 \in \mathbb{C}^{n \times n}`` is upper triangular and ``\mathbf{0}_{m-n, n}`` is the zero matrix with ``m-n`` rows and ``n`` columns. For ``m \geq n`` we call ``\boldsymbol{A}=\boldsymbol{Q}_1 \boldsymbol{R}_1`` a ``\mathbf{Q R}`` factorization of ``\boldsymbol{A}`` if ``\boldsymbol{Q}_1 \in \mathbb{C}^{m \times n}`` has orthonormal columns and ``\boldsymbol{R}_1 \in \mathbb{C}^{n \times n}`` is upper triangular.
+"""
+
+# ╔═╡ 40820595-a553-4e90-9b78-d6d4b3c473ae
+cm"""
+$(ex()) Consider
+```math
+\boldsymbol{A}=\left[\begin{array}{rrr}1 & 3 & 1 \\ 1 & 3 & 7 \\ 1 & -1 & -4 \\ 1 & -1 & 2\end{array}\right]
+```
+"""
+
+# ╔═╡ 37b9d55e-bc0d-438e-bb99-690b056bd2df
+cm"""
+$(bth("5.9 (Existence of QR Decomposition)"))
+Any matrix ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` with ``m, n \in \mathbb{N}`` has a ``Q R`` decomposition.
+"""
+
+# ╔═╡ 74d2a314-2eae-491e-a4ad-dc1184195c00
+cm"""
+$(bth("5.10 (Uniqueness of QR Factorization)")) If ``m \geq n`` then the ``Q R`` factorization is unique if ``\boldsymbol{A}`` has linearly independent columns and ``\boldsymbol{R}`` has positive diagonal elements.
+"""
+
+
+# ╔═╡ be674a64-cb53-47d0-bdfb-33d72266335d
+cm"""
+$(ex()) Consider
+```math
+\boldsymbol{A}=\left[\begin{array}{cc}2 & -1 \\ -1 & 2\end{array}\right]
+```
+Find ``QR`` descomposition of ``A``.
+"""
+
+# ╔═╡ 2e9130ea-3634-45a3-9658-d7b160ed491d
+cm"""
+> The Gram-Schmidt orthogonalization of the columns of ``\boldsymbol{A}`` can be used to find the QR factorization of ``\boldsymbol{A}``.
+
+$(bth("5.11 (`QR` and Gram-Schmidt)"))
+Suppose ``\boldsymbol{A} \in \mathbb{R}^{m \times n}`` has rank ``n`` and let ``\boldsymbol{v}_1, \ldots, \boldsymbol{v}_n`` be the result of applying Gram Schmidt to the columns ``\boldsymbol{a}_1, \ldots, \boldsymbol{a}_n`` of ``\boldsymbol{A}``, i.e.,
+```math
+\boldsymbol{v}_1=\boldsymbol{a}_1, \quad \boldsymbol{v}_j=\boldsymbol{a}_j-\sum_{i=1}^{j-1} \frac{\boldsymbol{a}_j^T \boldsymbol{v}_i}{\boldsymbol{v}_i^T \boldsymbol{v}_i} \boldsymbol{v}_i, \quad \text { for } j=2, \ldots, n
+```
+
+Let
+```math
+\boldsymbol{Q}_1:=\left[\boldsymbol{q}_1, \ldots, \boldsymbol{q}_n\right], \quad \boldsymbol{q}_j:=\frac{\boldsymbol{v}_j}{\left\|\boldsymbol{v}_i\right\|_2}, \quad j=1, \ldots, n \text { and }
+```
+```math
+\boldsymbol{R}_1:=\left[\begin{array}{cccccc}\left\|\boldsymbol{v}_1\right\|_2 & \boldsymbol{a}_2^T \boldsymbol{q}_1 & \boldsymbol{a}_3^T \boldsymbol{q}_1 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_1 & \boldsymbol{a}_n^T \boldsymbol{q}_1 \\ 0 & \left\|\boldsymbol{v}_2\right\|_2 & \boldsymbol{a}_3^T \boldsymbol{q}_2 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_2 & \boldsymbol{a}_n^T \boldsymbol{q}_2 \\ & 0 & \left\|\boldsymbol{v}_3\right\|_2 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_3 & \boldsymbol{a}_n^T \boldsymbol{q}_3 \\ & & \ddots & \ddots & \vdots & \vdots \\ & & & \ddots & \left\|\boldsymbol{v}_{n-1}\right\|_2 \boldsymbol{a}_n^T \boldsymbol{q}_{n-1} \\ & & & & 0 & \left\|\boldsymbol{v}_n\right\|_2\end{array}\right].
+```
+Then ``\boldsymbol{A}=\boldsymbol{Q}_1 \boldsymbol{R}_1`` is the unique ``Q R`` factorization of ``\boldsymbol{A}``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -4183,7 +4354,9 @@ version = "1.4.1+1"
 # ╟─17312234-ed45-4e26-868e-3f25c14f73bd
 # ╟─310f6fa8-f185-4901-8368-b2b268e40bca
 # ╟─ef18b323-485f-48f4-95d0-9063bb6ef2e1
+# ╠═3d678fbd-65f7-4516-a684-6724c66970de
 # ╟─a916bede-5304-4120-a929-979d8fbff63c
+# ╠═b5ba03bb-8c78-4a14-91d8-f4b110db8885
 # ╟─5ae18425-3dde-487d-80f7-127d59a18bbb
 # ╟─e28d00ed-710d-4c08-af2e-0f9562d64be2
 # ╟─4eade3b9-589f-492a-9965-03eb74afd493
@@ -4199,9 +4372,24 @@ version = "1.4.1+1"
 # ╟─a71dc775-4826-494d-8b83-62274561e6be
 # ╟─864a50be-eabc-44be-891e-64d7caa2d8ef
 # ╟─7fd8fae9-c083-46c7-a0b9-1c8317641669
+# ╟─b35a0a84-880b-4da3-a01d-f7d7fd1bb2a4
+# ╟─2d60f5a5-139f-4451-af2e-33ee04355709
 # ╠═dca4ccc0-bb15-41b3-9fb5-a3d74bf552c9
 # ╠═f79e868a-5ed7-4439-ac3c-9229f64360d2
+# ╟─04b6d34a-7a30-4337-a862-a84f17680ac6
 # ╠═3ba9e235-869c-4011-afeb-c09385260140
+# ╟─7ea5927a-81bb-404a-aa62-67bce4e00313
+# ╟─211f7f09-31f4-44d5-8e8f-6bb5a2920ae7
+# ╟─188ddb61-6cba-4485-83a0-ff37870cebed
+# ╟─40820595-a553-4e90-9b78-d6d4b3c473ae
+# ╠═ca414318-5a80-423e-b4a3-561e282e4111
+# ╟─37b9d55e-bc0d-438e-bb99-690b056bd2df
+# ╟─74d2a314-2eae-491e-a4ad-dc1184195c00
+# ╟─be674a64-cb53-47d0-bdfb-33d72266335d
+# ╟─cc72a9e5-1f40-496e-8f87-79cf6734da89
+# ╟─2e9130ea-3634-45a3-9658-d7b160ed491d
+# ╠═fbf9565f-f1d6-4a50-b81d-4863eff22d3b
+# ╠═c6576e1e-f86f-46a4-bd2f-7b82550c231d
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
