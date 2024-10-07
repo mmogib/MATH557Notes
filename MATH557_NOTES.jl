@@ -948,7 +948,8 @@ end
 # ╔═╡ f79e868a-5ed7-4439-ac3c-9229f64360d2
 let
 	A = rand(-1:6,6,4)
-	R = housetriang(Float64.(A))
+	R, C = housetriang(Float64.(A))
+	R
 end
 
 # ╔═╡ 04b6d34a-7a30-4337-a862-a84f17680ac6
@@ -962,12 +963,15 @@ let
 	]
 	b= [4;20;23.0]
 	R, C = housetriang(A)
-	R
+	C
 	bb= C*b
+	R
 	x3 = bb[end]/R[end,end]
 	x2 = (bb[2]-R[2,3]*x3)/R[2,2]
 	x1 = (bb[1]-R[1,3]*x3-R[1,2]*x2)/R[1,1]
 	A*[x1;x2;x3]-b
+	x1,x2,x3
+	A\b
 end
 
 # ╔═╡ 7ea5927a-81bb-404a-aa62-67bce4e00313
@@ -1006,27 +1010,46 @@ let
 	R
 end
 
+# ╔═╡ 2bb49eb8-1c93-44f3-a05b-745594830356
+# solve
+
+
 # ╔═╡ cc72a9e5-1f40-496e-8f87-79cf6734da89
 md"##  5.5 QR and Gram-Schmid"
 
 # ╔═╡ fbf9565f-f1d6-4a50-b81d-4863eff22d3b
-function QRFactor(A)
-	m,n =size(A)
-	vjs = Vector{Vector{<:Real}}(undef,n)
-	foreach(enumerate(eachcol(A))) do (j,a)
-		 vj=if j==1
-			 a
-		 else
-			 a - sum(vjs[i]*dot(vjs[i],a)/dot(vjs[i],vjs[i]) for i in 1:j-1)
-		 end
-		vjs[j]=[vj...]
+begin
+	# function QRFactor(A)
+	# 	m,n =size(A)
+	# 	vjs = Vector{Vector{<:Real}}(undef,n)
+	# 	foreach(enumerate(eachcol(A))) do (j,a)
+	# 		 vj=if j==1
+	# 			 a
+	# 		 else
+	# 			 a - sum(vjs[i]*dot(vjs[i],a)/dot(vjs[i],vjs[i]) for i in 1:j-1)
+	# 		 end
+	# 		vjs[j]=[vj...]
+	# 	end
+	# 	vjs_norms = map(norm,vjs)
+	# 	Q1 = stack(vjs ./ vjs_norms)
+	# 	dict = [i=>map(j->dot(A[:,j+i],Q1[:,j]),1:n-i) for i in 1:n-1]
+	# 	R1 =diagm(0=>vjs_norms, dict...)
+		
+	# 	Q1, R1
+	# end
+	function QRFactor(A)
+		m,n = size(A)
+		Q = copy(A)
+		R = zeros(eltype(A),n,n)
+		for k in 1:n
+ 			R[1:k-1,k] = Q[:,1:k-1]'*A[:,k]
+ 			Q[:,k] = A[:,k]- Q[:,1:k-1]*R[1:k-1,k]
+ 			R[k,k] = norm(Q[:,k])
+ 			Q[:,k] = Q[:,k]/R[k,k]
+ 		end
+		Q,R
 	end
-	vjs_norms = map(norm,vjs)
-	Q1 = stack(vjs ./ vjs_norms)
-	dict = [i=>map(j->dot(A[:,j+i],Q1[:,j]),1:n-i) for i in 1:n-1]
-	R1 =diagm(0=>vjs_norms, dict...)
-	
-	Q1, R1
+
 end
 
 # ╔═╡ c6576e1e-f86f-46a4-bd2f-7b82550c231d
@@ -1040,6 +1063,30 @@ let
 	A,Q1,R1
 
 end
+
+# ╔═╡ 22cac4d7-7c2a-43e9-8d94-ed6df2508fed
+md"# Chapter 6: Eigenpairs and Similarity Transformations"
+
+# ╔═╡ 5a573a95-6092-4def-b900-1b80c3aca31f
+md"## 6.1 Defective and Nondefective Matrices"
+
+# ╔═╡ e7a24ffb-1a85-433c-a9c2-4868f9ba4205
+md"### Similarity Transformations"
+
+# ╔═╡ 2aa4b07a-f768-4986-814d-eb5c6a279adc
+cm"""
+1. Similar matrices have the same eigenvalues, they even have the same charac
+teristic polynomial.
+2. ( ``\boldsymbol{\lambda , \boldsymbol { x }}`` ) is an eigenpair for ``\boldsymbol{S}^{-1} \boldsymbol{A} \boldsymbol{S}`` if and only if ``(\boldsymbol{\lambda}, \boldsymbol{S} \boldsymbol{x})`` is an eigenpair for ``\boldsymbol{A}``
+3. If ``\boldsymbol{S}^{-1} \boldsymbol{A} \boldsymbol{S}=\boldsymbol{D}=\operatorname{diag}\left(\lambda_1, \ldots, \lambda_n\right)`` then the columns of ``\boldsymbol{S}`` are eigenvectors of ``\boldsymbol{A}`` and ``\boldsymbol{A}`` is nondefective . 
+<div style="padding-left:40px;">
+
+Conversely, if ``\boldsymbol{A}`` is nondefective then it can be diagonalized by a similarity transformation ``\boldsymbol{S}^{-1} \boldsymbol{A}\boldsymbol{S}``, where the columns of ``\boldsymbol{S}`` are eigenvectors of ``\boldsymbol{A}``.
+</div>
+"""
+
+# ╔═╡ bf91a78d-429c-46c1-8a09-8f7551c32d6a
+md"### Algebraic and Geometric Multiplicity of Eigenvalues"
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -2132,6 +2179,117 @@ Let
 \boldsymbol{R}_1:=\left[\begin{array}{cccccc}\left\|\boldsymbol{v}_1\right\|_2 & \boldsymbol{a}_2^T \boldsymbol{q}_1 & \boldsymbol{a}_3^T \boldsymbol{q}_1 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_1 & \boldsymbol{a}_n^T \boldsymbol{q}_1 \\ 0 & \left\|\boldsymbol{v}_2\right\|_2 & \boldsymbol{a}_3^T \boldsymbol{q}_2 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_2 & \boldsymbol{a}_n^T \boldsymbol{q}_2 \\ & 0 & \left\|\boldsymbol{v}_3\right\|_2 & \cdots & \boldsymbol{a}_{n-1}^T \boldsymbol{q}_3 & \boldsymbol{a}_n^T \boldsymbol{q}_3 \\ & & \ddots & \ddots & \vdots & \vdots \\ & & & \ddots & \left\|\boldsymbol{v}_{n-1}\right\|_2 \boldsymbol{a}_n^T \boldsymbol{q}_{n-1} \\ & & & & 0 & \left\|\boldsymbol{v}_n\right\|_2\end{array}\right].
 ```
 Then ``\boldsymbol{A}=\boldsymbol{Q}_1 \boldsymbol{R}_1`` is the unique ``Q R`` factorization of ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ f0a58c35-47dc-4666-befc-08c502e6e229
+cm"""
+$(bbl("Recall",""))
+Let ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is a square matrix, ``\lambda \in \mathbb{C}`` and ``\boldsymbol{x} \in \mathbb{C}^n`` then ``(\lambda, \boldsymbol{x})`` is an eigenpair for ``\boldsymbol{A}`` if 
+```math 
+\boldsymbol{A} \boldsymbol{x}=\lambda \boldsymbol{x}\quad \text{and}\quad  \boldsymbol{x}\quad \text{is nonzero}.
+```
+- The scalar ``\lambda`` is called an __eigenvalue__ and 
+- ``\boldsymbol{x}`` is said to be an __eigenvector__. 
+- The set of eigenvalues is called the __spectrum__ of ``\boldsymbol{A}`` and is denoted by ``\sigma(\boldsymbol{A})``. 
+
+For example, ``\sigma(\boldsymbol{I})=\{1, \ldots, 1\}=\{1\}``. 
+
+The eigenvalues are the roots of the __characteristic polynomial__ of ``\boldsymbol{A}`` given for ``\lambda \in \mathbb{C}`` by
+```math
+\pi_{\boldsymbol{A}}(\lambda)=\operatorname{det}(\boldsymbol{A}-\lambda \boldsymbol{I})
+```
+
+The equation ``\operatorname{det}(\boldsymbol{A}-\lambda \boldsymbol{I})=0`` is called the __characteristic equation__ of ``\boldsymbol{A}``. Equivalently the characteristic equation can be written ``\operatorname{det}(\lambda \boldsymbol{I}-\boldsymbol{A})=0``.
+"""
+
+# ╔═╡ 3f925be3-06da-4b91-b9c8-1749ba55b3d0
+cm"""
+$(define(""))
+We say that ``\boldsymbol{A}`` is __defective__ if the eigenvectors do not form a basis for ``\mathbb{C}^n`` and __nondefective__ otherwise.
+"""
+
+# ╔═╡ 37344680-8fd2-4440-9f03-b7b325c8965c
+cm"""
+$(bth("6.1 (Distinct Eigenvalues)"))
+A matrix with distinct eigenvalues is __nondefective__, i.e., its eigenvectors are linearly independent.
+"""
+
+# ╔═╡ ea67c00c-4aed-46ff-a11f-5455553901c0
+cm"""
+$(ex("Example 6.1","(Defective and Nondefective Matrices)"))
+Consider the matrices
+```math
+\boldsymbol{I}:=\left[\begin{array}{ll}
+1 & 0 \\
+0 & 1
+\end{array}\right], \quad \boldsymbol{J}:=\left[\begin{array}{ll}
+1 & 1 \\
+0 & 1
+\end{array}\right]
+```
+"""
+
+# ╔═╡ e51e2e47-e389-4afa-b1e0-1ed5bf3768f6
+cm"""
+$(define("eigenvector expansion"))
+If the eigenvectors ``\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n`` form a basis for ``\mathbb{C}^n`` then any ``\boldsymbol{x} \in \mathbb{C}^n`` can be written
+```math
+\boldsymbol{x}=\sum_{j=1}^n c_j \boldsymbol{x}_j \text { for some scalars } c_1, \ldots, c_n
+```
+We call this __an eigenvector expansion__ of ``\boldsymbol{x}``. 
+"""
+
+# ╔═╡ bfaf9649-e08a-4adf-9794-539277902565
+cm"""
+$(ex())
+```math
+A = \left[\begin{array}{cc}2 & -1 \\ -1 & 2\end{array}\right]
+```
+
+"""
+
+# ╔═╡ 458a0966-e841-48dc-8e04-6f617fb70b6b
+cm"""
+$(define("6.1 (Similar Matrices)"))
+Two matrices ``\boldsymbol{A}, \boldsymbol{B} \in \mathbb{C}^{n \times n}`` are said to be similar if there is a nonsingular matrix ``\boldsymbol{S} \in \mathbb{C}^{n \times n}`` such that 
+```math
+\boldsymbol{B}=\boldsymbol{S}^{-1} \boldsymbol{A} \boldsymbol{S}.
+```
+The transformation ``\boldsymbol{A} \rightarrow \boldsymbol{B}`` is called a similarity transformation. The columns of ``\boldsymbol{S}`` are denoted by ``\boldsymbol{s}_1, \boldsymbol{s}_2, \ldots, \boldsymbol{s}_n``.
+"""
+
+# ╔═╡ 823551c5-01bc-4217-82d9-a87bbb7f03fd
+cm"""
+$(define("Algebraic Multiplicity"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has ``k`` distinct eigenvalues ``\lambda_1, \ldots, \lambda_k`` with multiplicities ``a_1, \ldots, a_k`` so that
+```math
+\pi_{\boldsymbol{A}}(\lambda):=\operatorname{det}(\boldsymbol{A}-\lambda \boldsymbol{I})=\left(\lambda_1-\lambda\right)^{a_1} \cdots\left(\lambda_k-\lambda\right)^{a_k}, \quad \lambda_i \neq \lambda_j, i \neq j, \sum_{i=1}^k a_i=n
+```
+
+The positive integer ``a_i=a\left(\lambda_i\right)=a_A\left(\lambda_i\right)`` is called the __multiplicity__, or more precisely the __algebraic multiplicity__ of the eigenvalue ``\lambda_i``. The multiplicity of an eigenvalue is __simple__ (*double*, *__triple__*) if ``a_i`` is equal to __one__ (*two*, *__three__*).
+"""
+
+# ╔═╡ 4f2e0531-99fa-4c48-867b-710c80b42be5
+cm"""
+$(define("(Geometric Multiplicity)"))
+The __geometric multiplicity__ ``g=g(\lambda)=`` ``g_{\boldsymbol{A}}(\lambda)`` of an eigenvalue ``\lambda`` of ``\boldsymbol{A}`` is the dimension of the nullspace ``\mathcal{N}(\boldsymbol{A}-\lambda \boldsymbol{I})`` where 
+```math
+\mathcal{N}(\boldsymbol{A}-\lambda \boldsymbol{I}):=\left\{\boldsymbol{x} \in \mathbb{C}^n:(\boldsymbol{A}-\lambda \boldsymbol{I}) \boldsymbol{x}=\mathbf{0}\right\}
+```
+"""
+
+# ╔═╡ 9fdb84a6-2576-4b58-bf2e-6daa75434f1f
+cm"""
+$(bth("6.2 (Geometric Multiplicity of Similar Matrices)")) Similar matrices have the same eigenvalues with the same algebraic and geometric multiplicities.
+"""
+
+# ╔═╡ e4782556-d145-4b88-ba80-359da77b2362
+cm"""
+$(bth("6.3 (Geometric Multiplicity)"))
+We have
+1. The geometric multiplicity of an eigenvalue is always bounded above by the algebraic multiplicity of the eigenvalue. ``g_A(\lambda)\leq a_A(\lambda)``.
+2. The number of linearly independent eigenvectors of a matrix equals the sum of the geometric multiplicities of the eigenvalues.
+3. A matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has ``n`` linearly independent eigenvectors if and only if the algebraic and geometric multiplicity of all eigenvalues are the same.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -4386,10 +4544,27 @@ version = "1.4.1+1"
 # ╟─37b9d55e-bc0d-438e-bb99-690b056bd2df
 # ╟─74d2a314-2eae-491e-a4ad-dc1184195c00
 # ╟─be674a64-cb53-47d0-bdfb-33d72266335d
+# ╠═2bb49eb8-1c93-44f3-a05b-745594830356
 # ╟─cc72a9e5-1f40-496e-8f87-79cf6734da89
 # ╟─2e9130ea-3634-45a3-9658-d7b160ed491d
 # ╠═fbf9565f-f1d6-4a50-b81d-4863eff22d3b
 # ╠═c6576e1e-f86f-46a4-bd2f-7b82550c231d
+# ╟─22cac4d7-7c2a-43e9-8d94-ed6df2508fed
+# ╟─f0a58c35-47dc-4666-befc-08c502e6e229
+# ╟─5a573a95-6092-4def-b900-1b80c3aca31f
+# ╟─3f925be3-06da-4b91-b9c8-1749ba55b3d0
+# ╟─37344680-8fd2-4440-9f03-b7b325c8965c
+# ╟─ea67c00c-4aed-46ff-a11f-5455553901c0
+# ╟─e51e2e47-e389-4afa-b1e0-1ed5bf3768f6
+# ╟─bfaf9649-e08a-4adf-9794-539277902565
+# ╟─e7a24ffb-1a85-433c-a9c2-4868f9ba4205
+# ╟─458a0966-e841-48dc-8e04-6f617fb70b6b
+# ╟─2aa4b07a-f768-4986-814d-eb5c6a279adc
+# ╟─bf91a78d-429c-46c1-8a09-8f7551c32d6a
+# ╟─823551c5-01bc-4217-82d9-a87bbb7f03fd
+# ╟─4f2e0531-99fa-4c48-867b-710c80b42be5
+# ╟─9fdb84a6-2576-4b58-bf2e-6daa75434f1f
+# ╟─e4782556-d145-4b88-ba80-359da77b2362
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
