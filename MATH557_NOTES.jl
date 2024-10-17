@@ -1091,8 +1091,106 @@ Conversely, if ``\boldsymbol{A}`` is nondefective then it can be diagonalized by
 # ╔═╡ bf91a78d-429c-46c1-8a09-8f7551c32d6a
 md"### Algebraic and Geometric Multiplicity of Eigenvalues"
 
-# ╔═╡ 0d9f555a-1ff6-43f6-aa43-cbbda51fc48e
+# ╔═╡ 1660650f-917c-4354-acb7-c287f53548b8
+let
+	A = [6  3  4 
+	0  6  2 
+	0  0  7]
+	λs, Λ = eigen(A)
+	# Λ[:,3], normalize([10,2,1])
 
+	
+	 
+end
+
+# ╔═╡ 8221aa32-82ae-4ec6-b40b-0ec7c54f92de
+cm"""
+- ``A`` is not diagnalizable
+- ``A`` is defective
+"""
+
+# ╔═╡ 3ea9b542-6182-48d3-9fc6-29b7d1c28920
+md"## 6.2 The Jordan Factorization"
+
+# ╔═╡ 43dc89bb-3c51-4aea-98ee-4df58ccd2997
+let
+	A = [6  3  4 
+	0  6  2 
+	0  0  7]
+
+	N1 =A-6I
+	# N1^2
+	v1 =[3;0;0]
+	v2 =[0;1;0]
+	v3=[10;2;1]
+	S = [v1 v2 v3]
+	J =[6 1 0
+		0 6 0
+		0 0 7
+	]	
+	S*J*inv(S), A
+	
+end
+
+# ╔═╡ df706f98-7cf7-4b84-9868-0e67e9e4c34a
+let
+	A=[2  1  -1  8  -3 
+	0  2  0  7  5 
+	0  0  2  7  5 
+	0  0  0  2  0 
+	0  0  0  0  2.0
+	]
+	N = A-2I
+	v1=[1;0;0;0;0]
+	v2=[0;1;1;0;0]
+	v3=[0;61;0;-5;7]
+	N^2
+	w3 = [0;1;0;0;0]
+	N*w3
+	w4 = [0;0;0;1;0]
+	v2= N*w4
+	S =[v1 w3 v2 w4 v3]
+	J =[
+		2 1 0 0 0
+		0 2 0 0 0
+		0 0 2 1 0
+		0 0 0 2 0
+		0 0 0 0 2
+	]
+	round.(S*J*inv(S)),A
+end
+
+# ╔═╡ 6e123b71-f3bd-40b5-ad65-82515b0a44df
+let
+	# # @variables λ::Real
+	# A=[2  0  0  0 
+	# 0  2  0  0 
+	# 0  0  2  1 
+	# 1  0  0  2]
+	# # det(A-λ*I)
+	# N=A-2I
+	# N^3
+	# # level 1 N
+	# v1=[0;1;0;0]
+	# v2=[0;0;1;0]
+	# # level 2 N^2
+	# v3=[0;0;0;1]
+
+	# # level 3 N^3
+	# v4=[1;0;0;0]
+	# N*v4
+	# N^2*v4
+	# S= [v2 v3 v4 v1]
+	# J =[2 1 0 0
+	# 	0 2 1 0
+	# 	0 0 2 0
+	# 	0 0 0 2]
+	# S*J*inv(S)
+	
+end
+
+# ╔═╡ 63c34957-6379-4723-b537-f9753f6fe814
+md"## 6.3 The Schur Factorization and Normal Matrices"
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -2296,6 +2394,96 @@ We have
 1. The geometric multiplicity of an eigenvalue is always bounded above by the algebraic multiplicity of the eigenvalue. ``g_A(\lambda)\leq a_A(\lambda)``.
 2. The number of linearly independent eigenvectors of a matrix equals the sum of the geometric multiplicities of the eigenvalues.
 3. A matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has ``n`` linearly independent eigenvectors if and only if the algebraic and geometric multiplicity of all eigenvalues are the same.
+"""
+
+# ╔═╡ d93f5977-87d5-42cf-b383-8c861a69ccf5
+cm"""
+$(ex())
+```math
+A = \left[\begin{array}{lll}6 & 3 & 4 \\ 0 & 6 & 2 \\ 0 & 0 & 7\end{array}\right]
+```
+"""
+
+# ╔═╡ 2c711e97-7f1f-4c7c-b7c0-3cfb56e912fd
+cm"""
+$(define("6.3 (Jordan Block)"))
+A Jordan block of order ``m``, denoted ``\boldsymbol{J}_m(\boldsymbol{\lambda})`` is an ``m \times m`` matrix of the form
+```math
+\boldsymbol{J}_m(\lambda):=\left[\begin{array}{cccccc}
+\lambda & 1 & 0 & \cdots & 0 & 0 \\
+0 & \lambda & 1 & \cdots & 0 & 0 \\
+0 & 0 & \lambda & \cdots & 0 & 0 \\
+\vdots & & & & \vdots \\
+0 & 0 & 0 & \cdots & \lambda & 1 \\
+0 & 0 & 0 & \cdots & 0 & \lambda
+\end{array}\right]=\lambda \boldsymbol{I}_m+\boldsymbol{E}_m, \quad \boldsymbol{E}_m:=\left[\begin{array}{cccccc}
+0 & 1 & 0 & \cdots & 0 & 0 \\
+0 & 0 & 1 & \cdots & 0 & 0 \\
+0 & 0 & 0 & \cdots & 0 & 0 \\
+\vdots & & & & \vdots \\
+0 & 0 & 0 & \cdots & 0 & 1 \\
+0 & 0 & 0 & \cdots & 0 & 0
+\end{array}\right] .
+```
+"""
+
+# ╔═╡ a657c07f-ab42-4051-8e03-fedb8af62f6b
+cm"""
+$(bth("6.4 (The Jordan Factorization of a Matrix)"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has ``k`` distinct eigenvalues ``\lambda_1, \ldots, \lambda_k`` of algebraic multiplicities ``a_1, \ldots, a_k`` and geometric multiplicities ``g_1, \ldots, g_k``. There is a nonsingular matrix
+
+``S \in \mathbb{C}^{n \times n}`` such that
+```math
+\boldsymbol{J}:=\boldsymbol{S}^{-1} \boldsymbol{A} \boldsymbol{S}=\operatorname{diag}\left(\boldsymbol{U}_1, \ldots, \boldsymbol{U}_k\right), \text { with } \boldsymbol{U}_i \in \mathbb{C}^{a_i \times a_i},\tag{*}
+```
+where each ``\boldsymbol{U}_i`` is block diagonal having ``g_i`` Jordan blocks along the diagonal
+```math
+\boldsymbol{U}_i=\operatorname{diag}\left(\boldsymbol{J}_{m_{i, 1}}\left(\lambda_i\right), \ldots, \boldsymbol{J}_{m_{i, g_i}}\left(\lambda_i\right)\right)
+```
+
+Here ``m_{i, 1}, \ldots, m_{i, g_i}`` are positive integers and they are unique if they are ordered so that ``m_{i, 1} \geq m_{i, 2} \geq \cdots \geq m_{i, g_i}``. Moreover, ``a_i=\sum_{j=1}^{g_i} m_{i, j}`` for all ``i``.
+$(eth())
+$(bbl("Remarks"))
+We note that
+1. The matrices ``\boldsymbol{S}`` and ``\boldsymbol{J}`` in (*) are called Jordan factors. We also call ``\boldsymbol{J}`` the Jordan factorization of ``\boldsymbol{A}``.
+2. The columns of ``S`` are called principal vectors or generalized eigenvectors. They satisfy the matrix equation ``\boldsymbol{A} \boldsymbol{S}=\boldsymbol{S J}``.
+3. Each ``\boldsymbol{U}_i`` is upper triangular with the eigenvalue ``\lambda_i`` on the diagonal and consists of ``g_i`` Jordan blocks. These Jordan blocks can be taken in any order and it is customary to refer to any such block diagonal matrix as the Jordan factorization of ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ b5c411da-2629-4942-944b-5f3f4245b74e
+cm"""
+$(ex())
+```math
+A = \left[\begin{array}{lll}6 & 3 & 4 \\ 0 & 6 & 2 \\ 0 & 0 & 7\end{array}\right]
+```
+Find Jordan factors ``J`` and ``S`` of ``A``.
+"""
+
+# ╔═╡ db3892ca-816a-4982-adb0-ef09109a99a0
+cm"""
+$(ex())
+```math
+A=\left[\begin{array}{rrrrr}2 & 1 & -1 & 8 & -3 \\ 0 & 2 & 0 & 7 & 5 \\ 0 & 0 & 2 & 7 & 5 \\ 0 & 0 & 0 & 2 & 0 \\ 0 & 0 & 0 & 0 & 2\end{array}\right]
+```
+"""
+
+# ╔═╡ ce0f671e-395d-4cd4-a95b-5ec67e7c1fd0
+cm"""
+$(ex())
+Find Jodan factors of A
+```math
+A=\left[\begin{array}{llll}2 & 0 & 0 & 0 \\ 0 & 2 & 0 & 0 \\ 0 & 0 & 2 & 1 \\ 1 & 0 & 0 & 2\end{array}\right]
+```
+"""
+
+# ╔═╡ 4830028b-2e80-48b1-8dc0-79597852b828
+cm"""
+$(bth("6.5 (Schur Factorization)"))
+For each ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` there exists a unitary matrix ``\boldsymbol{U} \in \mathbb{C}^{n \times n}`` such that ``\boldsymbol{R}:=\boldsymbol{U}^* \boldsymbol{A} \boldsymbol{U}`` is upper triangular.
+
+The matrices ``\boldsymbol{U}`` and ``\boldsymbol{R}`` in the __Schur factorization__ are called __Schur factors__. 
+
+We call ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{R} \boldsymbol{U}^*`` the Schur factorization of ``\boldsymbol{A}``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -4602,11 +4790,24 @@ version = "1.4.1+1"
 # ╟─458a0966-e841-48dc-8e04-6f617fb70b6b
 # ╟─2aa4b07a-f768-4986-814d-eb5c6a279adc
 # ╟─bf91a78d-429c-46c1-8a09-8f7551c32d6a
-# ╠═0d9f555a-1ff6-43f6-aa43-cbbda51fc48e
 # ╟─823551c5-01bc-4217-82d9-a87bbb7f03fd
 # ╟─4f2e0531-99fa-4c48-867b-710c80b42be5
 # ╟─9fdb84a6-2576-4b58-bf2e-6daa75434f1f
 # ╟─e4782556-d145-4b88-ba80-359da77b2362
+# ╟─d93f5977-87d5-42cf-b383-8c861a69ccf5
+# ╠═1660650f-917c-4354-acb7-c287f53548b8
+# ╠═8221aa32-82ae-4ec6-b40b-0ec7c54f92de
+# ╟─3ea9b542-6182-48d3-9fc6-29b7d1c28920
+# ╟─2c711e97-7f1f-4c7c-b7c0-3cfb56e912fd
+# ╟─a657c07f-ab42-4051-8e03-fedb8af62f6b
+# ╟─b5c411da-2629-4942-944b-5f3f4245b74e
+# ╟─43dc89bb-3c51-4aea-98ee-4df58ccd2997
+# ╟─db3892ca-816a-4982-adb0-ef09109a99a0
+# ╠═df706f98-7cf7-4b84-9868-0e67e9e4c34a
+# ╟─ce0f671e-395d-4cd4-a95b-5ec67e7c1fd0
+# ╠═6e123b71-f3bd-40b5-ad65-82515b0a44df
+# ╟─63c34957-6379-4723-b537-f9753f6fe814
+# ╟─4830028b-2e80-48b1-8dc0-79597852b828
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
