@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.47
+# v0.20.0
 
 #> [frontmatter]
 #> title = "TETM241 | MATH557 | NOTES"
@@ -1191,6 +1191,112 @@ end
 
 # ╔═╡ 63c34957-6379-4723-b537-f9753f6fe814
 md"## 6.3 The Schur Factorization and Normal Matrices"
+
+# ╔═╡ 6be7cbc4-023b-4d2e-bda5-36a996fad82c
+md"# Chapter 7: The Singular Value Decomposition (svd)"
+
+# ╔═╡ 2f9a1b80-5247-4af9-bf89-15a50eb7e5c6
+md"##  Normal Matrices"
+
+# ╔═╡ 4bf58173-2848-4256-bc2d-01f0e3136094
+md"## 7.1 The SVD Always Exists
+### The Matrices $A^* A, A A^*$"
+
+# ╔═╡ f4cf76b0-e5f6-4920-93a7-0be1f1041987
+let
+	A = [1  0  1 
+		 0  1  0 
+		 0  1  1 
+		 0  1  0 
+		 1  1  0]
+	B = A'*A
+	B
+	v1=[1;2;1]
+	v1=v1/norm(v1)
+	u1=A*v1
+	u1=u1/norm(u1)
+	v2=[1;-1;1]
+	v2=v2/norm(v2)
+	u2 = A*v2
+	u2=u2/norm(u2)
+	v3=[-1;0;1]
+	v3=v3/norm(v3)
+	u3 = A*v3
+	u3=u3/norm(u3)
+	C = A*A'
+	
+	u4 =[0;-1;0;1;0]
+	u4 =u4/norm(u4)
+	u5 =[-1;-2;1;0;1]
+	u5=u5-dot(u4,u5)*u4
+	u5=u5/norm(u5)
+	U =[u1 u2 u3 u4 u5]
+	V = [v1 v2 v3]
+	S=U'*A*V
+	U2,S2,Vt2 = svd(A)
+	diag(S),S2
+	# dot(u4,u5)
+	
+end
+
+# ╔═╡ 57322645-33db-4c87-a5c8-51d69e8e74e9
+cm"""
+
+__The Singular Value Factorization__
+
+Suppose ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*`` is a singular value decomposition of ``\boldsymbol{A}`` of rank ``r``. Consider the block partitions
+```math
+\begin{aligned}
+& \boldsymbol{U}=\left[\boldsymbol{U}_1, \boldsymbol{U}_2\right] \in \mathbb{C}^{m \times m}, \quad \boldsymbol{U}_1:=\left[\boldsymbol{u}_1, \ldots, \boldsymbol{u}_r\right], \quad \boldsymbol{U}_2:=\left[\boldsymbol{u}_{r+1}, \ldots, \boldsymbol{u}_m\right], \\
+& \boldsymbol{V}=\left[\boldsymbol{V}_1, \boldsymbol{V}_2\right] \in \mathbb{C}^{n \times n}, \quad \boldsymbol{V}_1:=\left[\boldsymbol{v}_1, \ldots, \boldsymbol{v}_r\right], \quad \boldsymbol{V}_2:=\left[\boldsymbol{v}_{r+1}, \ldots, \boldsymbol{v}_n\right], \\
+& \boldsymbol{\Sigma}=\left[\begin{array}{cc}
+\boldsymbol{\Sigma}_1 & \mathbf{0}_{r, n-r} \\
+\mathbf{0}_{m-r, r} & \mathbf{0}_{m-r, n-r}
+\end{array}\right] \in \mathbb{R}^{m \times n}, \text { where } \boldsymbol{\Sigma}_1:=\operatorname{diag}\left(\sigma_1, \ldots, \sigma_r\right)
+\end{aligned}
+```
+So
+```math
+\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*=\boldsymbol{U}_1 \boldsymbol{\Sigma}_1 \boldsymbol{V}_1^*.
+```
+"""
+
+# ╔═╡ 4843fc90-c81f-4810-8da8-8b1ce0694a55
+md"## SVD and the Four Fundamental Subspaces"
+
+# ╔═╡ 2a8a27d1-55ff-4471-80c3-28a7c605b97e
+md"## 7.3 A Geometric Interpretation"
+
+# ╔═╡ 394b491d-36b0-48a8-92d0-b2abb1ffdc01
+let
+	A= [11  48 ; 48  39]/25
+	U,S,Vt = svd(A)
+	
+	a = S[1]     # Semi-major axis
+	b = S[2]    # Semi-minor axis
+	cx, cy = 0, 0  # Center of the ellipse
+	θ = π/4   # Rotation angle (in radians)
+	t = range(0, 2π, length=500)
+	x = a * cos.(t)
+	y = b * sin.(t)
+	
+	# Rotate the ellipse by θ
+	x_rot = U * [x';y']
+	# y_rot = sin(θ) * x + cos(θ) * y
+	
+	# Shift to the desired center
+	# x_shifted = x_rot .+ cx
+	# y_shifted = y_rot .+ cy
+	
+	# Plot the filled ellipse
+	p1 = plot(x, y, fill = true, lw=2, label="", color=:lightblue, alpha=0.5)
+	plot(p1,frame_style=:origin)
+	p2 = plot(p1,x_rot[1,:], x_rot[2,:], fill = true, lw=2, label="", color=:lightgreen, alpha=0.5)
+	plot(p2,frame_style=:origin)
+	# plot(p1,p2)
+	
+	
+end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -2486,6 +2592,129 @@ The matrices ``\boldsymbol{U}`` and ``\boldsymbol{R}`` in the __Schur factorizat
 We call ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{R} \boldsymbol{U}^*`` the Schur factorization of ``\boldsymbol{A}``.
 """
 
+# ╔═╡ 70686047-be6a-4d77-8cc3-dcb38b7bc378
+cm"""
+$(define("Normal Matrix"))
+A matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is normal if ``\boldsymbol{A}^* \boldsymbol{A}=\boldsymbol{A} \boldsymbol{A}^*``. In this section we show that a matrix has orthogonal eigenvectors if and only if it is normal.
+
+Examples of normal matrices are
+1. ``A^*=A``,
+(Hermitian)
+2. ``\boldsymbol{A}^*=-\boldsymbol{A}``,
+(Skew-Hermitian)
+3. ``\boldsymbol{A}^*=\boldsymbol{A}^{-1}``,
+(Unitary)
+4. ``\boldsymbol{A}=\operatorname{diag}\left(d_1, \ldots, d_n\right)``.
+(Diagonal)
+"""
+
+# ╔═╡ afa0532c-de60-44d4-a166-befcdc1959e4
+cm"""
+$(bbl("","(Spectral Theorem for Normal Matrices)"))
+A matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is normal if and only if there exists a unitary matrix ``\boldsymbol{U} \in \mathbb{C}^{n \times n}`` (that is ``\boldsymbol{U}^*\boldsymbol{U} =\boldsymbol{I} ``) such that 
+```math
+\boldsymbol{U}^* \boldsymbol{A} \boldsymbol{U}=\boldsymbol{D} \quad \text{is diagonal.}
+```
+If ``\boldsymbol{D}=\operatorname{diag}\left(\lambda_1, \ldots, \lambda_n\right)`` and ``\boldsymbol{U}=\left[\boldsymbol{u}_1, \ldots, \boldsymbol{u}_n\right]`` then ``\left(\lambda_j, \boldsymbol{u}_j\right), j=`` ``1, \ldots, n`` are orthonormal eigenpairs for ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ b23fc699-d1e8-4c83-8e61-06dc4ab8ea6a
+cm"""
+$(define("The singular value decomposition (SVD)"))
+The singular value decomposition (SVD) is a __decomposition__ of a matrix in the form 
+```math
+\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*,
+``` 
+where 
+- ``\boldsymbol{U}`` and ``\boldsymbol{V}`` are unitary, and 
+- ``\boldsymbol{\Sigma}`` is a nonnegative diagonal matrix, i.e., ``\Sigma_{i j}=0`` for all ``i \neq j`` and ``\Sigma_{i i} \geq 0`` for all ``i``. 
+
+The diagonal elements ``\sigma_i:=\Sigma_{i i}`` are __called singular values__, while the columns of ``\boldsymbol{U}`` and ``\boldsymbol{V}`` are called __singular vectors__. 
+
+To be a singular value decomposition the singular values should be ordered, i.e., 
+```math
+\sigma_i \geq \sigma_{i+1} \quad \text{for all}\quad  i.
+```
+"""
+
+# ╔═╡ a2dc9322-049b-4437-a29e-1cd23f816059
+cm"""
+$(bbl("Remark",""))
+The singular values of an ``m \times n`` matrix ``A`` are the positive square roots of the nonzero eigenvalues of the ``n \times n`` symmetric matrix ``A^t A``.
+"""
+
+# ╔═╡ 8e1f15f2-8273-400d-97a1-86cd7d138a64
+cm"""
+$(bth("7.1 "))
+Suppose ``m, n \in \mathbb{N}`` and ``\boldsymbol{A} \in \mathbb{C}^{m \times n}``.
+1. The matrices ``\boldsymbol{A}^* \boldsymbol{A} \in \mathbb{C}^{n \times n}`` and ``\boldsymbol{A} \boldsymbol{A}^* \in \mathbb{C}^{m \times m}`` have the same nonzero eigenvalues with the same algebraic multiplicities. Moreover the extra eigenvalues of the larger matrix are all zero.
+2. The matrices ``\boldsymbol{A}^* \boldsymbol{A}`` and ``\boldsymbol{A} \boldsymbol{A}^*`` are Hermitian with nonnegative eigenvalues.
+3. Let ``\left(\lambda_j, \boldsymbol{v}_j\right)`` be orthonormal eigenpairs for ``\boldsymbol{A}^* \boldsymbol{A}`` with
+```math
+\lambda_1 \geq \cdots \geq \lambda_r>0=\lambda_{r+1}=\cdots=\lambda_n .
+```
+$(add_space(10))Then ``\left\{\boldsymbol{A} \boldsymbol{v}_1, \ldots, \boldsymbol{A} \boldsymbol{v}_r\right\}`` is an orthogonal basis for the column space 
+```math 
+\mathcal{R}(\boldsymbol{A}):=\left\{\boldsymbol{A} \boldsymbol{y} \in \mathbb{C}^m: \boldsymbol{y} \in \mathbb{C}^n\right\}
+``` 
+$(add_space(10))and ``\left\{\boldsymbol{v}_{r+1}, \ldots, \boldsymbol{v}_n\right\}`` is an orthonormal basis for the nullspace 
+```math
+\mathcal{N}(\boldsymbol{A}):=\left\{\boldsymbol{y} \in \mathbb{C}^n: \boldsymbol{A} \boldsymbol{y}=\mathbf{0}\right\}.
+```
+4. Let ``\left(\lambda_j, \boldsymbol{u}_j\right)`` be orthonormal eigenpairs for ``\boldsymbol{A} \boldsymbol{A}^*``. If ``\lambda_j>0, j=1, \ldots, r`` and ``\lambda_j=0, j=r+1, \ldots, m`` then ``\left\{\boldsymbol{A}^* \boldsymbol{u}_1, \ldots, \boldsymbol{A}^* \boldsymbol{u}_r\right\}`` is an orthogonal basis for the column space ``\mathcal{R}\left(\boldsymbol{A}^*\right)`` and ``\left\{\boldsymbol{u}_{r+1}, \ldots, \boldsymbol{u}_m\right\}`` is an orthonormal basis for the nullspace ``\mathcal{N}\left(\boldsymbol{A}^*\right)``.
+5. The rank of ``\boldsymbol{A}`` equals the number of positive eigenvalues of ``\boldsymbol{A}^* \boldsymbol{A}`` and ``\boldsymbol{A} \boldsymbol{A}^*``.
+"""
+
+# ╔═╡ e1d0a740-2c6b-4b72-ab3e-0c0fde78ed68
+cm"""
+$(bth("7.2 (Existence of SVD)")) Suppose for ``m, n, r \in \mathbb{N}`` that ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` has rank ``r``, and that ``\left(\lambda_j, \boldsymbol{v}_j\right)`` are orthonormal eigenpairs for ``\boldsymbol{A}^* \boldsymbol{A}`` with ``\lambda_1 \geq \cdots \geq`` ``\lambda_r>0=\lambda_{r+1}=\cdots=\lambda_n``. Define
+1. ``\boldsymbol{V}:=\left[\boldsymbol{v}_1, \ldots, \boldsymbol{v}_n\right] \in \mathbb{C}^{n \times n}``,
+2. ``\Sigma \in \mathbb{R}^{m \times n}`` is a diagonal matrix with diagonal elements ``\sigma_j:=\sqrt{\lambda_j}`` for ``j=`` ``1, \ldots, \min (m, n)``,
+3. ``\boldsymbol{U}:=\left[\boldsymbol{u}_1, \ldots, \boldsymbol{u}_m\right] \in \mathbb{C}^{m \times m}``, where ``\boldsymbol{u}_j=\sigma_j^{-1} \boldsymbol{A} \boldsymbol{v}_j`` for ``j=1, \ldots, r`` and ``\boldsymbol{u}_{r+1}, \ldots, \boldsymbol{u}_m`` is any extension of ``\boldsymbol{u}_1, \ldots, \boldsymbol{u}_r`` to an orthonormal basis ``\boldsymbol{u}_1, \ldots, \boldsymbol{u}_m`` for ``\mathbb{C}^m``.
+Then ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*`` is a singular value decomposition of ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ 3013da2b-e879-4730-a46f-ab3a94e6cbb8
+cm"""
+$(ex())
+Determine the singular values of the ``5 \times 3`` matrix
+```math
+A=\left[\begin{array}{lll}
+1 & 0 & 1 \\
+0 & 1 & 0 \\
+0 & 1 & 1 \\
+0 & 1 & 0 \\
+1 & 1 & 0
+\end{array}\right]
+```
+"""
+
+# ╔═╡ db97a178-677b-48f7-b15d-fbe64d374128
+cm"""
+$(bth("7.3 (Singular Vectors and Orthonormal Bases)"))
+For positive integers ``m, n`` let ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` have rank ``r`` and a singular value decomposition ``\boldsymbol{A}=`` ``\left[\boldsymbol{u}_1, \ldots, \boldsymbol{u}_m\right] \boldsymbol{\Sigma}\left[\boldsymbol{v}_1, \ldots, \boldsymbol{v}_n\right]^*=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*``. Then the singular vectors satisfy
+```math
+\begin{aligned}
+\boldsymbol{A} \boldsymbol{v}_i & =\sigma_i \boldsymbol{u}_i, i=1, \ldots, r, & & \boldsymbol{A} \boldsymbol{v}_i=0, i=r+1, \ldots, n \\
+\boldsymbol{A}^* \boldsymbol{u}_i & =\sigma_i \boldsymbol{v}_i, i=1, \ldots, r, & & \boldsymbol{A}^* \boldsymbol{u}_i=0, i=r+1, \ldots, m
+\end{aligned}
+```
+
+Moreover,
+1. ``\left\{\boldsymbol{u}_1, \ldots, \boldsymbol{u}_r\right\}`` is an orthonormal basis for ``\mathcal{R}(\boldsymbol{A})``,
+2. ``\left\{\boldsymbol{u}_{r+1}, \ldots, \boldsymbol{u}_m\right\}`` is an orthonormal basis for ``\mathcal{N}\left(\boldsymbol{A}^*\right)``,
+3. ``\left\{\boldsymbol{v}_1, \ldots, \boldsymbol{v}_r\right\}`` is an orthonormal basis for ``\mathcal{R}\left(\boldsymbol{A}^*\right)``,
+4. ``\left\{\boldsymbol{v}_{r+1}, \ldots, \boldsymbol{v}_n\right\}`` is an orthonormal basis for ``\mathcal{N}(\boldsymbol{A})``.
+"""
+
+# ╔═╡ 6cbcc482-d188-4732-8926-2cae312e2788
+cm"""
+$(ex())
+```math
+\boldsymbol{A}:=\frac{1}{25}\left[\begin{array}{ll}11 & 48 \\ 48 & 39\end{array}\right]
+```
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2531,7 +2760,7 @@ Symbolics = "~5.35.1"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.0"
+julia_version = "1.11.1"
 manifest_format = "2.0"
 project_hash = "057e33cad75fbc8a952cd7fbb187792e23e4affc"
 
@@ -4808,6 +5037,23 @@ version = "1.4.1+1"
 # ╠═6e123b71-f3bd-40b5-ad65-82515b0a44df
 # ╟─63c34957-6379-4723-b537-f9753f6fe814
 # ╟─4830028b-2e80-48b1-8dc0-79597852b828
+# ╟─6be7cbc4-023b-4d2e-bda5-36a996fad82c
+# ╟─2f9a1b80-5247-4af9-bf89-15a50eb7e5c6
+# ╟─70686047-be6a-4d77-8cc3-dcb38b7bc378
+# ╟─afa0532c-de60-44d4-a166-befcdc1959e4
+# ╟─b23fc699-d1e8-4c83-8e61-06dc4ab8ea6a
+# ╟─a2dc9322-049b-4437-a29e-1cd23f816059
+# ╟─4bf58173-2848-4256-bc2d-01f0e3136094
+# ╟─8e1f15f2-8273-400d-97a1-86cd7d138a64
+# ╟─e1d0a740-2c6b-4b72-ab3e-0c0fde78ed68
+# ╟─3013da2b-e879-4730-a46f-ab3a94e6cbb8
+# ╠═f4cf76b0-e5f6-4920-93a7-0be1f1041987
+# ╟─57322645-33db-4c87-a5c8-51d69e8e74e9
+# ╟─4843fc90-c81f-4810-8da8-8b1ce0694a55
+# ╟─db97a178-677b-48f7-b15d-fbe64d374128
+# ╟─2a8a27d1-55ff-4471-80c3-28a7c605b97e
+# ╟─6cbcc482-d188-4732-8926-2cae312e2788
+# ╠═394b491d-36b0-48a8-92d0-b2abb1ffdc01
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
