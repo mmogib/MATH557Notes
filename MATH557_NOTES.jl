@@ -1202,6 +1202,27 @@ md"##  Normal Matrices"
 md"## 7.1 The SVD Always Exists
 ### The Matrices $A^* A, A A^*$"
 
+# ╔═╡ 5d9e665a-7dd6-42cb-99f8-47ab69256feb
+let
+	A = [1 1 0.0;0 0 1]
+	# B = A'*A
+	# eigen(B)
+	# w1 =[1;1;0]
+	# v1=w1/norm(w1)
+	# w2 =[0;0;1]
+	# v2=w2/norm(w2)
+	# w3 =[-1;1;0]
+	# v3=w3/norm(w3)
+	# V =[v1 v2 v3]
+	# u1,u2 = A*v1/sqrt(2),A*v2
+	# U = [u1 u2]
+	# Σ = [sqrt(2) 0 0;0 1 0]
+	# U*Σ*V', A
+	# V*Σ'U'
+	
+	
+end
+
 # ╔═╡ f4cf76b0-e5f6-4920-93a7-0be1f1041987
 let
 	A = [1  0  1 
@@ -1210,31 +1231,47 @@ let
 		 0  1  0 
 		 1  1  0]
 	B = A'*A
-	B
-	v1=[1;2;1]
-	v1=v1/norm(v1)
-	u1=A*v1
-	u1=u1/norm(u1)
-	v2=[1;-1;1]
-	v2=v2/norm(v2)
-	u2 = A*v2
-	u2=u2/norm(u2)
-	v3=[-1;0;1]
-	v3=v3/norm(v3)
-	u3 = A*v3
-	u3=u3/norm(u3)
-	C = A*A'
+	# @variables λ::Real
+	# expand(det(B-λ*I))
+	# λ = 5,2,1
+	# L,U=lu(B-λ[1]I,NoPivot())
+	# U
 	
-	u4 =[0;-1;0;1;0]
-	u4 =u4/norm(u4)
-	u5 =[-1;-2;1;0;1]
-	u5=u5-dot(u4,u5)*u4
-	u5=u5/norm(u5)
-	U =[u1 u2 u3 u4 u5]
-	V = [v1 v2 v3]
-	S=U'*A*V
-	U2,S2,Vt2 = svd(A)
-	diag(S),S2
+	# w1=[1;2;1]
+	# v1=w1/norm(w1)
+
+	# B-λ[2]I
+	# w2=[1;-1;1]
+	# v2=w2/norm(w2)
+
+	# B-λ[3]I
+	# w3=[-1;0;1]
+	# v3=w3/norm(w3)
+	
+	# u1=(1/√λ[1])A*v1
+	# norm(u1)
+	# u2 = (1/√λ[2])*A*v2
+	# # norm(u2)
+	# u3 = sqrt(2)*A*v3
+	# # u3=u3/norm(u3)
+	# # C = A*A'
+	
+	# u4 =[0;-1;0;1;0]
+	# u4 =u4/norm(u4)
+	# u5 =[-1;-2;1;0;1]
+	# u5=u5-dot(u4,u5)*u4
+	# u5=u5/norm(u5)
+	# U =[u1 u2 u3 u4 u5]
+	# V = [v1 v2 v3]
+	# S=[sqrt(5) 0 0
+	#    0 sqrt(2) 0
+	#    0 0 1
+	# 	0 0 0
+	# 	0 0 0
+	# ]
+	# round.(U*S*V')
+	# U2,S2,Vt2 = svd(A)
+	# diag(S),S2
 	# dot(u4,u5)
 	
 end
@@ -1296,6 +1333,59 @@ let
 	# plot(p1,p2)
 	
 	
+end
+
+# ╔═╡ 9e6b9683-458c-4796-94b0-590b7325c11b
+md"# Chapter 8: Matrix Norms and Perturbation Theory forLinear Systems"
+
+# ╔═╡ 1ac0a8f6-6803-43bc-bc1e-8ac8d8b3ef1a
+md"## 8.1 Vector Norms"
+
+# ╔═╡ 4a6c39bf-04b0-4758-ba67-8648ed21817a
+md"##  8.2 Matrix Norms"
+
+# ╔═╡ 17d84f46-a294-4c12-b706-72ebc15a98e0
+cm"""
+The follwoing are matrix norms
+```math
+\|\boldsymbol{A}\|_S:=\sum_{i=1}^m \sum_{i=1}^n\left|a_{i j}\right|,\quad \textbf{sum norm}
+```
+```math
+\|\boldsymbol{A}\|_F:=\left(\sum_{i=1}^m \sum_{i=1}^n\left|a_{i j}\right|^2\right)^{1 / 2}, \quad \textbf{Frobenius norm}
+```
+```math
+\|\boldsymbol{A}\|_M:=\max _{i, j}\left|a_{i j}\right|.\quad \textbf{max norm}
+```
+"""
+
+# ╔═╡ d595178d-1edf-45d4-b97f-d8c98a8c88a4
+let
+	A = rand([-1.0,2,2,-2,0,3,3,3,3,4,-4,4],4,4)
+	sum(abs.(A))== norm(A,1)
+	
+end
+
+# ╔═╡ e291e3fb-3301-44e9-8a54-842ccba1cf20
+md"## Consistent and Subordinate Matrix Norms"
+
+# ╔═╡ 183a420c-cac8-47d1-b9ae-dff435f10858
+md"## Operator Norms"
+
+# ╔═╡ a1de0642-7ef4-4d4b-ad3b-c2829cda3393
+cm"""
+- ``\|I\|_F=?`` so is it an operator norm?
+"""
+
+# ╔═╡ bef48346-8bd5-4f24-9a1e-cc91f52318d1
+md"##  The Operator ``p``-Norms"
+
+# ╔═╡ 1beb011b-26bf-4718-85b1-c16747e184cd
+let
+	A=(1//15)*[14  4  16 
+	2  22  13]
+	sum(map(abs,A))
+	sum(map(x->x^2,A))
+	maximum(sum(eachcol(A)))
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -2674,6 +2764,18 @@ $(bth("7.2 (Existence of SVD)")) Suppose for ``m, n, r \in \mathbb{N}`` that ``\
 Then ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*`` is a singular value decomposition of ``\boldsymbol{A}``.
 """
 
+# ╔═╡ b1b78dd1-112f-42b9-9d40-66123d64feac
+cm"""
+$(ex())
+Determine the singular values of the ``2 \times 3`` matrix
+```math
+A=\left[\begin{array}{lll}
+1 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{array}\right]
+```
+"""
+
 # ╔═╡ 3013da2b-e879-4730-a46f-ab3a94e6cbb8
 cm"""
 $(ex())
@@ -2713,6 +2815,237 @@ $(ex())
 ```math
 \boldsymbol{A}:=\frac{1}{25}\left[\begin{array}{ll}11 & 48 \\ 48 & 39\end{array}\right]
 ```
+"""
+
+# ╔═╡ 56f09d0a-67c5-4109-bde0-b66296986a1c
+cm"""
+$(define("8.1 (Vector Norm)")) 
+A __(vector) norm__ in a real (resp. complex) vector space ``\mathcal{V}`` is a function ``\|\cdot\|: \mathcal{V} \rightarrow \mathbb{R}`` that satisfies for all ``\boldsymbol{x}, \boldsymbol{y}`` in ``\mathcal{V}`` and all ``a`` in ``\mathbb{R}`` (resp. ``\mathbb{C}`` )
+1. ``\|\boldsymbol{x}\| \geq 0`` with equality if and only if ``\boldsymbol{x}=\mathbf{0}``.
+(positivity)
+2. ``\|a x\|=|a|\|x\|``.
+(homogeneity)
+3. ``\|\boldsymbol{x}+\boldsymbol{y}\| \leq\|\boldsymbol{x}\|+\|\boldsymbol{y}\|``.
+(subadditivity)
+
+The triple ``(\mathcal{V}, \mathbb{R},\|\cdot\|)(`` resp. ``(\mathcal{V}, \mathbb{C},\|\cdot\|))`` is called a __normed vector space__ and the inequality 3 . is called the triangle inequality.
+"""
+
+# ╔═╡ 4f107e76-56a3-4b87-a76b-ec2179b082df
+
+cm"""
+$(define("8.2 (Vector p-Norms)"))
+We define for ``p \geq 1`` and ``\boldsymbol{x} \in \mathbb{R}^n`` or ``\boldsymbol{x} \in \mathbb{C}^n`` the ``p``-norms by
+```math
+\begin{aligned}
+\|\boldsymbol{x}\|_p & :=\left(\sum_{j=1}^n\left|x_j\right|^p\right)^{1 / p} \\
+\|\boldsymbol{x}\|_{\infty} & :=\max _{1 \leq j \leq n}\left|x_j\right|
+\end{aligned}
+```
+"""
+
+# ╔═╡ 47337c99-d8e1-4488-9959-77963d555e7d
+cm"""
+$(bbl("Remarks",""))
+1. It can be shown that the ``p``-norms are vector norms for ``1 \leq p \leq \infty``.
+
+2. The triangle inequality called Minkowski's inequality
+```math
+\|\boldsymbol{x}+\boldsymbol{y}\|_p \leq\|\boldsymbol{x}\|_p+\|\boldsymbol{y}\|_p.
+```
+3. To prove it one first establishes Hölder's inequality
+```math
+\sum_{j=1}^n\left|x_j y_j\right| \leq\|\boldsymbol{x}\|_p\|\boldsymbol{y}\|_q, \quad \frac{1}{p}+\frac{1}{q}=1, \quad \boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n
+```
+$(add_space(10))The relation ``\frac{1}{p}+\frac{1}{q}=1`` means that if ``p=1`` then ``q=\infty`` and vice versa. The Hölder's inequality is the same as the Cauchy-Schwarz inequality for the Euclidian norm ``p=2``.
+
+4. The infinity norm is related to the other ``p``-norms by
+```math
+\lim _{p \rightarrow \infty}\|\boldsymbol{x}\|_p=\|\boldsymbol{x}\|_{\infty} \text { for all } \boldsymbol{x} \in \mathbb{C}^n\tag{*}
+```
+5. The equation (*) clearly holds for ``\boldsymbol{x}=\mathbf{0}``. For ``\boldsymbol{x} \neq \mathbf{0}`` we write
+```math
+\|\boldsymbol{x}\|_p:=\|\boldsymbol{x}\|_{\infty}\left(\sum_{j=1}^n\left(\frac{\left|x_j\right|}{\|\boldsymbol{x}\|_{\infty}}\right)^p\right)^{1 / p} .
+```
+$(add_space(10))Now each term in the sum is not greater than one and at least one term is equal to one, and we obtain
+```math
+\|\boldsymbol{x}\|_{\infty} \leq\|\boldsymbol{x}\|_p \leq n^{1 / p}\|\boldsymbol{x}\|_{\infty}, \quad p \geq 1\tag{**}
+```
+
+$(add_space(10))Since ``\lim _{p \rightarrow \infty} n^{1 / p}=1`` for any fixed ``n \in \mathbb{N}``, we see that (*) follows.
+
+6. We can show the following generalization of inequality (**)
+```math
+\|\boldsymbol{x}\|_{p^{\prime}} \leq\|\boldsymbol{x}\|_p \leq n^{1 / p-1 / p^{\prime}}\|\boldsymbol{x}\|_{p^{\prime}}, \quad \boldsymbol{x} \in \mathbb{C}^n, \quad 1 \leq p \leq p^{\prime} \leq \infty .
+```
+
+"""
+
+# ╔═╡ 53af53ab-a701-47cc-8979-14d6bef5e074
+cm"""
+$(define("8.3 (Equivalent Norms)"))
+We say that two norms ``\|\cdot\|`` and ``\|\cdot\|^{\prime}`` on ``\mathcal{V}`` are equivalent if there are positive constants ``m`` and ``M`` such that for all vectors ``\boldsymbol{x} \in \mathcal{V}`` we have
+```math
+m\|\boldsymbol{x}\|^{\prime} \leq\|\boldsymbol{x}\| \leq M\|\boldsymbol{x}\|^{\prime} .
+```
+$(ebl())
+$(bbl("Remark",""))
+By (**) the ``p`` - and ``\infty``-norms are equivalent for any ``p \geq 1``. This result is generalized in the following theorem.
+$(ebl())
+$(bth(" 8.1 (Basic Properties of Vector Norms)"))
+The following holds for a normed vector space ``(\mathcal{V}, \mathbb{C},\|\cdot\|)``.
+1. ``\|\boldsymbol{x}-\boldsymbol{y}\| \geq|\|\boldsymbol{x}\|-\|\boldsymbol{y}\||``, for all ``\boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n \quad`` (inverse triangle inequality).
+2. The vector norm is a continuous function ``\mathcal{V} \rightarrow \mathbb{R}``.
+3. All vector norms on ``\mathcal{V}`` are equivalent provided ``\mathcal{V}`` is finite dimensional.
+"""
+
+# ╔═╡ d72010fc-cd62-4313-a3b2-aea4f5b277c2
+cm"""
+$(bth("8.2 (Matrix Norm Equivalence)"))
+All matrix norms on ``\mathbb{C}^{m \times n}`` are equivalent. Thus, if ``\|\cdot\|`` and ``\|\cdot\|^{\prime}`` are two matrix norms on ``\mathbb{C}^{m \times n}`` then there are positive constants ``\mu`` and ``M`` such that
+```math
+\mu\|\boldsymbol{A}\| \leq\|\boldsymbol{A}\|^{\prime} \leq M\|\boldsymbol{A}\|
+```
+holds for all ``\boldsymbol{A} \in \mathbb{C}^{m \times n}``. Moreover, a matrix norm is a continuous function.
+"""
+
+# ╔═╡ 4da69a7c-1ece-485d-a353-cb944c900b26
+cm"""
+$(bbl("Lemma","(Frobenius Norm Properties)")) 
+For any ``m, n \in \mathbb{N}`` and any matrix ``\boldsymbol{A} \in`` ``\mathbb{C}^{m \times n}``
+1. ``\left\|\boldsymbol{A}^*\right\|_F=\|\boldsymbol{A}\|_F``,
+2. ``\|\boldsymbol{A}\|_F^2=\sum_{j=1}^n\left\|\boldsymbol{a}_{: j}\right\|_2^2``,
+3. ``\|\boldsymbol{U} \boldsymbol{A}\|_F=\|\boldsymbol{A} \boldsymbol{V}\|_F=\|\boldsymbol{A}\|_F`` for any unitary matrices ``\boldsymbol{U} \in \mathbb{C}^{m \times m}`` and ``\boldsymbol{V} \in`` ``\mathbb{C}^{n \times n}``,
+4. ``\|\boldsymbol{A} \boldsymbol{B}\|_F \leq\|\boldsymbol{A}\|_F\|\boldsymbol{B}\|_F`` for any ``\boldsymbol{B} \in \mathbb{C}^{n, k}, \quad k \in \mathbb{N}``,
+5. ``\|\boldsymbol{A} \boldsymbol{x}\|_2 \leq\|\boldsymbol{A}\|_F\|\boldsymbol{x}\|_2``, for all ``\boldsymbol{x} \in \mathbb{C}^n``.
+"""
+
+# ╔═╡ 9a9975ef-2ec1-41af-bd6f-0a76756c100b
+cm"""
+$(bth("(Frobenius Norm and Singular Values)"))
+We have ``\|\boldsymbol{A}\|_F=`` ``\sqrt{\sigma_1^2+\cdots+\sigma_n^2}``, where ``\sigma_1, \ldots, \sigma_n`` are the singular values of ``\boldsymbol{A}``.
+
+__Proof__ Using previous Lemma we find
+```math
+\|\boldsymbol{A}\|_F \stackrel{\text { 3. }}{=}\left\|\boldsymbol{U}^* \boldsymbol{A} \boldsymbol{V}\right\|_F=\|\boldsymbol{\Sigma}\|_F=\sqrt{\sigma_1^2+\cdots+\sigma_n^2} .
+```
+"""
+
+# ╔═╡ 263b843b-e75c-45a4-98a9-4f9111858ae6
+cm"""
+$(define("8.4 (Consistent Matrix Norms)"))
+A matrix norm is called consistent on ``\mathbb{C}^{n \times n}`` if
+
+```math
+\|\boldsymbol{A} \boldsymbol{B}\| \leq\|\boldsymbol{A}\|\|\boldsymbol{B}\|\quad
+\text{(submultiplicativity)}\quad
+\text{holds for all } \boldsymbol{A}, \boldsymbol{B} \in \mathbb{C}^{n \times n}.
+```
+"""
+
+# ╔═╡ fba0bff1-e7a9-4793-94bd-968cd82fd926
+cm"""
+$(bbl("Remark",""))
+For a consistent matrix norm on ``\mathbb{C}^{n \times n}`` we have the inequality 
+```math
+\left\|\boldsymbol{A}^k\right\| \leq\|\boldsymbol{A}\|^k \text{ for } \boldsymbol{A} \in \mathbb{C}^{n \times n} \text{ and } k \in \mathbb{N}.\tag{🌟}
+```
+"""
+
+# ╔═╡ 048fc935-3507-496b-b00d-09078784fe06
+cm"""
+$(define("8.5 (Subordinate Matrix Norms)"))
+Suppose ``m, n \in \mathbb{N}`` are given, let ``\| \|`` on ``\mathbb{C}^m`` and ``\left\|\|_\beta\right.`` on ``\mathbb{C}^n`` be vector norms, and let ``\| \|`` be a matrix norm on ``\mathbb{C}^{m \times n}``. 
+We say that the matrix norm ``\|\|`` is __subordinate__ to the vector norms ``\| \|`` and ``\left\|\|_\beta\right.`` if 
+```math
+\|\boldsymbol{A x}\| \leq\|\boldsymbol{A}\|\|\boldsymbol{x}\|_\beta\quad \text{ for all}\quad \boldsymbol{A} \in \mathbb{C}^{m \times n}\quad \text{and all } \boldsymbol{x} \in \mathbb{C}^n.
+```
+"""
+
+# ╔═╡ 1a8ed4b8-74ab-4775-b01b-24b637d9288c
+cm"""
+$(bbl("Remark",""))
+
+The Frobenius  norm is __subordinate__ to the Euclidian vector norm
+
+``\color{white}{.}``
+"""
+
+# ╔═╡ 40940718-bf05-4f6e-8244-7716c77ca10c
+cm"""
+$(bbl("Proposition"," 8.1"))
+For ``m, n \in \mathbb{N}, \boldsymbol{A} \in \mathbb{C}^{m \times n}``, all ``\boldsymbol{x} \in \mathbb{C}^n`` and any consistent matrix norm || ||
+```math
+\|\boldsymbol{A x}\| \leq\|\boldsymbol{A}\|\|\boldsymbol{x}\|,
+```
+i.e., a consistent matrix norm is subordinate to itself. Moreover, the matrix power bound (🌟) holds for all square matrices ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``.
+
+"""
+
+# ╔═╡ 46991e0d-8a9c-487c-a157-72690cf2b489
+cm"""
+$(define("8.6 (Operator Norm)"))
+Let ``\left\|\|\right.`` be a vector norm defined on ``\mathbb{C}^n`` for all ``n \in \mathbb{N}``. For given ``m, n \in \mathbb{N}`` and ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` we define
+```math
+\|\boldsymbol{A}\|:=\max _{\boldsymbol{x} \neq 0} \frac{\|\boldsymbol{A} \boldsymbol{x}\|}{\|\boldsymbol{x}\|} .\tag{🌻}
+```
+
+We call this the __operator norm__ corresponding to the vector norm ``\| \|``.
+"""
+
+# ╔═╡ 89819051-5d7b-47f7-ad1c-94362c4679fe
+cm"""
+$(bbl("Lemma", "8.1 (The Operator Norm Is a Consistent Matrix Norm)")) If ``|| ||`` is vector norm defined on ``\mathbb{C}^n`` for all ``n \in \mathbb{N}``, then the operator norm given by (🌻) is a consistent matrix norm. Moreover, ``\|\boldsymbol{I}\|=1``.
+"""
+
+# ╔═╡ a82fb7fd-861d-4843-8cc6-18a33d9a41b4
+cm"""
+We define for any ``1 \leq p \leq \infty``
+```math
+\|\boldsymbol{A}\|_p:=\max _{\boldsymbol{x} \neq 0} \frac{\|\boldsymbol{A} \boldsymbol{x}\|_p}{\|\boldsymbol{x}\|_p}=\max _{\|\boldsymbol{y}\|_p=1}\|\boldsymbol{A} \boldsymbol{y}\|_p .
+```
+
+$(bth("8.3 (One-Two-Inf-Norms)"))
+For ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` we have
+```math
+\begin{array}{ll}
+\|\boldsymbol{A}\|_1:=\max _{1 \leq j \leq n}\left\|\boldsymbol{A} \boldsymbol{e}_j\right\|_1=\max _{1 \leq j \leq n} \sum_{k=1}^m\left|a_{k, j}\right|, \quad \text { (max column sum) } \\
+\|\boldsymbol{A}\|_2:=\sigma_1, \quad \quad \text { (largest singular value of } \boldsymbol{A} \text { ) } \\
+\|\boldsymbol{A}\|_{\infty}=\max _{1 \leq k \leq m}\left\|\boldsymbol{e}_k^T \boldsymbol{A}\right\|_1=\max _{1 \leq k \leq m} \sum_{j=1}^n\left|a_{k, j}\right| . \quad \quad \text { (max row sum) }
+\end{array}
+```
+ The __two-norm__ ``\|A\|_2`` is also called the __spectral norm__ of ``A``
+"""
+
+# ╔═╡ 01efad8f-6aea-45ee-b084-9b68b35fb61b
+cm"""
+$(ex()) Let 
+```math
+\boldsymbol{A}:=\frac{1}{15}\left[\begin{array}{ccc}14 & 4 & 16 \\ 2 & 22 & 13\end{array}\right].
+```
+Then find (i) ``\|A\|_1``, (ii) ``\|A\|_2``, (iii) ``\|A\|_{\infty}`` and (iv) ``\|A\|_F``.
+"""
+
+# ╔═╡ 2b4ca2be-25dd-4f9c-a2c2-c4845c0f048a
+cm"""
+$(bth("8.4 (Spectral Norm)"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` has singular values ``\sigma_1 \geq \sigma_2 \geq`` ``\cdots \geq \sigma_n`` and eigenvalues ``\left|\lambda_1\right| \geq\left|\lambda_2\right| \geq \cdots \geq\left|\lambda_n\right|``. Then
+```math 
+\begin{array}{lcl}
+\|\boldsymbol{A}\|_2&=&\sigma_1 \quad\text{and}\quad \left\|\boldsymbol{A}^{-1}\right\|_2=\frac{1}{\sigma_n},\\
+\\
+\|\boldsymbol{A}\|_2&=&\lambda_1 \quad\text{and}\quad \left\|\boldsymbol{A}^{-1}\right\|_2=\frac{1}{\lambda_n},\quad  \text{if } \boldsymbol{A} \text{  is positive definite,} \\
+\\
+\|\boldsymbol{A}\|_2&=&\left|\lambda_1\right| \quad\text{and}\quad \left\|\boldsymbol{A}^{-1}\right\|_2=\frac{1}{\left|\lambda_n\right|},\quad \text{if } \boldsymbol{A} \text{  is normal}.
+\end{array}
+```
+For the norms of ``\boldsymbol{A}^{-1}`` we assume that ``\boldsymbol{A}`` is nonsingular.
+"""
+
+# ╔═╡ 56f568bb-f68e-4c92-b1fa-89ed1a422c8a
+cm"""
+$(bth("8.5 (Spectral Norm Bound)"))
+For any ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` we have ``\|\boldsymbol{A}\|_2^2 \leq`` ``\|\boldsymbol{A}\|_1\|\boldsymbol{A}\|_{\infty}``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -5046,6 +5379,8 @@ version = "1.4.1+1"
 # ╟─4bf58173-2848-4256-bc2d-01f0e3136094
 # ╟─8e1f15f2-8273-400d-97a1-86cd7d138a64
 # ╟─e1d0a740-2c6b-4b72-ab3e-0c0fde78ed68
+# ╟─b1b78dd1-112f-42b9-9d40-66123d64feac
+# ╠═5d9e665a-7dd6-42cb-99f8-47ab69256feb
 # ╟─3013da2b-e879-4730-a46f-ab3a94e6cbb8
 # ╠═f4cf76b0-e5f6-4920-93a7-0be1f1041987
 # ╟─57322645-33db-4c87-a5c8-51d69e8e74e9
@@ -5054,6 +5389,34 @@ version = "1.4.1+1"
 # ╟─2a8a27d1-55ff-4471-80c3-28a7c605b97e
 # ╟─6cbcc482-d188-4732-8926-2cae312e2788
 # ╠═394b491d-36b0-48a8-92d0-b2abb1ffdc01
+# ╟─9e6b9683-458c-4796-94b0-590b7325c11b
+# ╟─1ac0a8f6-6803-43bc-bc1e-8ac8d8b3ef1a
+# ╟─56f09d0a-67c5-4109-bde0-b66296986a1c
+# ╟─4f107e76-56a3-4b87-a76b-ec2179b082df
+# ╟─47337c99-d8e1-4488-9959-77963d555e7d
+# ╟─53af53ab-a701-47cc-8979-14d6bef5e074
+# ╟─4a6c39bf-04b0-4758-ba67-8648ed21817a
+# ╟─d72010fc-cd62-4313-a3b2-aea4f5b277c2
+# ╟─17d84f46-a294-4c12-b706-72ebc15a98e0
+# ╠═d595178d-1edf-45d4-b97f-d8c98a8c88a4
+# ╟─4da69a7c-1ece-485d-a353-cb944c900b26
+# ╟─9a9975ef-2ec1-41af-bd6f-0a76756c100b
+# ╟─e291e3fb-3301-44e9-8a54-842ccba1cf20
+# ╟─263b843b-e75c-45a4-98a9-4f9111858ae6
+# ╟─fba0bff1-e7a9-4793-94bd-968cd82fd926
+# ╟─048fc935-3507-496b-b00d-09078784fe06
+# ╟─1a8ed4b8-74ab-4775-b01b-24b637d9288c
+# ╟─40940718-bf05-4f6e-8244-7716c77ca10c
+# ╟─183a420c-cac8-47d1-b9ae-dff435f10858
+# ╟─46991e0d-8a9c-487c-a157-72690cf2b489
+# ╟─89819051-5d7b-47f7-ad1c-94362c4679fe
+# ╟─a1de0642-7ef4-4d4b-ad3b-c2829cda3393
+# ╟─bef48346-8bd5-4f24-9a1e-cc91f52318d1
+# ╟─a82fb7fd-861d-4843-8cc6-18a33d9a41b4
+# ╠═01efad8f-6aea-45ee-b084-9b68b35fb61b
+# ╠═1beb011b-26bf-4718-85b1-c16747e184cd
+# ╟─2b4ca2be-25dd-4f9c-a2c2-c4845c0f048a
+# ╟─56f568bb-f68e-4c92-b1fa-89ed1a422c8a
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
