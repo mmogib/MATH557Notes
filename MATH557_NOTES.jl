@@ -1341,6 +1341,13 @@ md"# Chapter 8: Matrix Norms and Perturbation Theory forLinear Systems"
 # ╔═╡ 1ac0a8f6-6803-43bc-bc1e-8ac8d8b3ef1a
 md"## 8.1 Vector Norms"
 
+# ╔═╡ f613474b-8e87-4c3f-b352-570543e3990c
+let
+	x = [-2;5;4]
+	my_norm(x,p)=sum(map(y->abs(y)^p,x))^(1/p)
+	norm(x,1000)
+end
+
 # ╔═╡ 4a6c39bf-04b0-4758-ba67-8648ed21817a
 md"##  8.2 Matrix Norms"
 
@@ -1366,10 +1373,10 @@ let
 end
 
 # ╔═╡ e291e3fb-3301-44e9-8a54-842ccba1cf20
-md"## Consistent and Subordinate Matrix Norms"
+md"### Consistent and Subordinate Matrix Norms"
 
 # ╔═╡ 183a420c-cac8-47d1-b9ae-dff435f10858
-md"## Operator Norms"
+md"### Operator Norms"
 
 # ╔═╡ a1de0642-7ef4-4d4b-ad3b-c2829cda3393
 cm"""
@@ -1377,7 +1384,7 @@ cm"""
 """
 
 # ╔═╡ bef48346-8bd5-4f24-9a1e-cc91f52318d1
-md"##  The Operator ``p``-Norms"
+md"###  The Operator ``p``-Norms"
 
 # ╔═╡ 1beb011b-26bf-4718-85b1-c16747e184cd
 let
@@ -1386,6 +1393,90 @@ let
 	sum(map(abs,A))
 	sum(map(x->x^2,A))
 	maximum(sum(eachcol(A)))
+end
+
+# ╔═╡ aa8a8293-eeb8-4327-bfe7-c3d131a506fe
+md"###  Unitary Invariant Matrix Norms"
+
+# ╔═╡ b7bd9f6d-8df0-4cd4-b51c-2585da332d4c
+let
+	A = rand(ComplexF64,4,3)
+	B = A'
+	D = rand(ComplexF64,4,3)
+	Q,R = qr(D)
+	U=collect(Q)[1:3,:]
+	V=collect(Q)[2:end,:]
+	norm(V*A*U,2),norm(A,2),norm(collect(Q),2)
+end
+
+# ╔═╡ 5a1b36d2-3065-4fb2-85e3-c5f131f2cd26
+md"### Absolute and Monotone Norms"
+
+# ╔═╡ 7cb3af49-e0c4-4692-9efd-605d53189a54
+md"# 8.3 The Condition Number with Respect to Inversion"
+
+# ╔═╡ ef6598c7-2737-424a-8bbb-51298c9421a0
+cm"""
+- The number ``K(\boldsymbol{A})`` is called the __condition number with respect to inversion of a matrix__, or just the __condition number__ of ``\boldsymbol{A}``, if it is clear from the context that we are talking about inverting a matrix. 
+- The condition number depends on the matrix ``\boldsymbol{A}`` and on the norm used. 
+- If ``K(\boldsymbol{A})`` is large, ``\boldsymbol{A}`` is called __ill-conditioned__ (with respect to inversion). 
+- If ``K(\boldsymbol{A})`` is small, ``\boldsymbol{A}`` is called __well-conditioned__ (with respect to inversion). 
+- We always have ``K(\boldsymbol{A}) \geq 1``. 
+
+For since ``\|\boldsymbol{x}\|=\|\boldsymbol{I} \boldsymbol{x}\| \leq\|\boldsymbol{I}\|\|\boldsymbol{x}\|`` for any ``\boldsymbol{x}`` we have ``\|\boldsymbol{I}\| \geq 1`` and therefore ``\|\boldsymbol{A}\|\left\|\boldsymbol{A}^{-1}\right\| \geq`` ``\left\|\boldsymbol{A} \boldsymbol{A}^{-1}\right\|=\|\boldsymbol{I}\| \geq 1``.
+"""
+
+# ╔═╡ 3a32d50b-75c5-407d-b0c4-2c4866ce7797
+md"# Chapter 9: Least Squares"
+
+# ╔═╡ b3a6b457-b7ff-481f-9192-f421ba34dbf5
+cm"""
+The __normal equations__ are
+```math
+\begin{aligned}
+& \boldsymbol{A}^* \boldsymbol{A} \boldsymbol{x}=\left[\begin{array}{ccc}
+1 & \cdots & 1 \\
+t_1 & \cdots & t_m
+\end{array}\right]\left[\begin{array}{ll}
+1 & t_1 \\
+\vdots \\
+1 & t_m
+\end{array}\right]\left[\begin{array}{l}
+x_1 \\
+x_2
+\end{array}\right]=\left[\begin{array}{cc}
+m & \sum t_k \\
+\sum t_k & \sum t_k^2
+\end{array}\right]\left[\begin{array}{l}
+x_1 \\
+x_2
+\end{array}\right], \\
+& =\left[\begin{array}{ccc}
+1 & \cdots & 1 \\
+t_1 & \cdots & t_m
+\end{array}\right]\left[\begin{array}{c}
+y_1 \\
+\vdots \\
+y_m
+\end{array}\right]=\left[\begin{array}{c}
+\sum y_k \\
+\sum t_k y_k
+\end{array}\right]=\boldsymbol{A}^* \boldsymbol{b},
+\end{aligned}
+```
+"""
+
+# ╔═╡ d21788c6-14d2-4237-b09e-0d869819aaf1
+let
+	t = 1:1.0:4
+	y =[3.1;1.8;1.0;0.1]
+# 	p = scatter(t,y,frame_style=:origin;m=:star,xlims=(-2,6),ylims=(-1,6),annotations=[(6,0.3,L"t"),(0.3,5.7,L"y")])
+
+# 	A =hcat(ones(4),collect(t))
+# 	b = A'*y
+# 	B=A'*A
+# 	x = B\b
+# 	plot(p,t->x[1]+x[2]*t)
 end
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
@@ -3046,6 +3137,136 @@ For the norms of ``\boldsymbol{A}^{-1}`` we assume that ``\boldsymbol{A}`` is no
 cm"""
 $(bth("8.5 (Spectral Norm Bound)"))
 For any ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` we have ``\|\boldsymbol{A}\|_2^2 \leq`` ``\|\boldsymbol{A}\|_1\|\boldsymbol{A}\|_{\infty}``.
+"""
+
+# ╔═╡ bbf4261d-7747-47e4-b69d-1d293c6172c0
+cm"""
+$(define("(Unitary Invariant Norm)"))
+A matrix norm ``\left\|\|\right.`` on ``\mathbb{C}^{m \times n}`` is called unitary invariant if ``\|\boldsymbol{U} \boldsymbol{A} \boldsymbol{V}\|=\|\boldsymbol{A}\|`` for any ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` and any unitary matrices ``\boldsymbol{U} \in \mathbb{C}^{m \times m}`` and ``\boldsymbol{V} \in \mathbb{C}^{n \times n}``.
+"""
+
+# ╔═╡ 076b87bb-261d-4dca-a520-67f760a22d84
+cm"""
+$(bth("8.6 (Unitary Invariant Norms)"))
+The Frobenius norm and the spectral norm are unitary invariant. Moreover,
+```math
+\left\|\boldsymbol{A}^*\right\|_F=\|\boldsymbol{A}\|_F \text { and }\left\|\boldsymbol{A}^*\right\|_2=\|\boldsymbol{A}\|_2 \text {. }
+```
+"""
+
+# ╔═╡ 4cea17b5-b132-4de2-9294-db3ebeccbbd3
+cm"""
+$(define("Absolute Norm"))
+A vector norm on ``\mathbb{C}^n`` is an absolute norm if ``\|\boldsymbol{x}\|=\||\boldsymbol{x}|\|`` for all ``\boldsymbol{x} \in \mathbb{C}^n``. Here ``|\boldsymbol{x}|:=\left[\left|x_1\right|, \ldots,\left|x_n\right|\right]^T``, the absolute values of the components of ``\boldsymbol{x}``. 
+$(ebl())
+
+$(bbl("Remarks",""))
+- The vector ``p`` norms are absolute norms. 
+- A vector norm on ``\mathbb{C}^n`` is an absolute norm if and only if it is a monotone norm, i.e.,
+```math
+\left|x_i\right| \leq\left|y_i\right|, i=1, \ldots, n \Longrightarrow\|\boldsymbol{x}\| \leq\|\boldsymbol{y}\| \text {, for all } \boldsymbol{x}, \boldsymbol{y} \in \mathbb{C}^n \text {. }
+```
+"""
+
+# ╔═╡ 34328fe5-caf3-441c-8957-0190ecc62170
+cm"""
+$(bth("8.7 (Perturbation in the Right-Hand Side)"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is nonsingular, ``\boldsymbol{b}, \boldsymbol{e} \in \mathbb{C}^n, \boldsymbol{b} \neq \mathbf{0}`` and ``\boldsymbol{A x}=\boldsymbol{b}, \boldsymbol{A} \boldsymbol{y}=\boldsymbol{b}+\boldsymbol{e}``. Then
+```math
+\frac{1}{K(\boldsymbol{A})} \frac{\|\boldsymbol{e}\|}{\|\boldsymbol{b}\|} \leq \frac{\|\boldsymbol{y}-\boldsymbol{x}\|}{\|\boldsymbol{x}\|} \leq K(\boldsymbol{A}) \frac{\|\boldsymbol{e}\|}{\|\boldsymbol{b}\|},
+```
+where ``K(\boldsymbol{A})=\|\boldsymbol{A}\|\left\|\boldsymbol{A}^{-1}\right\|`` is the __condition number of ``\boldsymbol{A}``__.
+"""
+
+# ╔═╡ 17f6efeb-ccbb-4aa0-bf02-056195f91604
+cm"""
+$(bth("8.8 (Perturbation and Residual)"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}, \boldsymbol{b} \in \mathbb{C}^n``, ``\boldsymbol{A}`` is nonsingular and ``\boldsymbol{b} \neq \mathbf{0}``. Let ``\boldsymbol{r}(\boldsymbol{y})=\boldsymbol{A} \boldsymbol{y}-\boldsymbol{b}`` for ``\boldsymbol{y} \in \mathbb{C}^n``. If ``\boldsymbol{A} \boldsymbol{x}=\boldsymbol{b}`` then
+```math
+\frac{1}{K(\boldsymbol{A})} \frac{\|\boldsymbol{r}(\boldsymbol{y})\|}{\|\boldsymbol{b}\|} \leq \frac{\|\boldsymbol{y}-\boldsymbol{x}\|}{\|\boldsymbol{x}\|} \leq K(\boldsymbol{A}) \frac{\|\boldsymbol{r}(\boldsymbol{y})\|}{\|\boldsymbol{b}\|} .
+```
+"""
+
+# ╔═╡ 9ee3d314-acee-4646-8139-6fd1706e7292
+cm"""
+$(bth("8.9 (Perturbation in Matrix)"))
+Suppose ``\boldsymbol{A}, \boldsymbol{E} \in \mathbb{C}^{n \times n}, \boldsymbol{b} \in \mathbb{C}^n`` with ``\boldsymbol{A}`` nonsingular and ``\boldsymbol{b} \neq \mathbf{0}``. If ``r:=\left\|\boldsymbol{A}^{-1} \boldsymbol{E}\right\|<1`` then ``\boldsymbol{A}+\boldsymbol{E}`` is nonsingular. If ``\boldsymbol{A} \boldsymbol{x}=\boldsymbol{b}`` and ``(\boldsymbol{A}+\boldsymbol{E}) \boldsymbol{y}=\boldsymbol{b}`` then
+```math
+\begin{aligned}
+& \frac{\|\boldsymbol{y}-\boldsymbol{x}\|}{\|\boldsymbol{y}\|} \leq r \leq K(\boldsymbol{A}) \frac{\|\boldsymbol{E}\|}{\|\boldsymbol{A}\|} \\
+& \frac{\|\boldsymbol{y}-\boldsymbol{x}\|}{\|\boldsymbol{x}\|} \leq \frac{r}{1-r} \leq \frac{K(\boldsymbol{A})}{1-r} \frac{\|\boldsymbol{E}\|}{\|\boldsymbol{A}\|}
+\end{aligned}
+```
+"""
+
+# ╔═╡ de24c4e8-65c8-4952-a87f-5196ef74891a
+cm"""
+$(bth("8.10 (Spectral Condition Number)"))
+Suppose ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` is nonsingular with singular values ``\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_n>0`` and eigenvalues ``\left|\lambda_1\right| \geq\left|\lambda_2\right| \geq \cdots \geq`` ``\left|\lambda_n\right|>0``. Then
+```math
+K_2(\boldsymbol{A})= \begin{cases}\lambda_1 / \lambda_n, & \text { if } \boldsymbol{A} \text { is positive definite }, \\ \left|\lambda_1\right| /\left|\lambda_n\right|, & \text { if } \boldsymbol{A} \text { is normal }, \\ \sigma_1 / \sigma_n, & \text { in general. }\end{cases}
+```
+"""
+
+# ╔═╡ db507c85-6847-4e29-aaf5-7314b22abe2d
+cm"""
+$(define("9.1 (Least Squares Problem (LSQ))"))
+Suppose ``m, n \in \mathbb{N}, \boldsymbol{A} \in \mathbb{C}^{m \times n}`` and ``\boldsymbol{b} \in \mathbb{C}^m``. To find ``\boldsymbol{x} \in \mathbb{C}^n`` that minimizes ``E: \mathbb{C}^n \rightarrow \mathbb{R}`` given by
+```math
+E(\boldsymbol{x}):=\|\boldsymbol{A} \boldsymbol{x}-\boldsymbol{b}\|_2^2,
+```
+is called the __least squares problem__. A minimizer ``\boldsymbol{x}`` is called a __least squares solution__.
+"""
+
+# ╔═╡ 083fd2fa-582a-414f-87b3-012a3509a049
+cm"""
+We show the following results, valid for any ``m, n \in \mathbb{N}, \boldsymbol{A} \in \mathbb{C}^{m \times n}`` and ``\boldsymbol{b} \in \mathbb{C}^n``.
+
+$(bth("9.1 (Existence)")) The least squares problem always has a solution.
+$(ebl())
+
+$(bth("9.2 (Uniqueness)")) The solution of the least squares problem is unique if and only if ``\boldsymbol{A}`` has linearly independent columns.
+$(ebl())
+
+$(bth("9.3 (Characterization)"))
+``\boldsymbol{x} \in \mathbb{C}^n`` is a solution of the least squares problem if and only if ``\boldsymbol{A}^* \boldsymbol{A x}=\boldsymbol{A}^* \boldsymbol{b}``.
+$(ebl())
+"""
+
+# ╔═╡ 71ea919d-fcf1-4282-8d71-2888406d31d0
+cm"""
+$(bbl("Example 9.2", "(Linear Regression)"))
+We want to fit a straight line ``p(t)=x_1+x_2 t`` to ``m \geq 2`` given data ``\left(t_k, y_k\right) \in \mathbb{R}^2, k=1, \ldots, m``. This is part of the linear regression process in statistics. We obtain the linear system
+```math
+\boldsymbol{A} \boldsymbol{x}=\left[\begin{array}{c}
+p\left(t_1\right) \\
+\vdots \\
+p\left(t_m\right)
+\end{array}\right]=\left[\begin{array}{ll}
+1 & t_1 \\
+\vdots \\
+1 & t_m
+\end{array}\right]\left[\begin{array}{l}
+x_1 \\
+x_2
+\end{array}\right]=\left[\begin{array}{c}
+y_1 \\
+\vdots \\
+y_m
+\end{array}\right]=\boldsymbol{b}
+```
+"""
+
+# ╔═╡ bdce2e27-5fe4-47cc-b27e-7cfc2e320a45
+cm"""
+$(ex())
+Give the data,
+
+| ``t`` | ``1.0`` | ``2.0`` | ``3.0`` | ``4.0`` |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| y | 3.1 |  1.8 | 1.0 |  0.1 |
+
+Find the __least squares line__ (Linear Regression)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -5394,6 +5615,7 @@ version = "1.4.1+1"
 # ╟─56f09d0a-67c5-4109-bde0-b66296986a1c
 # ╟─4f107e76-56a3-4b87-a76b-ec2179b082df
 # ╟─47337c99-d8e1-4488-9959-77963d555e7d
+# ╠═f613474b-8e87-4c3f-b352-570543e3990c
 # ╟─53af53ab-a701-47cc-8979-14d6bef5e074
 # ╟─4a6c39bf-04b0-4758-ba67-8648ed21817a
 # ╟─d72010fc-cd62-4313-a3b2-aea4f5b277c2
@@ -5413,10 +5635,29 @@ version = "1.4.1+1"
 # ╟─a1de0642-7ef4-4d4b-ad3b-c2829cda3393
 # ╟─bef48346-8bd5-4f24-9a1e-cc91f52318d1
 # ╟─a82fb7fd-861d-4843-8cc6-18a33d9a41b4
-# ╠═01efad8f-6aea-45ee-b084-9b68b35fb61b
+# ╟─01efad8f-6aea-45ee-b084-9b68b35fb61b
 # ╠═1beb011b-26bf-4718-85b1-c16747e184cd
 # ╟─2b4ca2be-25dd-4f9c-a2c2-c4845c0f048a
 # ╟─56f568bb-f68e-4c92-b1fa-89ed1a422c8a
+# ╟─aa8a8293-eeb8-4327-bfe7-c3d131a506fe
+# ╟─bbf4261d-7747-47e4-b69d-1d293c6172c0
+# ╟─076b87bb-261d-4dca-a520-67f760a22d84
+# ╠═b7bd9f6d-8df0-4cd4-b51c-2585da332d4c
+# ╟─5a1b36d2-3065-4fb2-85e3-c5f131f2cd26
+# ╟─4cea17b5-b132-4de2-9294-db3ebeccbbd3
+# ╟─7cb3af49-e0c4-4692-9efd-605d53189a54
+# ╟─34328fe5-caf3-441c-8957-0190ecc62170
+# ╟─ef6598c7-2737-424a-8bbb-51298c9421a0
+# ╟─17f6efeb-ccbb-4aa0-bf02-056195f91604
+# ╟─9ee3d314-acee-4646-8139-6fd1706e7292
+# ╟─de24c4e8-65c8-4952-a87f-5196ef74891a
+# ╟─3a32d50b-75c5-407d-b0c4-2c4866ce7797
+# ╟─db507c85-6847-4e29-aaf5-7314b22abe2d
+# ╟─083fd2fa-582a-414f-87b3-012a3509a049
+# ╟─71ea919d-fcf1-4282-8d71-2888406d31d0
+# ╟─b3a6b457-b7ff-481f-9192-f421ba34dbf5
+# ╟─bdce2e27-5fe4-47cc-b27e-7cfc2e320a45
+# ╠═d21788c6-14d2-4237-b09e-0d869819aaf1
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
