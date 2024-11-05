@@ -1372,6 +1372,9 @@ let
 	
 end
 
+# ╔═╡ ba7cc1b5-e6bd-4b8b-adac-fa1636927d5e
+
+
 # ╔═╡ e291e3fb-3301-44e9-8a54-842ccba1cf20
 md"### Consistent and Subordinate Matrix Norms"
 
@@ -1413,7 +1416,7 @@ end
 md"### Absolute and Monotone Norms"
 
 # ╔═╡ 7cb3af49-e0c4-4692-9efd-605d53189a54
-md"# 8.3 The Condition Number with Respect to Inversion"
+md"## 8.3 The Condition Number with Respect to Inversion"
 
 # ╔═╡ ef6598c7-2737-424a-8bbb-51298c9421a0
 cm"""
@@ -1478,6 +1481,22 @@ let
 # 	x = B\b
 # 	plot(p,t->x[1]+x[2]*t)
 end
+
+# ╔═╡ 249f483c-30ba-4ed3-9497-f774646999fc
+md"## 9.3 Numerical Solution"
+
+# ╔═╡ 4ec999bf-a88f-40c8-92d6-0d578084ab5d
+cm"""
+Assume that ``m \geq n, \boldsymbol{A} \in \mathbb{C}^{m \times n}, \boldsymbol{b} \in \mathbb{C}^m``
+
+__Numerical Methods:__
+1. Normal Equations
+2. ``QR`` factorization
+3. ``SVD`` factorization
+"""
+
+# ╔═╡ 67977543-3768-478f-b09f-a176a80f3f24
+md"### Normal Equations"
 
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
@@ -5622,6 +5641,7 @@ version = "1.4.1+1"
 # ╟─17d84f46-a294-4c12-b706-72ebc15a98e0
 # ╠═d595178d-1edf-45d4-b97f-d8c98a8c88a4
 # ╟─4da69a7c-1ece-485d-a353-cb944c900b26
+# ╠═ba7cc1b5-e6bd-4b8b-adac-fa1636927d5e
 # ╟─9a9975ef-2ec1-41af-bd6f-0a76756c100b
 # ╟─e291e3fb-3301-44e9-8a54-842ccba1cf20
 # ╟─263b843b-e75c-45a4-98a9-4f9111858ae6
@@ -5658,6 +5678,9 @@ version = "1.4.1+1"
 # ╟─b3a6b457-b7ff-481f-9192-f421ba34dbf5
 # ╟─bdce2e27-5fe4-47cc-b27e-7cfc2e320a45
 # ╠═d21788c6-14d2-4237-b09e-0d869819aaf1
+# ╟─249f483c-30ba-4ed3-9497-f774646999fc
+# ╟─4ec999bf-a88f-40c8-92d6-0d578084ab5d
+# ╟─67977543-3768-478f-b09f-a176a80f3f24
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
