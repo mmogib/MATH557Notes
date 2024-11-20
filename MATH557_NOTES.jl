@@ -970,8 +970,15 @@ let
 	x2 = (bb[2]-R[2,3]*x3)/R[2,2]
 	x1 = (bb[1]-R[1,3]*x3-R[1,2]*x2)/R[1,1]
 	A*[x1;x2;x3]-b
-	x1,x2,x3
-	A\b
+	[x1,x2,x3],A\b
+end
+
+# ╔═╡ 3e8a3007-5161-40f5-bf7d-47d8aeecb1aa
+let
+	Au = [3 1 -1  14 
+	 1 -2 5   -7 
+	 4  1 2  17.0]
+	R,C = housetriang(Au)
 end
 
 # ╔═╡ 7ea5927a-81bb-404a-aa62-67bce4e00313
@@ -1473,13 +1480,13 @@ y_m
 let
 	t = 1:1.0:4
 	y =[3.1;1.8;1.0;0.1]
-# 	p = scatter(t,y,frame_style=:origin;m=:star,xlims=(-2,6),ylims=(-1,6),annotations=[(6,0.3,L"t"),(0.3,5.7,L"y")])
+	p = scatter(t,y,frame_style=:origin;m=:star,xlims=(-2,6),ylims=(-1,6),annotations=[(6,0.3,L"t"),(0.3,5.7,L"y")])
 
-# 	A =hcat(ones(4),collect(t))
-# 	b = A'*y
-# 	B=A'*A
-# 	x = B\b
-# 	plot(p,t->x[1]+x[2]*t)
+	A =hcat(ones(4),collect(t))
+	b = A'*y
+	B=A'*A
+	x = B\b
+	plot(p,t->x[1]+x[2]*t)
 end
 
 # ╔═╡ 249f483c-30ba-4ed3-9497-f774646999fc
@@ -1498,8 +1505,88 @@ __Numerical Methods:__
 # ╔═╡ 67977543-3768-478f-b09f-a176a80f3f24
 md"### Normal Equations"
 
+# ╔═╡ f29b912a-7080-47f4-93cf-239a692bf337
+cm"""
+Assume ``\text{rank}(A) = n`` , then ``B = A^*A`` is positive definite.
+
+- Solve using Cholesky factorization.
+
+We calculate the inner product in ``A^*A`` in two ways
+1. __inner product__: 
+```math 
+\left(\boldsymbol{A}^* \boldsymbol{A}\right)_{i, j}=\sum_{k=1}^m \bar{a}_{k, i} a_{k, j}, i, j=1, \ldots, n,\quad \left(\boldsymbol{A}^* \boldsymbol{b}\right)_i=\sum_{k=1}^m \bar{a}_{k, i} b_k, i=1, \ldots, n,
+```   
+2. __outer product__: 
+```math
+\boldsymbol{A}^* \boldsymbol{A}=\sum_{k=1}^m\left[\begin{array}{c}\bar{a}_{k, 1} \\ \vdots \\ \bar{a}_{k, n}\end{array}\right]\left[a_{k 1} \cdots a_{k n}\right],\quad \boldsymbol{A}^* \boldsymbol{b}=\sum_{k=1}^m\left[\begin{array}{c}\bar{a}_{k, 1} \\ \vdots \\ \bar{a}_{k, n}\end{array}\right] b_k.
+```
+- The __outer product__ form is suitable for large problems since it uses only one pass through the data importing one row of ``\boldsymbol{A}`` at a time from some separate storage.
+
+
+"""
+
+# ╔═╡ ceaf76d6-d5ee-4334-a3d8-88373f5f0f31
+md"### QR Factorization"
+
+# ╔═╡ fb1e4d9c-cae8-4a42-b218-00f157ba7b60
+cm"""
+Suppose ``\boldsymbol{A}=\boldsymbol{Q}_1 \boldsymbol{R}_1``, then
+```math
+\boldsymbol{A}^* \boldsymbol{A}=\boldsymbol{R}_1^* \boldsymbol{Q}_1^* \boldsymbol{Q}_1 \boldsymbol{R}_1=\boldsymbol{R}_1^* \boldsymbol{R}_1, \quad \boldsymbol{A}^* \boldsymbol{b}=\boldsymbol{R}_1^* \boldsymbol{Q}_1^* \boldsymbol{b} .
+```
+Since ``\boldsymbol{A}`` has rank ``n`` the matrix ``\boldsymbol{R}_1^*`` is nonsingular and can be canceled. Thus
+```math
+A^* A \boldsymbol{x}=\boldsymbol{A}^* \boldsymbol{b} \Longrightarrow \boldsymbol{R}_1 \boldsymbol{x}=\boldsymbol{c}_1, \quad \boldsymbol{c}_1:=\boldsymbol{Q}_1^* \boldsymbol{b} .
+```
+"""
+
 # ╔═╡ 85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
 TableOfContents(title="📚 MATH557: Applied Linear Algebra", indent=true,depth=4)
+
+# ╔═╡ 6449b443-e4e4-40d9-aefc-a98d0dd65cea
+let
+	x= [3;3;-1;-1] 
+	y= [1;7;-4;2] 
+	A = [ones(4) x y]
+	b =ones(4)
+	Q, R = qr(A)
+	Q=collect(Q)
+	Q1 = Q[:,1:3]
+	# R1*x = Q1^*b
+	x = R\Q1'*b
+	# x = [1, 0, 0]
+	# A\b
+end
+
+# ╔═╡ a0c5f1c5-4230-4630-8b4a-5515e7c49ebe
+md"###  Singular Value Decomposition, Generalized Inverses and  Least Squares"
+
+# ╔═╡ 4a35b5c1-086f-4103-b8db-98886ddbbf9d
+cm"""
+The matrix ``\boldsymbol{A}^{\dagger}`` is called the generalized inverse of ``\boldsymbol{A}``. We note that
+1. If ``\boldsymbol{A}`` is square and nonsingular then ``\boldsymbol{A}^{-1}`` satisfies (👽) so that ``\boldsymbol{A}^{-1}=\boldsymbol{A}^{\dagger}``. Indeed, ``\boldsymbol{A}^{-1} \boldsymbol{A}=\boldsymbol{A} \boldsymbol{A}^{-1}=\boldsymbol{I}`` implies that ``\boldsymbol{A}^{-1} \boldsymbol{A}`` and ``\boldsymbol{A} \boldsymbol{A}^{-1}`` are Hermitian. Moreover, ``\boldsymbol{A} \boldsymbol{A}^{-1} \boldsymbol{A}=\boldsymbol{A}, \boldsymbol{A}^{-1} \boldsymbol{A} \boldsymbol{A}^{-1}=\boldsymbol{A}^{-1}``. By uniqueness ``\boldsymbol{A}^{-1}=\boldsymbol{A}^{\dagger}``.
+2. We show in Exercise 9.7 that if ``\boldsymbol{A}`` has linearly independent columns then
+```math
+\boldsymbol{A}^{\dagger}=\left(\boldsymbol{A}^* \boldsymbol{A}\right)^{-1} \boldsymbol{A}^*
+```
+"""
+
+# ╔═╡ b84719e4-902e-4c13-a146-74c19c28ca5e
+let
+	x= [3;3;-1;-1] 
+	y= [1;7;-4;2] 
+	A = [ones(4) x y]
+	b=ones(4)
+	# x = A\b # x = [1;0;0]
+	U,s,V = svd(A,full=true)
+	S = [Diagonal(s);zeros(1,3)]
+	S1 =S[1:3,:]
+	U1=U[:,1:3]
+	V1=V
+	S1inv=Diagonal(1 ./s)
+	Ap=V1*S1inv*U1'
+	x = Ap*b
+end
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
@@ -3286,6 +3373,68 @@ Give the data,
 | y | 3.1 |  1.8 | 1.0 |  0.1 |
 
 Find the __least squares line__ (Linear Regression)
+"""
+
+# ╔═╡ 4e890dc7-db6a-4213-ac44-a2bb80e542c6
+cm"""
+$(bth("(Spectral Condition Number)"))
+of ``\boldsymbol{A}^* \boldsymbol{A}`` 
+
+Suppose ``1 \leq n \leq m`` and that ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` has linearly independent columns. Then
+```math
+K_2\left(\boldsymbol{A}^* \boldsymbol{A}\right):=\left\|\boldsymbol{A}^* \boldsymbol{A}\right\|_2\left\|\left(\boldsymbol{A}^* \boldsymbol{A}\right)^{-1}\right\|_2=\frac{\lambda_1}{\lambda_n}=\frac{\sigma_1^2}{\sigma_n^2}=K_2(\boldsymbol{A})^2,
+```
+where ``\lambda_1 \geq \cdots \geq \lambda_n>0`` are the eigenvalues of ``\boldsymbol{A}^* \boldsymbol{A}``, and ``\sigma_1 \geq \cdots \geq \sigma_n>0`` are the singular values of ``\boldsymbol{A}``.
+
+Proof Since ``\boldsymbol{A}^* \boldsymbol{A}`` is Hermitian it follows from Theorem 8.10 that ``K_2(\boldsymbol{A})=\frac{\sigma_1}{\sigma_n}`` and ``K_2\left(\boldsymbol{A}^* \boldsymbol{A}\right)=\frac{\lambda_1}{\lambda_n}``. But ``\lambda_i=\sigma_i^2`` by Theorem 7.2 and the proof is complete.
+"""
+
+# ╔═╡ 7ad74395-20ad-4d02-92a9-788790382fa4
+cm"""
+$(ex())
+Solve ``Ax=b`` where
+```math
+\boldsymbol{A}=\left[\begin{array}{rrr}1 & 3 & 1 \\ 1 & 3 & 7 \\ 1 & -1 & -4 \\ 1 & -1 & 2\end{array}\right] \quad \text{and}\quad \boldsymbol{b}=\left[\begin{array}{l}1 \\ 1 \\ 1 \\ 1\end{array}\right]
+```
+
+"""
+
+# ╔═╡ 1b72137a-1d39-49bc-9d2f-8d60262dccb1
+cm"""
+$(bth("(The Generalized Inverse)"))
+For any ``m, n \in \mathbb{N}`` and any ``\boldsymbol{A} \in \mathbb{C}^{m \times n}`` there is a unique matrix ``\boldsymbol{A}^{\dagger} \in \mathbb{C}^{n \times m}`` such that
+```math
+\boldsymbol{A} \boldsymbol{A}^{\dagger} \boldsymbol{A}=\boldsymbol{A}, \boldsymbol{A}^{\dagger} \boldsymbol{A} \boldsymbol{A}^{\dagger}=\boldsymbol{A}^{\dagger},\left(\boldsymbol{A}^{\dagger} \boldsymbol{A}\right)^*=\boldsymbol{A}^{\dagger} \boldsymbol{A},\left(\boldsymbol{A} \boldsymbol{A}^{\dagger}\right)^*=\boldsymbol{A} \boldsymbol{A}^{\dagger}\tag{👽}
+```
+
+If ``\boldsymbol{U}_1 \boldsymbol{\Sigma}_1 \boldsymbol{V}_1^*`` is a singular value factorization of ``\boldsymbol{A}`` then
+```math
+\boldsymbol{A}^{\dagger}=\boldsymbol{V}_1 \boldsymbol{\Sigma}_1^{-1} \boldsymbol{U}_1^*
+```
+"""
+
+# ╔═╡ 2a6ad2c4-16f2-4a3c-9bf8-b198fe560626
+cm"""
+$(bth("(Orthogonal Projections)"))
+Given ``m, n \in \mathbb{N}, \boldsymbol{A} \in \mathbb{C}^{m \times n}`` of rank ``r``, and let ``\mathcal{S}`` be one of the subspaces ``\mathcal{R}(\boldsymbol{A}), \mathcal{N}\left(\boldsymbol{A}^*\right)``. The orthogonal projection of ``\boldsymbol{v} \in \mathbb{C}^m`` into ``\mathcal{S}`` can be written as a matrix ``\boldsymbol{P}_{\mathcal{S}}`` times the vector ``\boldsymbol{v}`` in the form ``\boldsymbol{P}_{\mathcal{S}} \boldsymbol{v}``, where
+```math
+\begin{gathered}
+\boldsymbol{P}_{\mathcal{R}(\boldsymbol{A})}=\boldsymbol{A} \boldsymbol{A}^{\dagger}=\boldsymbol{U}_1 \boldsymbol{U}_1^*=\sum_{j=1}^r \boldsymbol{u}_j \boldsymbol{u}_j^* \in \mathbb{C}^{m \times m} \\
+\boldsymbol{P}_{\mathcal{N}\left(\boldsymbol{A}^*\right)}=\boldsymbol{I}-\boldsymbol{A} \boldsymbol{A}^{\dagger}=\boldsymbol{U}_2 \boldsymbol{U}_2^*=\sum_{j=r+1}^m \boldsymbol{u}_j \boldsymbol{u}_j^* \in \mathbb{C}^{m \times m} .
+\end{gathered}
+```
+where ``\boldsymbol{A}^{\dagger}`` is the generalized inverse of ``\boldsymbol{A}``, and ``\boldsymbol{A}=\boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^* \in \mathbb{C}^{m \times n}`` is a singular value decomposition of ``\boldsymbol{A}(c f``. (9.7)).
+"""
+
+# ╔═╡ 16ff57d8-3c79-4442-80f0-f8a43a949649
+cm"""
+$(bbl("Collary","(LSQ Characterization Using Generalized Inverse)")) ``\boldsymbol{x} \in \mathbb{C}^n`` solves the least squares problem ``\min _x\|\boldsymbol{A x}-b\|_2^2`` if and only if ``\boldsymbol{x}=\boldsymbol{A}^{\dagger} \boldsymbol{b}+\boldsymbol{z}``, where ``\boldsymbol{A}^{\dagger}`` is the generalized inverse of ``\boldsymbol{A}`` and ``\boldsymbol{z} \in \mathcal{N}(\boldsymbol{A})``.
+"""
+
+# ╔═╡ 04a47b4d-9a14-4225-a907-a63ac6ee70d6
+cm"""
+$(bth("(Minimal Norm Solution)"))
+The least squares solution with minimal Euclidian norm is ``\boldsymbol{x}=\boldsymbol{A}^{\dagger} \boldsymbol{b}`` corresponding to ``\boldsymbol{z}=\mathbf{0}``.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -5567,6 +5716,7 @@ version = "1.4.1+1"
 # ╠═f79e868a-5ed7-4439-ac3c-9229f64360d2
 # ╟─04b6d34a-7a30-4337-a862-a84f17680ac6
 # ╠═3ba9e235-869c-4011-afeb-c09385260140
+# ╠═3e8a3007-5161-40f5-bf7d-47d8aeecb1aa
 # ╟─7ea5927a-81bb-404a-aa62-67bce4e00313
 # ╟─211f7f09-31f4-44d5-8e8f-6bb5a2920ae7
 # ╟─188ddb61-6cba-4485-83a0-ff37870cebed
@@ -5681,7 +5831,20 @@ version = "1.4.1+1"
 # ╟─249f483c-30ba-4ed3-9497-f774646999fc
 # ╟─4ec999bf-a88f-40c8-92d6-0d578084ab5d
 # ╟─67977543-3768-478f-b09f-a176a80f3f24
+# ╟─f29b912a-7080-47f4-93cf-239a692bf337
+# ╟─4e890dc7-db6a-4213-ac44-a2bb80e542c6
+# ╟─ceaf76d6-d5ee-4334-a3d8-88373f5f0f31
+# ╟─fb1e4d9c-cae8-4a42-b218-00f157ba7b60
 # ╟─85794fff-8d0d-4ca3-bf94-b2aead8c9dd3
+# ╟─7ad74395-20ad-4d02-92a9-788790382fa4
+# ╠═6449b443-e4e4-40d9-aefc-a98d0dd65cea
+# ╟─a0c5f1c5-4230-4630-8b4a-5515e7c49ebe
+# ╟─1b72137a-1d39-49bc-9d2f-8d60262dccb1
+# ╟─4a35b5c1-086f-4103-b8db-98886ddbbf9d
+# ╟─2a6ad2c4-16f2-4a3c-9bf8-b198fe560626
+# ╟─16ff57d8-3c79-4442-80f0-f8a43a949649
+# ╟─04a47b4d-9a14-4225-a907-a63ac6ee70d6
+# ╠═b84719e4-902e-4c13-a146-74c19c28ca5e
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
