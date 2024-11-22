@@ -1588,6 +1588,334 @@ let
 	x = Ap*b
 end
 
+# ╔═╡ e61790b0-ca31-44f8-bc2b-2bf610966400
+md"# Chapter 12: The Classical Iterative Methods"
+
+# ╔═╡ 9c266479-0995-4f72-9942-0941bb0938fd
+md"""
+Suppose $\boldsymbol{A} \in \mathbb{C}^{n \times n}$ is nonsingular and $\boldsymbol{b} \in \mathbb{C}^n$.
+"""
+
+# ╔═╡ 1557cf00-e2db-49df-b1b7-07b83ff6e214
+md"## Component Form"
+
+# ╔═╡ 0edaff9d-8630-435d-b2c5-4afea2ad7e5f
+md"""
+
+ 
+
+Let $\boldsymbol{x}_k=\left[\boldsymbol{x}_k(1), \ldots, \boldsymbol{x}_k(n)\right]^T$ be an approximation to the exact solution $\boldsymbol{x}$ of $\boldsymbol{A x}=\boldsymbol{b}$. 
+
+We need to assume that the rows are ordered so that $\boldsymbol{A}$ has nonzero
+
+1. __Jacobi's method ( $\mathbf{J}$ method)__ 
+
+
+$\boldsymbol{x}_{k+1}(i)=\left(-\sum_{j=1}^{i-1} a_{i j} \boldsymbol{x}_k(j)-\sum_{j=i+1}^n a_{i j} \boldsymbol{x}_k(j)+b_i\right) / a_{i i}, \text { for } i=1,2, \ldots, n$
+
+2. __Gauss-Seidel's method (GS method)__ is a modification of Jacobi's method, where we use the new $\boldsymbol{x}_{k+1}(i)$ immediately after it has been computed.
+
+$\boldsymbol{x}_{k+1}(i)=\left(-\sum_{j=1}^{i-1} a_{i j} \boldsymbol{x}_{k+1}(j)-\sum_{j=i+1}^n a_{i j} \boldsymbol{x}_k(j)+b_i\right) / a_{i i}, \text { for } i=1,2, \ldots, n$
+
+3. __The Successive overrelaxation method (SOR method)__ is obtained by introducing an acceleration parameter $0<\omega<2$ in the GS method. We write $\boldsymbol{x}(i)=\omega \boldsymbol{x}(i)+(1-\omega) \boldsymbol{x}(i)$ and this leads to the method
+$\boldsymbol{x}_{k+1}(i)=\omega\left(-\sum_{j=1}^{i-1} a_{i j} \boldsymbol{x}_{k+1}(j)-\sum_{j=i+1}^n a_{i j} \boldsymbol{x}_k(j)+b_i\right) / a_{i i}+(1-\omega) \boldsymbol{x}_k(i)$
+
+we can write this as
+
+$\boldsymbol{x}_{k+1}=\omega \boldsymbol{x}^{gs}_{k+1} +(1-\omega) \boldsymbol{x}_k$
+
+4. __The symmetric successive overrelaxation method SSOR__: Two SOR sweeps
+
+- __Forward Sweep__
+$\boldsymbol{x}_{k+1/2}=\omega \boldsymbol{x}^{gs}_{k+1} +(1-\omega) \boldsymbol{x}_k$
+
+- __Backward Sweep__ For $i=n, n-1, ...,1$
+$\small\boldsymbol{x}_{k+1}(i)=\omega\left(-\sum_{j=1}^{i-1} a_{i j} \boldsymbol{x}_{k+1/2}(j)-\sum_{j=i+1}^n a_{i j} \boldsymbol{x}_{k+1}(j)+b_i\right) / a_{i i}+(1-\omega) \boldsymbol{x}_{k+1/2}(i)$
+"""
+
+# ╔═╡ 3134e281-e748-4637-b182-97d27a14955f
+md"## Matrix-Form"
+
+# ╔═╡ d09b1a7b-90fd-46aa-88b9-954dd01d8043
+cm"""
+We write ``\boldsymbol{A x}=\boldsymbol{b}`` in the equivalent form
+```math
+M x=(M-A) x+b .
+```
+where 
+- ``\boldsymbol{M}`` is nonsingular matrix 
+- The matrix ``\boldsymbol{M}`` is known as a splitting matrix.
+
+The corresponding iterative method is given by
+```math
+\boldsymbol{M} \boldsymbol{x}_{k+1}=(\boldsymbol{M}-\boldsymbol{A}) \boldsymbol{x}_k+\boldsymbol{b}
+```
+or
+```math
+\boldsymbol{x}_{k+1}:=\boldsymbol{G} \boldsymbol{x}_k+\boldsymbol{c}, \quad \boldsymbol{G}=\boldsymbol{I}-\boldsymbol{M}^{-1} \boldsymbol{A}, \quad, \boldsymbol{c}=\boldsymbol{M}^{-1} b .
+```
+
+- This is known as a __fixed-point iteration__. 
+- The matrix ``\boldsymbol{M}`` can also be interpreted as a preconditioning matrix and is chosen to reduce the condition number of ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ 1de083fd-d518-4c98-b27a-54ff74b6eb25
+md"### The Splitting Matrices for the Classical Methods"
+
+# ╔═╡ a387c180-f6ef-4399-8df3-35c72e2330e2
+cm"""
+```math
+A=D-A_L-A_R,
+```
+where 
+```math
+\boldsymbol{A}_{\boldsymbol{L}}:=\left[\begin{array}{ccc}0 & & \\ -a_{2,1} & 0 & \\ \vdots & \ddots & \ddots \\ -a_{n, 1} & \cdots & -a_{n, n-1}\end{array}\right], \quad \boldsymbol{A}_{\boldsymbol{R}}:=\left[\begin{array}{ccc}0-a_{1,2} & \cdots & -a_{1, n} \\ \ddots & \ddots & \vdots \\ & 0 & -a_{n-1, n} \\ & & 0\end{array}\right].
+```
+and 
+```math
+\boldsymbol{D}:=\operatorname{diag}\left(a_{11}, \ldots, a_{n n}\right)
+```
+
+"""
+
+# ╔═╡ 3932efd6-8805-4b31-a724-0c45685fdb6f
+# J method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	
+	for k=1:10
+		for i in 1:n
+			xk[i] =(sum(-A[i,j]*x0[j] for j in 1:n if i!=j)+b[i])/A[i,i]
+		end
+		x0=copy(xk)
+	end
+	xk
+end
+
+# ╔═╡ 315db979-0472-45eb-a20a-9964821809f3
+# J method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	D = Diagonal(diag(A))
+	Al=-tril(A,-1)
+	Au=-triu(A,1)
+	Minv = inv(D)
+	G =(I-Minv*A)
+	c =Minv*b
+	for k=1:10
+		xk=G*x0 + c
+		x0=copy(xk)
+	end
+	xk
+	# E = eigen(G)
+	# maximum(abs.(E.values))
+end
+
+# ╔═╡ 279aea14-a829-4528-a7f6-d84eda6891ed
+# GS method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	
+	for k=1:5
+		for i in 1:n
+			s1 = if i==1 
+				0 
+			else 
+				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+			end
+			s2 = if i==n 
+				0 
+			else 
+				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
+			end
+			xk[i] =(s1+s2+b[i])/A[i,i]
+		end
+		x0=copy(xk)
+	end
+	xk
+end
+
+# ╔═╡ 87a8de33-2a99-4340-ad36-3d39abcc4de3
+# GS method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	D = Diagonal(diag(A))
+	Al=-tril(A,-1)
+	Au=-triu(A,1)
+	M = D-Al
+	Minv = inv(M)
+	G = (I-Minv*A)
+	c = Minv*b
+	for k=1:10
+		xk=G*x0 + c 
+		x0=copy(xk)
+	end
+	xk
+	# E = eigen(G)
+	# maximum(abs.(E.values))
+end
+
+# ╔═╡ 14f1e18c-c521-4084-a13e-74a5e54fe572
+# SOR method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	# A =[4 3 0;3 4 -1;0 -1 4]
+	b=[6;25;-11;15]
+	# b=[24;30;-24]
+	n = length(b)
+	x0=ones(n)
+	xk=ones(n)
+	ω = 1.25
+	for k=1:3
+		for i in 1:n
+			s1 = if i==1 
+				0 
+			else 
+				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+			end
+			s2 = if i==n 
+				0 
+			else 
+				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
+			end
+			xk[i] =ω*(s1+s2+b[i])/A[i,i] + (1-ω)*x0[i]
+		end
+		
+		x0=copy(xk)
+	end
+	xk
+end
+
+
+# ╔═╡ ba55ba2a-cb4e-4b31-b0df-9cf6593d56bc
+# SOR method
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	ω=1.25
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	D = Diagonal(diag(A))
+	Al=-tril(A,-1)
+	Au=-triu(A,1)
+	
+	M = (1/ω)*D-Al
+	Minv = inv(M)
+	G = (I-Minv*A)
+	c = Minv*b
+	for k=1:4
+		xk=G*x0 + c
+		x0=copy(xk)
+	end
+	xk
+	# norm(G)
+	E = eigen(G)
+	maximum(abs.(E.values))
+end
+
+# ╔═╡ abf0c10e-b7d2-4a19-bfd5-2625015bccef
+let
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	# A =[4 3 0;3 4 -1;0 -1 4]
+	b=[6;25;-11;15]
+	# b=[24;30;-24]
+	n = length(b)
+	x0=ones(n)
+	xk=ones(n)
+	ω = 1.25
+	for k=1:3
+		for i in 1:n
+			s1 = if i==1 
+				0 
+			else 
+				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+			end
+			s2 = if i==n 
+				0 
+			else 
+				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
+			end
+			xk[i] =(s1+s2+b[i])/A[i,i]
+		end
+		xk2=copy(xk)
+		for i in n:-1:1
+			xk[i]=ω*xk2[i] + (1-ω)*x0[i]
+		end
+		x0=copy(xk)
+	end
+	xk
+end
+
+# ╔═╡ ddb1b45e-df33-445c-b4b9-7611bc6f88a2
+md"## Convergence "
+
+# ╔═╡ 9222bbd2-a65e-425c-ac45-2abad5f43a5a
+md"##  Stopping Criteria"
+
+# ╔═╡ a5d9fa3d-7715-4bc3-88ee-44871493c84d
+cm"""
+1. ``\|x_{k}-x_{k-1}\|``
+2. ``\|G\|``
+"""
+
+# ╔═╡ 08b43888-cc2b-4b0c-88fd-7af121088db1
+# J method
+let
+	function Jmethod(A,b,ϵ, maxiters=100)
+	n = length(b)
+	x0=zeros(n)
+	xk=zeros(n)
+	D = Diagonal(diag(A))
+	Al=-tril(A,-1)
+	Au=-triu(A,1)
+	Minv = inv(D)
+	G =(I-Minv*A)
+	c =Minv*b
+	k = 1
+	norm_of_G = norm(G)
+	while true
+		if k>maxiters 
+			return xk, k, "max itrs reached"
+		end
+		
+		xk=G*x0 + c
+		
+		# if norm_of_G^(k) <= ϵ 
+		# 	return xk,k, "converged G"
+		# end
+		if norm(xk-x0) <= ϵ 
+			return xk,k, "converged"
+		end
+		
+		x0=copy(xk)
+		k = k + 1
+	end
+	
+	end
+	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
+	b=[6;25;-11;15]
+	x,k, message = Jmethod(A,b,1e-5)
+	# E = eigen(G)
+	# maximum(abs.(E.values))
+end
+
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
 
@@ -3435,6 +3763,62 @@ $(bbl("Collary","(LSQ Characterization Using Generalized Inverse)")) ``\boldsymb
 cm"""
 $(bth("(Minimal Norm Solution)"))
 The least squares solution with minimal Euclidian norm is ``\boldsymbol{x}=\boldsymbol{A}^{\dagger} \boldsymbol{b}`` corresponding to ``\boldsymbol{z}=\mathbf{0}``.
+"""
+
+# ╔═╡ b382223f-9c78-4671-97ec-d898654dfd0a
+cm"""
+$(bth("(Splitting Matrices for J, GS and SOR)")) The splitting matrices ``\boldsymbol{M}_J, \boldsymbol{M}_1`` and ``\boldsymbol{M}_\omega`` for the J, GS and SOR methods are given by
+```math
+\boldsymbol{M}_J=\boldsymbol{D}, \quad \boldsymbol{M}_1=\boldsymbol{D}-\boldsymbol{A}_L, \quad \boldsymbol{M}_\omega=\omega^{-1} \boldsymbol{D}-\boldsymbol{A}_L
+```
+"""
+
+# ╔═╡ c03160d4-b063-4899-8df6-6ebd66cc4617
+cm"""
+$(ex())
+Solve 
+```math
+\begin{array}{llllllllll} 
+& 10 x_1&-&x_2&+&2 x_3&& & =&6 \\ 
+-&x_1&+&11 x_2&-&x_3&+&3 x_4 & =&25 \\ 
+&2 x_1&-&x_2&+&10 x_3&-&x_4 & =&-11 \\ 
+&&&3 x_2&-&x_3&+&8 x_4 & =&15
+\end{array}
+```
+"""
+
+# ╔═╡ 658ced39-70ff-4fb1-8fdd-b314aca309ce
+cm"""
+In the following we assume that ``\boldsymbol{G} \in \mathbb{C}^{n \times n}, \boldsymbol{c} \in \mathbb{C}^n`` and ``\boldsymbol{I}-\boldsymbol{G}`` is nonsingular. We let ``\boldsymbol{x} \in \mathbb{C}^n`` be the unique fixed point satisfying ``\boldsymbol{x}=\boldsymbol{G} \boldsymbol{x}+\boldsymbol{c}``.
+
+$(define("(Convergence)"))
+We say that the iterative method ``\boldsymbol{x}_{k+1}:=\boldsymbol{G} \boldsymbol{x}_k+\boldsymbol{c}`` converges if the sequence ``\left\{\boldsymbol{x}_k\right\}`` converges for any starting vector ``\boldsymbol{x}_0``.
+$(ebl())
+
+$(bth("(Convergence of an Iterative Method)"))
+The iterative method ``\boldsymbol{x}_{k+1}:=\boldsymbol{G} \boldsymbol{x}_k+\boldsymbol{c}`` converges if and only if ``\lim _{k \rightarrow \infty} \boldsymbol{G}^k=\mathbf{0}``.
+$(ebl())
+
+$(bth("(Sufficient Condition for Convergence)"))
+If ``\|\boldsymbol{G}\|<1`` then the iteration ``\boldsymbol{x}_{k+1}=\boldsymbol{G} \boldsymbol{x}_k+\boldsymbol{c}`` converges.
+$(ebl())
+"""
+
+# ╔═╡ 8c4bf470-1408-4057-8d7e-216b1b38c1fa
+cm"""
+$(bth("(When Does an Iterative Method Converge?)")) Suppose ``\boldsymbol{G} \in \mathbb{C}^{n \times n}`` with ``\boldsymbol{I}-\boldsymbol{G}`` nonsingular and let ``\boldsymbol{c} \in \mathbb{C}^n``. The iteration ``\boldsymbol{x}_{k+1}=\boldsymbol{G} \boldsymbol{x}_k+\boldsymbol{c}`` converges if and only if ``\rho(\boldsymbol{G})<1`` where
+```math
+\rho(\boldsymbol{G}):=\max _{\lambda \in \sigma(\boldsymbol{G})}|\lambda|.
+```
+and is called __spectral radius__ of ``G``.
+"""
+
+# ╔═╡ 6c86adaf-2850-46f1-b421-e4ebc97e6631
+cm"""
+$(bbl("Lemma","(Be Careful When Stopping)")) If ``\boldsymbol{x}_k=\boldsymbol{G} \boldsymbol{x}_{k-1}+\boldsymbol{c}, \boldsymbol{x}=\boldsymbol{G} \boldsymbol{x}+\boldsymbol{c}`` and ``\|\boldsymbol{G}\|<1`` then
+```math
+\left\|\boldsymbol{x}_k-\boldsymbol{x}_{k-1}\right\| \geq \frac{1-\|\boldsymbol{G}\|}{\|\boldsymbol{G}\|}\left\|\boldsymbol{x}_k-\boldsymbol{x}\right\|, \quad k \geq 1
+```
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -5845,6 +6229,30 @@ version = "1.4.1+1"
 # ╟─16ff57d8-3c79-4442-80f0-f8a43a949649
 # ╟─04a47b4d-9a14-4225-a907-a63ac6ee70d6
 # ╠═b84719e4-902e-4c13-a146-74c19c28ca5e
+# ╟─e61790b0-ca31-44f8-bc2b-2bf610966400
+# ╟─9c266479-0995-4f72-9942-0941bb0938fd
+# ╟─1557cf00-e2db-49df-b1b7-07b83ff6e214
+# ╟─0edaff9d-8630-435d-b2c5-4afea2ad7e5f
+# ╟─3134e281-e748-4637-b182-97d27a14955f
+# ╟─d09b1a7b-90fd-46aa-88b9-954dd01d8043
+# ╟─1de083fd-d518-4c98-b27a-54ff74b6eb25
+# ╟─a387c180-f6ef-4399-8df3-35c72e2330e2
+# ╟─b382223f-9c78-4671-97ec-d898654dfd0a
+# ╟─c03160d4-b063-4899-8df6-6ebd66cc4617
+# ╠═3932efd6-8805-4b31-a724-0c45685fdb6f
+# ╠═315db979-0472-45eb-a20a-9964821809f3
+# ╠═279aea14-a829-4528-a7f6-d84eda6891ed
+# ╠═87a8de33-2a99-4340-ad36-3d39abcc4de3
+# ╠═14f1e18c-c521-4084-a13e-74a5e54fe572
+# ╠═ba55ba2a-cb4e-4b31-b0df-9cf6593d56bc
+# ╠═abf0c10e-b7d2-4a19-bfd5-2625015bccef
+# ╟─ddb1b45e-df33-445c-b4b9-7611bc6f88a2
+# ╟─658ced39-70ff-4fb1-8fdd-b314aca309ce
+# ╟─8c4bf470-1408-4057-8d7e-216b1b38c1fa
+# ╟─9222bbd2-a65e-425c-ac45-2abad5f43a5a
+# ╟─a5d9fa3d-7715-4bc3-88ee-44871493c84d
+# ╟─6c86adaf-2850-46f1-b421-e4ebc97e6631
+# ╠═08b43888-cc2b-4b0c-88fd-7af121088db1
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
