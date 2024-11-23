@@ -1683,17 +1683,18 @@ and
 let
 	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
 	b=[6;25;-11;15]
+	# A\b
 	n = length(b)
-	x0=zeros(n)
-	xk=zeros(n)
+	x0=1000*ones(n)
+	x1=zeros(n)
 	
-	for k=1:10
+	for k=1:17
 		for i in 1:n
-			xk[i] =(sum(-A[i,j]*x0[j] for j in 1:n if i!=j)+b[i])/A[i,i]
+			x1[i] =(sum(-A[i,j]*x0[j] for j in 1:n if i!=j)+b[i])/A[i,i]
 		end
-		x0=copy(xk)
+		x0=copy(x1)
 	end
-	xk
+	x1
 end
 
 # ╔═╡ 315db979-0472-45eb-a20a-9964821809f3
@@ -1703,18 +1704,19 @@ let
 	b=[6;25;-11;15]
 	n = length(b)
 	x0=zeros(n)
-	xk=zeros(n)
+	x1=zeros(n)
 	D = Diagonal(diag(A))
 	Al=-tril(A,-1)
 	Au=-triu(A,1)
 	Minv = inv(D)
 	G =(I-Minv*A)
-	c =Minv*b
-	for k=1:10
-		xk=G*x0 + c
-		x0=copy(xk)
-	end
-	xk
+	norm(G)
+	# c =Minv*b
+	# for k=1:17
+	# 	x1=G*x0 + c
+	# 	x0=copy(x1)
+	# end
+	# x1
 	# E = eigen(G)
 	# maximum(abs.(E.values))
 end
@@ -1726,25 +1728,25 @@ let
 	b=[6;25;-11;15]
 	n = length(b)
 	x0=zeros(n)
-	xk=zeros(n)
+	x1=zeros(n)
 	
-	for k=1:5
+	for k=1:7
 		for i in 1:n
 			s1 = if i==1 
 				0 
 			else 
-				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+				sum(-A[i,j]*x1[j] for j in 1:n if j<i)
 			end
 			s2 = if i==n 
 				0 
 			else 
 				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
 			end
-			xk[i] =(s1+s2+b[i])/A[i,i]
+			x1[i] =(s1+s2+b[i])/A[i,i]
 		end
-		x0=copy(xk)
+		x0=copy(x1)
 	end
-	xk
+	x1
 end
 
 # ╔═╡ 87a8de33-2a99-4340-ad36-3d39abcc4de3
@@ -1754,7 +1756,7 @@ let
 	b=[6;25;-11;15]
 	n = length(b)
 	x0=zeros(n)
-	xk=zeros(n)
+	x1=zeros(n)
 	D = Diagonal(diag(A))
 	Al=-tril(A,-1)
 	Au=-triu(A,1)
@@ -1762,11 +1764,11 @@ let
 	Minv = inv(M)
 	G = (I-Minv*A)
 	c = Minv*b
-	for k=1:10
-		xk=G*x0 + c 
-		x0=copy(xk)
+	for k=1:7
+		x1=G*x0 + c 
+		x0=copy(x1)
 	end
-	xk
+	x1
 	# E = eigen(G)
 	# maximum(abs.(E.values))
 end
@@ -1780,26 +1782,27 @@ let
 	# b=[24;30;-24]
 	n = length(b)
 	x0=ones(n)
-	xk=ones(n)
+	x1=ones(n)
 	ω = 1.25
-	for k=1:3
+	
+	for k=1:7
 		for i in 1:n
 			s1 = if i==1 
 				0 
 			else 
-				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+				sum(-A[i,j]*x1[j] for j in 1:n if j<i)
 			end
 			s2 = if i==n 
 				0 
 			else 
 				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
 			end
-			xk[i] =ω*(s1+s2+b[i])/A[i,i] + (1-ω)*x0[i]
+			x1[i] =ω*(s1+s2+b[i])/A[i,i] + (1-ω)*x0[i]
 		end
 		
-		x0=copy(xk)
+		x0=copy(x1)
 	end
-	xk
+	x1
 end
 
 
@@ -1808,10 +1811,10 @@ end
 let
 	A =[10 -1 2 0;-1 11 -1 3;2 -1 10 -1;0 3 -1 8]
 	b=[6;25;-11;15]
-	ω=1.25
+	ω=0.95
 	n = length(b)
 	x0=zeros(n)
-	xk=zeros(n)
+	x1=zeros(n)
 	D = Diagonal(diag(A))
 	Al=-tril(A,-1)
 	Au=-triu(A,1)
@@ -1819,15 +1822,16 @@ let
 	M = (1/ω)*D-Al
 	Minv = inv(M)
 	G = (I-Minv*A)
-	c = Minv*b
-	for k=1:4
-		xk=G*x0 + c
-		x0=copy(xk)
-	end
-	xk
-	# norm(G)
-	E = eigen(G)
-	maximum(abs.(E.values))
+	norm(G)
+	# c = Minv*b
+	# for k=1:8
+	# 	x1=G*x0 + c
+	# 	x0=copy(x1)
+	# end
+	# x1
+	# # norm(G)
+	# E = eigen(G)
+	# maximum(abs.(E.values))
 end
 
 # ╔═╡ abf0c10e-b7d2-4a19-bfd5-2625015bccef
@@ -1838,29 +1842,29 @@ let
 	# b=[24;30;-24]
 	n = length(b)
 	x0=ones(n)
-	xk=ones(n)
+	x1=ones(n)
 	ω = 1.25
-	for k=1:3
+	for k=1:7
 		for i in 1:n
 			s1 = if i==1 
 				0 
 			else 
-				sum(-A[i,j]*xk[j] for j in 1:n if j<i)
+				sum(-A[i,j]*x1[j] for j in 1:n if j<i)
 			end
 			s2 = if i==n 
 				0 
 			else 
 				sum(-A[i,j]*x0[j] for j in 1:n if j>i)
 			end
-			xk[i] =(s1+s2+b[i])/A[i,i]
+			x1[i] =(s1+s2+b[i])/A[i,i]
 		end
-		xk2=copy(xk)
+		xk2=copy(x1)
 		for i in n:-1:1
-			xk[i]=ω*xk2[i] + (1-ω)*x0[i]
+			x1[i]=ω*xk2[i] + (1-ω)*x0[i]
 		end
-		x0=copy(xk)
+		x0=copy(x1)
 	end
-	xk
+	x1
 end
 
 # ╔═╡ ddb1b45e-df33-445c-b4b9-7611bc6f88a2
@@ -1873,6 +1877,7 @@ md"##  Stopping Criteria"
 cm"""
 1. ``\|x_{k}-x_{k-1}\|``
 2. ``\|G\|``
+3. ``\|\boldsymbol{r}_k\|``, where ``\boldsymbol{r}_k:=\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}_k``
 """
 
 # ╔═╡ 08b43888-cc2b-4b0c-88fd-7af121088db1
@@ -1915,6 +1920,261 @@ let
 	# E = eigen(G)
 	# maximum(abs.(E.values))
 end
+
+# ╔═╡ 4a6c26ed-02da-4b97-8c47-c3f4d779c5f6
+md"# Chapter 13: The Conjugate Gradient Method"
+
+# ╔═╡ 800c3790-eb08-446f-8d93-f3b6be8132a4
+cm"""
+ Let ``\boldsymbol{A} \in \mathbb{R}^{n \times n}`` will be a __symmetric__ and __positive definite__ matrix.
+
+- Condition number of ``A`` is given by: ``\kappa:=\frac{\lambda_{\max }}{\lambda_{\min }}``
+- the __usual inner product__ ``\langle\boldsymbol{x}, \boldsymbol{y}\rangle=\boldsymbol{x}^T \boldsymbol{y}`` 
+- with the associated __Euclidian norm__ ``\|\boldsymbol{x}\|_2=\sqrt{\boldsymbol{x}^T \boldsymbol{x}}``, and
+- the ``\boldsymbol{A}``-inner product and the corresponding ``\boldsymbol{A}``-norm given by
+```math
+\langle\boldsymbol{x}, \boldsymbol{y}\rangle_{\boldsymbol{A}}:=\boldsymbol{x}^T \boldsymbol{A} \boldsymbol{y}, \quad\|\boldsymbol{y}\|_{\boldsymbol{A}}:=\sqrt{\boldsymbol{y}^T \boldsymbol{A} \boldsymbol{y}}, \quad \boldsymbol{x}, \boldsymbol{y} \in \mathbb{R}^n .
+```
+
+"""
+
+# ╔═╡ 72056b5f-6bc3-45a3-a1fc-532b26be2cdc
+md"## Quadratic Minimization and Steepest Descent"
+
+# ╔═╡ 547db5f5-a6df-406f-8cb2-c2750603e04f
+cm"""
+Consider for a positive definite ``\boldsymbol{A} \in \mathbb{R}^{n \times n}, \boldsymbol{b} \in \mathbb{R}^n`` and ``c \in \mathbb{R}`` the quadratic function ``Q: \mathbb{R}^n \rightarrow \mathbb{R}`` given by
+```math
+Q(\boldsymbol{y}):=\frac{1}{2} \boldsymbol{y}^T \boldsymbol{A} \boldsymbol{y}-\boldsymbol{b}^T \boldsymbol{y}+c.\tag{⭐}
+```
+"""
+
+# ╔═╡ 8677b6f6-a0aa-4a95-8add-6ecdf5697870
+cm"""
+A general class of minimization algorithms for ``Q`` and solution algorithms for a linear system is given as follows:
+
+1. Choose ``\boldsymbol{x}_0 \in \mathbb{R}^n``.
+2. For ``k=0,1,2, \ldots``
+- Choose a "search direction" ``\boldsymbol{p}_k``,
+- Choose a "step length" ``\alpha_k``,
+- Compute ``\boldsymbol{x}_{k+1}=\boldsymbol{x}_k+\alpha_k \boldsymbol{p}_k``.
+"""
+
+# ╔═╡ 9e4919d4-8a76-42da-a519-03bef7b6d7da
+cm"""
+__STEP LENGTH__ ``\alpha_k``
+
+Fix ``p_k``. 
+1. We find ``\alpha_k`` such that ``Q(x_{k+1})`` is as __small as possible__ 
+```math
+Q\left(\boldsymbol{x}_{k+1}\right)=Q\left(\boldsymbol{x}_k+\alpha_k \boldsymbol{p}_k\right)=\min _{\alpha \in \mathbb{R}} Q\left(\boldsymbol{x}_k+\alpha \boldsymbol{p}_k\right).
+```
+By (⭐) 
+```math
+Q\left(\boldsymbol{x}_k+\alpha \boldsymbol{p}_k\right)=Q\left(\boldsymbol{x}_k\right)-\alpha \boldsymbol{p}_k^T \boldsymbol{r}_k+\frac{1}{2} \alpha^2 \boldsymbol{p}_k^T \boldsymbol{A} \boldsymbol{p}_k,
+``` 
+where 
+``\boldsymbol{r}_k:=\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}_k`` 
+
+Hence
+```math
+\alpha_k:=\frac{\boldsymbol{p}_k^T \boldsymbol{r}_k}{\boldsymbol{p}_k^T \boldsymbol{A} \boldsymbol{p}_k}.
+```
+"""
+
+# ╔═╡ 42ec4938-e498-435a-b1c3-cf27c5b9d805
+cm"""
+__SEARCH DIRECTION__
+
+- __Steepest Descent__ (gradient method) 
+We choose 
+```math
+\boldsymbol{p}_k = \boldsymbol{r}_k
+```
+- Starting with ``x_0``, we have
+```math
+\boldsymbol{x}_{k+1}=\boldsymbol{x}_k+\left(\frac{\boldsymbol{r}_k^T \boldsymbol{r}_k}{\boldsymbol{r}_k^T \boldsymbol{A} \boldsymbol{r}_k}\right) \boldsymbol{r}_k
+```
+"""
+
+# ╔═╡ 031c02f9-f5a2-4dc0-94c5-2ed5d22a0f81
+cm"""
+- Updating the residual:
+```math
+\boldsymbol{r}_{k+1}=\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}_{k+1}=\boldsymbol{b}-\boldsymbol{A}\left(\boldsymbol{x}_k+\alpha_k \boldsymbol{p}_k\right)=\boldsymbol{r}_k-\alpha_k \boldsymbol{A} \boldsymbol{p}_k
+```
+- In the steepest descent method the choice ``\boldsymbol{p}_k=\boldsymbol{r}_k`` implies that the last two gradients are orthogonal. 
+```math 
+\boldsymbol{r}_{k+1}^T \boldsymbol{r}_k=\left(\boldsymbol{r}_k-\alpha_k \boldsymbol{A} \boldsymbol{r}_k\right)^T \boldsymbol{r}_k=0
+``` 
+since ``\alpha_k=`` ``\frac{\boldsymbol{r}_k^T \boldsymbol{r}_k}{\boldsymbol{r}_k^T \boldsymbol{A} \boldsymbol{r}_k}`` and ``\boldsymbol{A}`` is symmetric.
+"""
+
+# ╔═╡ 7c818918-5318-4708-b60a-142986d2d4b9
+function steepest_descent(A,b,x,ϵ=1e-6,maxiters=100; verbose=false)
+	k = 1
+	xs = Matrix{Float64}(undef,2,maxiters)
+	rk=b-A*x
+	pk = copy(rk)
+	verbose && printstyled("Starting ... \n",color=:green)
+	verbose && printstyled("====================================\n",color=:green)
+	while true
+		xs[:,k]=x
+		nrmk=norm(rk)
+		if nrmk<= ϵ
+			return x,nrmk,k, "converged", xs[:,1:k]
+		end
+		if k>=maxiters
+			return x,nrmk,k, "max reached",xs
+		end
+		tk = A*pk
+		αk = dot(pk,rk)/dot(pk,tk)
+		x = x + αk * pk
+		rk = rk-αk*tk
+		pk = copy(rk)
+		str = @sprintf "k = %2s, αk = %2.2f, ||rk|| = %2.4f\n" k αk nrmk
+		verbose && printstyled(str)
+		k = k + 1
+	end
+end
+
+# ╔═╡ 61985bee-07cb-4179-87bd-15a77c4ad399
+let
+	A = [2 -1.0;-1 2]
+	b = [0.0;0.0]
+	x,k,message,xs = steepest_descent(A,b,[-1;-1/2];verbose=true)
+end
+
+# ╔═╡ de45bf5a-6c4a-49de-9e90-d25d308d4281
+let
+	A = [2 -1.0;-1 2.0]
+	b = [0.0;0.0]
+	c = 0
+	Q(x) = (0.5*x'*A*x) - dot(b,x) + c
+	x0=[-1;0.5]
+	xs=-2:0.01:2
+	ys=-2:0.01:2
+	plt=plot(;frame_style=:origin,label=nothing)
+	sol = steepest_descent(A,b,[-1;-1/2];verbose=false)
+	levels = abs.(map(x->Q(x),eachcol(sol[end])))
+	contour!(xs,ys,(x,y)->Q([x;y]);levels=levels)
+	anim = @animate for (k,x)  in enumerate(eachcol(sol[end]))
+	scatter!([x[1]],[x[2]],label=nothing,annotation=	[((x.+0.1)...,L"x_%$k",8)])
+	end
+	# plot!(xlims=(-0.5,0.5),ylims=(-0.5,0.5))
+	gif(anim,"steepest_descent.gif",fps=1)
+	
+end
+
+# ╔═╡ 8b922b91-be18-4d73-a016-5a36da45b073
+md"## The Conjugate Gradient Method"
+
+# ╔═╡ 12d93e1a-b920-48a2-83c6-3ea1b4d84686
+cm"""
+1. Star with ``\boldsymbol{x}_0 \in \mathbb{R}^n``. 
+ - If ``\boldsymbol{r}_0=\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}_0=\mathbf{0}``, then ``x_0`` is the exact solution.
+ - Otherwise, ``\boldsymbol{p}_0 = \boldsymbol{r}_0``.
+2. For ``j\geq 0``,
+```math
+\begin{aligned} \boldsymbol{p}_j & :=\boldsymbol{r}_j-\sum_{i=0}^{j-1}\left(\frac{\boldsymbol{r}_j^T \boldsymbol{A} \boldsymbol{p}_i}{\boldsymbol{p}_i^T \boldsymbol{A} \boldsymbol{p}_i}\right) \boldsymbol{p}_i \\ \boldsymbol{x}_{j+1} & :=\boldsymbol{x}_j+\alpha_j \boldsymbol{p}_j \quad \alpha_j:=\frac{\boldsymbol{r}_j^T \boldsymbol{r}_j}{\boldsymbol{p}_j^T \boldsymbol{A} \boldsymbol{p}_j} \\ \boldsymbol{r}_{j+1} & =\boldsymbol{r}_j-\alpha_j \boldsymbol{A} \boldsymbol{p}_j\end{aligned}
+```
+
+"""
+
+# ╔═╡ 32b30cf8-3273-46a8-9a59-cc5b87d3338a
+cm"""
+__The conjugate gradient method__
+- Initialize 
+```math
+\boldsymbol{x}_0, \boldsymbol{p}_0=\boldsymbol{r}_0=\boldsymbol{b}-\boldsymbol{A} \boldsymbol{x}_0
+``` 
+- For ``k=0,1,2, \ldots``
+```math
+\begin{aligned}
+\boldsymbol{x}_{k+1} & :=\boldsymbol{x}_k+\alpha_k \boldsymbol{p}_k, \quad \alpha_k:=\frac{\boldsymbol{r}_k^T \boldsymbol{r}_k}{\boldsymbol{p}_k^T \boldsymbol{A} \boldsymbol{p}_k} \\
+\boldsymbol{r}_{k+1} & :=\boldsymbol{r}_k-\alpha_k \boldsymbol{A} \boldsymbol{p}_k
+\end{aligned}
+```
+```math
+\boldsymbol{p}_{k+1}:=\boldsymbol{r}_{k+1}+\beta_k \boldsymbol{p}_k, \quad \beta_k:=\frac{\boldsymbol{r}_{k+1}^T \boldsymbol{r}_{k+1}}{\boldsymbol{r}_k^T \boldsymbol{r}_k}
+```
+"""
+
+# ╔═╡ 84467d36-d1e6-445f-89c5-a8f6f456eb2e
+cm"""
+For computation we organize the iterations as follows for ``k=0,1,2, \ldots``
+```math
+\begin{aligned}
+\boldsymbol{t}_k & =\boldsymbol{A} \boldsymbol{p}_k, \\
+\alpha_k & =\left(\boldsymbol{r}_k^T \boldsymbol{r}_k\right) /\left(\boldsymbol{p}_k^T \boldsymbol{t}_k\right), \\
+\boldsymbol{x}_{k+1} & =\boldsymbol{x}_k+\alpha_k \boldsymbol{p}_k, \\
+\boldsymbol{r}_{k+1} & =\boldsymbol{r}_k-\alpha_k \boldsymbol{t}_k, \\
+\beta_k & =\left(\boldsymbol{r}_{k+1}^T \boldsymbol{r}_{k+1}\right) /\left(\boldsymbol{r}_k^T \boldsymbol{r}_k\right), \\
+\boldsymbol{p}_{k+1} & :=\boldsymbol{r}_{k+1}+\beta_k \boldsymbol{p}_k .
+\end{aligned} \tag{🌟}
+```
+"""
+
+# ╔═╡ 240b8dab-73ea-4470-b348-f31976bdddb2
+function conjugate_gonjugate(A,b,x,ϵ=1e-6,maxiters=100; verbose=false)
+	k = 1
+	rk=pk=b-A*x
+	xs = Matrix{Float64}(undef,2,maxiters)
+	verbose && printstyled("Starting ... \n",color=:green)
+	verbose && printstyled("====================================\n",color=:green)
+	while true
+		xs[:,k]=x
+		nrmk=norm(rk)
+		if nrmk<= ϵ
+			return x,nrmk,k, "converged", xs[:,1:k]
+		end
+		if k>=maxiters
+			return x,nrmk,k, "max reached", xs
+		end
+		tk = A*pk
+		αk = dot(rk,rk)/dot(pk,tk)
+		x = x + αk * pk
+		rk1 = rk-αk*tk
+		βk =dot(rk1,rk1)/dot(rk,rk) 
+		pk = rk1 + βk*pk
+		rk  = rk1
+		str = @sprintf "k = %2s, αk = %2.2f, βk =%2.2f,  ||rk|| = %2.4f\n" k αk βk nrmk
+		verbose && printstyled(str)
+		k = k + 1
+	end
+end
+
+# ╔═╡ be94b932-72ad-4e61-9157-b67f674cffa8
+let
+	A = [2 -1.0;-1 2]
+	b = [0.0;0.0]
+	x,k,message = conjugate_gonjugate(A,b,[-1;-1/2];verbose=true)
+end
+
+# ╔═╡ b482f83b-d02e-493e-ae2d-b43670f8776a
+let
+	A = [2 -1.0;-1 2.0]
+	b = [0.0;0.0]
+	c = 0
+	Q(x) = (0.5*x'*A*x) - dot(b,x) + c
+	x0=[-1;0.5]
+	xs=-2:0.01:2
+	ys=-2:0.01:2
+	plt=plot(;frame_style=:origin,label=nothing)
+	sol = conjugate_gonjugate(A,b,[-1;-1/2];verbose=false)
+	levels = abs.(map(x->Q(x),eachcol(sol[end])))
+	
+	contour!(xs,ys,(x,y)->Q([x;y]);levels=levels)
+	anim = @animate for (k,x)  in enumerate(eachcol(sol[end]))
+	scatter!([x[1]],[x[2]],label=nothing,annotation=	[((x.+0.1)...,L"x_%$k",8)])
+	end
+	# plot!(xlims=(-0.5,0.5),ylims=(-0.5,0.5))
+	gif(anim,"steepest_descent.gif",fps=1)
+	
+end
+
+# ╔═╡ 5a510efe-a8ce-49af-bbc4-aeb690441e7b
+md"## Convergence"
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
@@ -3819,6 +4079,32 @@ $(bbl("Lemma","(Be Careful When Stopping)")) If ``\boldsymbol{x}_k=\boldsymbol{G
 ```math
 \left\|\boldsymbol{x}_k-\boldsymbol{x}_{k-1}\right\| \geq \frac{1-\|\boldsymbol{G}\|}{\|\boldsymbol{G}\|}\left\|\boldsymbol{x}_k-\boldsymbol{x}\right\|, \quad k \geq 1
 ```
+"""
+
+# ╔═╡ e05ce5d1-d87c-49fc-94f6-8366fda60b2a
+cm"""
+$(bbl("Lemma","(Quadratic Function)")) 
+A vector ``\boldsymbol{x} \in \mathbb{R}^n`` minimizes ``Q`` given by (⭐) if and only if ``\boldsymbol{A x}=\boldsymbol{b}``. Moreover, the residual ``\boldsymbol{r}(\boldsymbol{y}):=\boldsymbol{b}-\boldsymbol{A y}`` for any ``\boldsymbol{y} \in \mathbb{R}^n`` is equal to the negative gradient, i.e., ``\boldsymbol{r}(\boldsymbol{y})=-\nabla Q(\boldsymbol{y})``, where ``\nabla:=\left[\frac{\partial}{\partial y_1}, \ldots, \frac{\partial}{\partial y_n}\right]^T``.
+"""
+
+# ╔═╡ d7f4695b-1271-47d8-8379-449e1a2dae51
+cm"""
+$(bbl("Lemma","(The Residuals Are Orthogonal)"))
+Suppose that for some ``k \geq 0`` that ``\boldsymbol{x}_j`` is well defined, ``\boldsymbol{r}_j \neq 0``, and ``\boldsymbol{r}_i^T \boldsymbol{r}_j=0`` for ``i, j=0,1, \ldots, k, i \neq j``. Then ``\boldsymbol{x}_{k+1}`` is well defined and ``\boldsymbol{r}_{k+1}^T \boldsymbol{r}_j=0`` for ``j=0,1, \ldots, k``.
+"""
+
+# ╔═╡ d0db5ca0-823b-4244-982d-4816e903748d
+cm"""
+$(bth("(Error Bound for Steepest Descent and Conjugate Gradients)")) Suppose ``\boldsymbol{A}`` is positive definite. For the ``\boldsymbol{A}``-norms of the errors in the steepest descent method (🌟) the following upper bounds hold
+```math
+\frac{\left\|\boldsymbol{x}-\boldsymbol{x}_k\right\|_{\boldsymbol{A}}}{\left\|\boldsymbol{x}-\boldsymbol{x}_0\right\|_{\boldsymbol{A}}} \leq\left(\frac{\kappa-1}{\kappa+1}\right)^k < e^{-\frac{2}{\kappa} k}, \quad, k >0
+```
+while for the conjugate gradient method we have
+```math
+\frac{\left\|\boldsymbol{x}-\boldsymbol{x}_k\right\|_{\boldsymbol{A}}}{\left\|\boldsymbol{x}-\boldsymbol{x}_0\right\|_{\boldsymbol{A}}} \leq 2\left(\frac{\sqrt{\kappa}-1}{\sqrt{\kappa}+1}\right)^k<2 e^{-\frac{2}{\sqrt{\kappa}} k}, \quad k \geq 0 .
+```
+
+Here ``\kappa=\operatorname{cond}_2(\boldsymbol{A}):=\lambda_{\max } / \lambda_{\min }`` is the spectral condition number of ``\boldsymbol{A}``, where ``\lambda_{\max }`` and ``\lambda_{\min }`` are the largest and smallest eigenvalue of ``\boldsymbol{A}``, respectively.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -6253,6 +6539,28 @@ version = "1.4.1+1"
 # ╟─a5d9fa3d-7715-4bc3-88ee-44871493c84d
 # ╟─6c86adaf-2850-46f1-b421-e4ebc97e6631
 # ╠═08b43888-cc2b-4b0c-88fd-7af121088db1
+# ╟─4a6c26ed-02da-4b97-8c47-c3f4d779c5f6
+# ╟─800c3790-eb08-446f-8d93-f3b6be8132a4
+# ╟─72056b5f-6bc3-45a3-a1fc-532b26be2cdc
+# ╟─547db5f5-a6df-406f-8cb2-c2750603e04f
+# ╟─e05ce5d1-d87c-49fc-94f6-8366fda60b2a
+# ╟─8677b6f6-a0aa-4a95-8add-6ecdf5697870
+# ╟─9e4919d4-8a76-42da-a519-03bef7b6d7da
+# ╟─42ec4938-e498-435a-b1c3-cf27c5b9d805
+# ╟─031c02f9-f5a2-4dc0-94c5-2ed5d22a0f81
+# ╠═7c818918-5318-4708-b60a-142986d2d4b9
+# ╠═61985bee-07cb-4179-87bd-15a77c4ad399
+# ╠═de45bf5a-6c4a-49de-9e90-d25d308d4281
+# ╟─8b922b91-be18-4d73-a016-5a36da45b073
+# ╟─12d93e1a-b920-48a2-83c6-3ea1b4d84686
+# ╟─d7f4695b-1271-47d8-8379-449e1a2dae51
+# ╟─32b30cf8-3273-46a8-9a59-cc5b87d3338a
+# ╟─84467d36-d1e6-445f-89c5-a8f6f456eb2e
+# ╠═240b8dab-73ea-4470-b348-f31976bdddb2
+# ╠═be94b932-72ad-4e61-9157-b67f674cffa8
+# ╠═b482f83b-d02e-493e-ae2d-b43670f8776a
+# ╟─5a510efe-a8ce-49af-bbc4-aeb690441e7b
+# ╟─d0db5ca0-823b-4244-982d-4816e903748d
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
