@@ -2014,8 +2014,8 @@ since ``\alpha_k=`` ``\frac{\boldsymbol{r}_k^T \boldsymbol{r}_k}{\boldsymbol{r}_
 function steepest_descent(A,b,x,ϵ=1e-6,maxiters=100; verbose=false)
 	k = 1
 	xs = Matrix{Float64}(undef,2,maxiters)
-	rk=b-A*x
-	pk = copy(rk)
+	rk=pk=b-A*x
+	
 	verbose && printstyled("Starting ... \n",color=:green)
 	verbose && printstyled("====================================\n",color=:green)
 	while true
@@ -2042,7 +2042,7 @@ end
 let
 	A = [2 -1.0;-1 2]
 	b = [0.0;0.0]
-	x,k,message,xs = steepest_descent(A,b,[-1;-1/2];verbose=true)
+	x,k,message,xs = steepest_descent(A,b,[10;-20];verbose=true)
 end
 
 # ╔═╡ de45bf5a-6c4a-49de-9e90-d25d308d4281
@@ -2055,9 +2055,9 @@ let
 	xs=-2:0.01:2
 	ys=-2:0.01:2
 	plt=plot(;frame_style=:origin,label=nothing)
-	sol = steepest_descent(A,b,[-1;-1/2];verbose=false)
+	sol = steepest_descent(A,b,[10;-10];verbose=false)
 	levels = abs.(map(x->Q(x),eachcol(sol[end])))
-	contour!(xs,ys,(x,y)->Q([x;y]);levels=levels)
+	contour!(xs,ys,(x,y)->Q([x;y]))
 	anim = @animate for (k,x)  in enumerate(eachcol(sol[end]))
 	scatter!([x[1]],[x[2]],label=nothing,annotation=	[((x.+0.1)...,L"x_%$k",8)])
 	end
@@ -2175,6 +2175,200 @@ end
 
 # ╔═╡ 5a510efe-a8ce-49af-bbc4-aeb690441e7b
 md"## Convergence"
+
+# ╔═╡ eeaba8a1-3de5-4b06-8c60-9aca96727e6e
+md"""# Numerical Eigenvalue Problems
+
+# Chapter 15: The QR Algorithm
+## The Power Method
+"""
+
+# ╔═╡ 4e64552f-a911-4281-806a-9d7c1a7f8cd9
+cm"""
+We define a sequence ``\left\{z_k\right\}`` of vectors in ``\mathbb{C}^n`` by
+```math
+z_k:=\boldsymbol{A}^k z_0=\boldsymbol{A} z_{k-1}, \quad k=1,2, \ldots
+```
+
+
+"""
+
+# ╔═╡ aaaaf6f0-cb52-479c-823d-3b5e546cb119
+let
+	A = [2 -1;-1 2]
+	z0 = [1;0]
+	z = similar(z0)
+	for k in 1:20
+		z = A^k*z0
+		z = 2*z/3^k # mystry 
+	end
+	# z/norm(z,Inf)
+	λ = dot(A*z,z)/dot(z,z) # mystry
+	z, λ
+end
+
+# ╔═╡ caa4d124-8518-4305-8cd5-326d8359382d
+cm"""
+Let ``\boldsymbol{A} \in \mathbb{C}^{n \times n}`` have eigenpairs ``\left(\lambda_j, \boldsymbol{v}_j\right), j=1, \ldots, n`` with 
+
+```math
+\left|\lambda_1\right|>\left|\lambda_2\right| \geq \cdots \geq\left|\lambda_n\right|.
+```
+
+Given ``z_0 \in \mathbb{C}^n`` we assume that
+
+- (i) ``\left|\lambda_1\right|>\left|\lambda_2\right| \geq\left|\lambda_3\right| \geq \cdots \geq\left|\lambda_n\right|``, (means: ``\lambda_1`` is the largest and has algebraic multiplicity one)
+- (ii) ``z_0^T \boldsymbol{v}_1 \neq 0`` (``z_0`` has a component in the
+ direction ``v_1``.)
+- (iii) ``\boldsymbol{A}`` has linearly independent eigenvectors. (Not really needed)
+"""
+
+# ╔═╡ 77a39dd0-b81e-417d-b33c-840f74e640ac
+cm"""
+Let 
+```math
+z_0=c_1 \boldsymbol{v}_1+c_2 \boldsymbol{v}_2+\cdots+c_n \boldsymbol{v}_n,
+```
+where by assumption (ii) we have ``c_1 \neq 0``. 
+
+Since for all ``j`` 
+```math
+\boldsymbol{A}^k \boldsymbol{v}_j=\lambda_j^k \boldsymbol{v}_j
+``` 
+and 
+```math
+z_k:=\boldsymbol{A}^k z_0=\boldsymbol{A} z_{k-1}, \quad k=1,2, \ldots
+```
+we see that
+```math
+z_k=c_1 \lambda_1^k \boldsymbol{v}_1+c_2 \lambda_2^k \boldsymbol{v}_2+\cdots+c_n \lambda_n^k \boldsymbol{v}_n, \quad k=0,1,2, \ldots
+```
+
+Dividing by ``\lambda_1^k`` we find
+```math
+\frac{z_k}{\lambda_1^k}=c_1 \boldsymbol{v}_1+c_2\left(\frac{\lambda_2}{\lambda_1}\right)^k \boldsymbol{v}_2+\cdots+c_n\left(\frac{\lambda_n}{\lambda_1}\right)^k \boldsymbol{v}_n, \quad k=0,1,2, \ldots
+```
+"""
+
+# ╔═╡ 81d77612-c4b3-4672-9315-972c8e2c4cc1
+cm"""
+__Finding an approximation ``\mu`` of ``\lambda`` and Stopping Criterion__
+
+- Using Rayleigh quotients we can incorporate the calculation of the eigenvalue into the power iteration. 
+- We can then compute the residual and stop the iteration when the residual is sufficiently small. But what does it mean to be sufficiently small? Recall that if ``\boldsymbol{A}`` is nonsingular with a nonsingular eigenvector matrix ``\boldsymbol{X}`` and ``(\mu, \boldsymbol{u})`` is an approximate eigenpair with ``\|\boldsymbol{u}\|_2=1``, then we can find an eigenvalue ``\lambda`` of ``\boldsymbol{A}`` such that
+```math
+\frac{|\lambda-\mu|}{|\lambda|} \leq K_2(\boldsymbol{X}) K_2(\boldsymbol{A}) \frac{\|\boldsymbol{A} \boldsymbol{u}-\mu \boldsymbol{u}\|_2}{\|\boldsymbol{A}\|_2} .
+```
+
+Thus if the relative residual is small and both ``\boldsymbol{A}`` and ``\boldsymbol{X}`` are well conditioned then the relative error in the eigenvalue will be small.
+"""
+
+# ╔═╡ ed502146-6839-424a-9aad-427173d94c1b
+function power_method(A,z,maxitrs,ϵ)
+	A_fnorm = norm(A)
+	x = z/norm(z);
+	k = 1
+	while true
+		y = A*x
+		μ = dot(x,y)
+		if (norm(y-μ*x)/A_fnorm) < ϵ
+			return μ, y/norm(y), k, :solved
+		end
+		if k>=maxitrs
+			return μ, y/norm(y), k, :max_reached
+		end
+		k = k + 1
+		x = y/norm(y)
+	end
+end
+
+# ╔═╡ acd94aa6-0042-4ba6-b3b0-360d4d7259f7
+let
+	_ratio(x) = begin 
+		x_sorted = sort(abs.(x), rev=true)
+		x_sorted[1] ≈ 0 ? Inf : x_sorted[2]/x_sorted[1]
+	end
+	# discuss why the difference 
+	# it is due to |λ₂|/|λ₁|
+	
+	A1 = [1 2;3 4] # small 
+	# E1 = eigen(A1)
+	# _ratio(E1.values)
+	A2 = [1.7 -0.4;0.15 2.2]
+	# E2 = eigen(A2)
+	# _ratio(E2.values)
+	
+	A3 = [1 2;-3 4]
+	# E3 = eigen(A3)
+	# _ratio(E3.values)
+	A1,A2,A3
+	# ϵ = 1e-6
+	# z = [0.6602;0.3420]
+	# μ1, x1, m1 = power_method(A1,z,100,ϵ)
+	# μ2, x2, m2 = power_method(A2,z,200,ϵ)
+	# μ3, x3, m3 = power_method(A3,z,100,ϵ)
+end
+
+# ╔═╡ 49bbacf6-0162-40dc-a426-a8b924ffd37c
+md"## Shifted Power Method"
+
+# ╔═╡ 4539150a-3501-4afc-b105-0b7c80b17b9d
+cm"""
+ We choose a number ``s`` and __apply__ the __power method__ to the matrix ``A − sI``. 
+
+- The number ``s`` is called a __shift__ since it shifts an eigenvalue ``λ`` of ``A`` to ``λ−s`` of ``A−sI``. 
+
+- Sometimes the convergence can be faster if the shift is chosen intelligently.
+"""
+
+# ╔═╡ 520a6cfc-c666-45d7-b8f0-9e9f6eb880ba
+begin 
+	sHtml = @bind sVar NumberField(1:0.1:5,default=1.2)
+
+	cm"""
+	s = $sHtml
+	"""
+end
+
+# ╔═╡ 0d79809f-8d23-4517-99aa-e98efbbf3050
+let
+	A2 = [1.7 -0.4;0.15 2.2]
+	ϵ = 1e-6
+	z = [0.6602;0.3420]
+	s = sVar
+	μ2, x2, i, m2 = power_method(A2-s*I,z,200,ϵ)
+	λ2 = μ2+s, i 
+end
+
+# ╔═╡ ce536dab-5efc-4433-8f7b-0fa0954b73a3
+md"##  The Inverse Power Metho"
+
+# ╔═╡ 14064c61-516b-4b68-94e4-eb3ba469a9e6
+md"## Rayleigh Quotient Iteration"
+
+# ╔═╡ 00a1538f-7139-40be-96f4-d613c9925583
+cm"""
+In this method we change the shift from iteration to iteration, using the previous Rayleigh quotient ``s_{k-1}`` as the current shift. In each iteration we need to compute the following quantities
+- (i) ``\left(\boldsymbol{A}-s_{k-1} \boldsymbol{I}\right) \boldsymbol{y}_k=\boldsymbol{x}_{k-1}``,
+- (ii) ``\boldsymbol{x}_k=\boldsymbol{y}_k /\left\|\boldsymbol{y}_k\right\|``,
+- (iii) ``\boldsymbol{s}_k=\boldsymbol{x}_k^* \boldsymbol{A} \boldsymbol{x}_k``,
+- (iv) ``\boldsymbol{r}_k=\boldsymbol{A} \boldsymbol{x}_k-s_k \boldsymbol{x}_k``.
+
+We can avoid the calculation of ``\boldsymbol{A} \boldsymbol{x}_k`` in (iii) and (iv). Let
+```math
+\rho_k:=\frac{\boldsymbol{y}_k^* \boldsymbol{x}_{k-1}}{\boldsymbol{y}_k^* \boldsymbol{y}_k}, \quad \boldsymbol{w}_k:=\frac{\boldsymbol{x}_{k-1}}{\left\|\boldsymbol{y}_k\right\|_2} .
+```
+
+Then
+```math
+\begin{aligned}
+& s_k=\frac{\boldsymbol{y}_k^* \boldsymbol{A} \boldsymbol{y}_k}{\boldsymbol{y}_k^* \boldsymbol{y}_k}=s_{k-1}+\frac{\boldsymbol{y}_k^*\left(\boldsymbol{A}-s_{k-1} \boldsymbol{I}\right) \boldsymbol{y}_k}{\boldsymbol{y}_k^* \boldsymbol{y}_k}=s_{k-1}+\frac{\boldsymbol{y}_k^* \boldsymbol{x}_{k-1}}{\boldsymbol{y}_k^* \boldsymbol{y}_k}=s_{k-1}+\rho_k, \\
+& \boldsymbol{r}_k=\boldsymbol{A} \boldsymbol{x}_k-s_k \boldsymbol{x}_k=\frac{\boldsymbol{A} \boldsymbol{y}_k-\left(s_{k-1}+\rho_k\right) \boldsymbol{y}_k}{\left\|\boldsymbol{y}_k\right\|_2}=\frac{\boldsymbol{x}_{k-1}-\rho_k \boldsymbol{y}_k}{\left\|\boldsymbol{y}_k\right\|_2}=\boldsymbol{w}_k-\rho_k \boldsymbol{x}_k
+\end{aligned}
+```
+
+Another problem is that the linear system in (i) becomes closer and closer to singular as ``s_k`` converges to the eigenvalue. Thus the system becomes more and more ill-conditioned and we can expect large errors in the computed ``\boldsymbol{y}_k``. This is indeed true, but we are lucky. Most of the error occurs in the direction of the eigenvector and this error disappears when we normalize ``\boldsymbol{y}_k`` in (ii). Miraculously, the normalized eigenvector will be quite accurate
+"""
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 initialize_eqref()
@@ -4105,6 +4299,121 @@ while for the conjugate gradient method we have
 ```
 
 Here ``\kappa=\operatorname{cond}_2(\boldsymbol{A}):=\lambda_{\max } / \lambda_{\min }`` is the spectral condition number of ``\boldsymbol{A}``, where ``\lambda_{\max }`` and ``\lambda_{\min }`` are the largest and smallest eigenvalue of ``\boldsymbol{A}``, respectively.
+"""
+
+# ╔═╡ f1fd47c6-5ff8-40ae-877c-4be93eed8267
+cm"""
+$(bbl("","Power Method"))
+The __power method__ in its basic form is a technique to compute an approximation to the __eigenvector__ corresponding to the __largest (in absolute value) eigenvalue__ of a matrix ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``. As a by product we can also find an approximation to the __corresponding eigenvalue__.
+
+
+"""
+
+# ╔═╡ 1e87d37f-af72-4f30-bd80-431bda4c284d
+cm"""
+$(ex(1)) (Power Method) Let
+```math
+\boldsymbol{A}=\left[\begin{array}{cc}
+2 & -1 \\
+-1 & 2
+\end{array}\right], \quad z_0:=\left[\begin{array}{l}
+1 \\
+0
+\end{array}\right] .
+```
+
+"""
+
+# ╔═╡ 89369a7f-e967-42af-958d-d303566138cc
+cm"""
+Assumption (i) implies that 
+```math
+\lim_{k \rightarrow \infty}\left(\lambda_j / \lambda_1\right)^k = 0  \quad \text{for all } j \geq 2
+```
+and we obtain
+
+```math
+\lim _{k \rightarrow \infty} \frac{z_k}{\lambda_1^k}=c_1 \boldsymbol{v}_1
+```
+the dominant eigenvector of ``\boldsymbol{A}``. 
+
+$(bbl("Remark",""))
+- It can be shown that this also holds for defective matrices as long as (i) and (ii)  hold.
+- The limit converges to ``0`` if ``\left|\lambda_1\right|>1`` and diverges if ``\left|\lambda_1\right|<1``, provided, of course, that ``c_1 \neq 0``. As a consequence, the entries in the ``z_k`` will grow with ``k`` if ``\left|\lambda_1\right|<1`` and will go to ``0`` if ``\left|\lambda_1\right|>1``, perhaps resulting in __overflow__ or __underflow__. 
+"""
+
+# ╔═╡ fb504532-e7f4-4e03-8a58-07315276ea63
+cm"""
+In practice, to take care of the computational issue, we need to scale the iterates ``z_k`` somehow and we normally do not know ``\lambda_1``. Instead we choose a norm on ``\mathbb{C}^n``, set 
+
+```math 
+\boldsymbol{x}_0=z_0 /\left\|z_0\right\|
+``` 
+and generate for ``k=1,2, \ldots`` unit vectors as follows:
+- (i) ``\boldsymbol{y}_k=\boldsymbol{A} \boldsymbol{x}_{k-1}``
+- (ii) ``\boldsymbol{x}_k=\boldsymbol{y}_k /\left\|\boldsymbol{y}_k\right\|``.
+
+$(bbl("Lemma","(Convergence of the Power Method)"))
+Suppose the above assumptions ((i)-(iii)) holds. Then
+```math
+\lim _{k \rightarrow \infty}\left(\frac{\left|\lambda_1\right|}{\lambda_1}\right)^k \boldsymbol{x}_k=\frac{c_1}{\left|c_1\right|} \frac{\boldsymbol{v}_1}{\left\|\boldsymbol{v}_1\right\|} .
+```
+
+In particular, if ``\lambda_1>0`` and ``c_1>0`` then the sequence ``\left\{\boldsymbol{x}_k\right\}`` will converge to the eigenvector ``\boldsymbol{u}_1:=\boldsymbol{v}_1 /\left\|\boldsymbol{v}_1\right\|`` of unit length.
+"""
+
+# ╔═╡ 81eb6a86-94b9-48f8-be99-56e0dd0c0ed6
+cm"""
+Suppose we know an approximate eigenvector ``\boldsymbol{u}`` of ``\boldsymbol{A}``, but not the corresponding eigenvalue ``\mu``. 
+
+One way of estimating ``\mu`` is to minimize the Euclidian norm of the residual ``r(\lambda):=\boldsymbol{A} \boldsymbol{u}-\lambda \boldsymbol{u}``.
+$(bth("(The Rayleigh Quotient Minimizes the Residual)"))
+Let ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``, ``\boldsymbol{u} \in \mathbb{C}^n \backslash\{\mathbf{0}\}``, and let ``\rho: \mathbb{C} \rightarrow \mathbb{R}`` be given by ``\rho(\lambda)=\|\boldsymbol{A} \boldsymbol{u}-\lambda \boldsymbol{u}\|_2``. Then ``\rho`` is minimized when ``\lambda:=\frac{\boldsymbol{u}^* \boldsymbol{A} \boldsymbol{u}}{\boldsymbol{u}^* \boldsymbol{u}}``, the Rayleigh quotient for ``\boldsymbol{A}``.
+"""
+
+# ╔═╡ 2965088c-09c5-48f0-a36d-9345fcc000a8
+cm"""
+$(ex(2,"(Power Method)"))
+We try powerit on the three matrices
+```math
+\boldsymbol{A}_1:=\left[\begin{array}{ll}
+1 & 2 \\
+3 & 4
+\end{array}\right], \quad \boldsymbol{A}_2:=\left[\begin{array}{cc}
+1.7 & -0.4 \\
+0.15 & 2.2
+\end{array}\right], \quad \text { and } \boldsymbol{A}_3=\left[\begin{array}{cc}
+1 & 2 \\
+-3 & 4
+\end{array}\right]
+```
+
+In each case we start with the random vector ``z=[0.6602,0.3420]`` and ``t o l=10^{-6}``.
+"""
+
+# ╔═╡ f23cf856-1172-4ddc-9a72-ca8f3362f855
+cm"""
+This method can be used to determine any eigenpair ``(\boldsymbol{\lambda}, \boldsymbol{x})`` of ``\boldsymbol{A}`` as long as ``\lambda`` has algebraic multiplicity one. 
+
+- We apply the power method to the inverse matrix 
+
+```math 
+(\boldsymbol{A}-s \boldsymbol{I})^{-1}, \quad\text{where } s \text{ is a shift.}
+```
+
+- If ``\boldsymbol{A}`` has eigenvalues ``\lambda_1, \ldots, \lambda_n`` in no particular order then ``(\boldsymbol{A}-\boldsymbol{s} \boldsymbol{I})^{-1}`` has eigenvalues
+```math
+\mu_1(s)=\left(\lambda_1-s\right)^{-1}, \mu_2(s)=\left(\lambda_2-s\right)^{-1}, \ldots, \mu_n(s)=\left(\lambda_n-s\right)^{-1}
+```
+
+- Suppose ``\lambda_1`` is a simple eigenvalue of ``\boldsymbol{A}``. Then ``\lim _{s \rightarrow \lambda_1}\left|\mu_1(s)\right|=\infty``, while ``\lim _{s \rightarrow \lambda_1} \mu_j(s)=\left(\lambda_j-\lambda_1\right)^{-1}<\infty`` for ``j=2, \ldots, n``. Hence, by choosing ``s`` sufficiently close to ``\lambda_1`` the inverse power method will converge to that eigenvalue.
+
+For the inverse power method the main step is replaced by
+- (i) ``\quad(\boldsymbol{A}-s \boldsymbol{I}) \boldsymbol{y}_k=\boldsymbol{x}_{k-1}``
+- (ii) ``\boldsymbol{x}_k=\boldsymbol{y}_k /\left\|\boldsymbol{y}_k\right\|``.
+
+$(bbl("Remark",""))
+Note that we solve the linear system rather than computing the inverse matrix. Normally the PLU factorization of ``\boldsymbol{A}-s \boldsymbol{I}`` is precomputed in order to speed up the computation.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -6561,6 +6870,28 @@ version = "1.4.1+1"
 # ╠═b482f83b-d02e-493e-ae2d-b43670f8776a
 # ╟─5a510efe-a8ce-49af-bbc4-aeb690441e7b
 # ╟─d0db5ca0-823b-4244-982d-4816e903748d
+# ╟─eeaba8a1-3de5-4b06-8c60-9aca96727e6e
+# ╟─f1fd47c6-5ff8-40ae-877c-4be93eed8267
+# ╟─4e64552f-a911-4281-806a-9d7c1a7f8cd9
+# ╟─1e87d37f-af72-4f30-bd80-431bda4c284d
+# ╠═aaaaf6f0-cb52-479c-823d-3b5e546cb119
+# ╟─caa4d124-8518-4305-8cd5-326d8359382d
+# ╟─77a39dd0-b81e-417d-b33c-840f74e640ac
+# ╟─89369a7f-e967-42af-958d-d303566138cc
+# ╟─fb504532-e7f4-4e03-8a58-07315276ea63
+# ╟─81eb6a86-94b9-48f8-be99-56e0dd0c0ed6
+# ╟─81d77612-c4b3-4672-9315-972c8e2c4cc1
+# ╠═ed502146-6839-424a-9aad-427173d94c1b
+# ╟─2965088c-09c5-48f0-a36d-9345fcc000a8
+# ╠═acd94aa6-0042-4ba6-b3b0-360d4d7259f7
+# ╟─49bbacf6-0162-40dc-a426-a8b924ffd37c
+# ╠═4539150a-3501-4afc-b105-0b7c80b17b9d
+# ╠═520a6cfc-c666-45d7-b8f0-9e9f6eb880ba
+# ╠═0d79809f-8d23-4517-99aa-e98efbbf3050
+# ╟─ce536dab-5efc-4433-8f7b-0fa0954b73a3
+# ╟─f23cf856-1172-4ddc-9a72-ca8f3362f855
+# ╟─14064c61-516b-4b68-94e4-eb3ba469a9e6
+# ╟─00a1538f-7139-40be-96f4-d613c9925583
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
