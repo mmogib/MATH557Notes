@@ -2202,7 +2202,8 @@ let
 		z = A^k*z0
 		z = 2*z/3^k # mystry 
 	end
-	# z/norm(z,Inf)
+	# A*z, 3*z
+	# # z/norm(z,Inf)
 	λ = dot(A*z,z)/dot(z,z) # mystry
 	z, λ
 end
@@ -2310,7 +2311,7 @@ let
 end
 
 # ╔═╡ 49bbacf6-0162-40dc-a426-a8b924ffd37c
-md"## Shifted Power Method"
+md"### Shifted Power Method"
 
 # ╔═╡ 4539150a-3501-4afc-b105-0b7c80b17b9d
 cm"""
@@ -2341,10 +2342,10 @@ let
 end
 
 # ╔═╡ ce536dab-5efc-4433-8f7b-0fa0954b73a3
-md"##  The Inverse Power Metho"
+md"###  The Inverse Power Metho"
 
 # ╔═╡ 14064c61-516b-4b68-94e4-eb3ba469a9e6
-md"## Rayleigh Quotient Iteration"
+md"### Rayleigh Quotient Iteration"
 
 # ╔═╡ 00a1538f-7139-40be-96f4-d613c9925583
 cm"""
@@ -2368,6 +2369,104 @@ Then
 ```
 
 Another problem is that the linear system in (i) becomes closer and closer to singular as ``s_k`` converges to the eigenvalue. Thus the system becomes more and more ill-conditioned and we can expect large errors in the computed ``\boldsymbol{y}_k``. This is indeed true, but we are lucky. Most of the error occurs in the direction of the eigenvector and this error disappears when we normalize ``\boldsymbol{y}_k`` in (ii). Miraculously, the normalized eigenvector will be quite accurate
+"""
+
+# ╔═╡ 700de65e-77ab-4abc-9247-69ae0597faf0
+md"## TheBasic QR Algorithm"
+
+# ╔═╡ ad94f13b-ada0-479e-9401-ec2b2844b9c8
+cm"""
+Let ``\boldsymbol{A} \in \mathbb{C}^{n \times n}``.
+
+The __QR algorithm__ is an __iterative method__ to compute __all eigenvalues and eigenvectors of ``\boldsymbol{A}``__ . 
+
+- Recall that for a square matrix the QR factorization and the QR decomposition are the same. 
+
+- If ``\boldsymbol{A}=\boldsymbol{Q} \boldsymbol{R}`` is a QR factorization then ``\boldsymbol{Q} \in \mathbb{C}^{n \times n}`` is unitary, ``\boldsymbol{Q}^* \boldsymbol{Q}=\boldsymbol{I}`` and ``\boldsymbol{R} \in \mathbb{C}^{n \times n}`` is upper triangular.
+
+- The basic QR algorithm takes the following form:
+
+<div style="border: 1px red solid;">
+
+```math
+\begin{aligned}
+& \boldsymbol{A}_1=\boldsymbol{A} \\
+& \text { for } k=1,2, \ldots \\
+& \quad \boldsymbol{Q}_k \boldsymbol{R}_k=\boldsymbol{A}_k \quad\left(\mathrm{QR} \text { factorization of } \boldsymbol{A}_k\;\; {\color{red}{\text{QR STEP}}}\right) \\
+& \quad \boldsymbol{A}_{k+1}=\boldsymbol{R}_k \boldsymbol{Q}_k \\
+& \text { end }
+\end{aligned}
+```
+</div>
+
+The determination of the QR factorization of ``\boldsymbol{A}_k`` and the computation of ``\boldsymbol{R}_k \boldsymbol{Q}_k`` is called a QR step. It is not at all clear that a QR step does anything useful. So, we find
+```math
+\boldsymbol{A}_{k+1}=\boldsymbol{R}_k \boldsymbol{Q}_k=\boldsymbol{Q}_k^* \boldsymbol{A}_k \boldsymbol{Q}_k,
+```
+
+- ``\boldsymbol{A}_{k+1}`` is unitary similar to ``\boldsymbol{A}_k``. By induction ``\boldsymbol{A}_{k+1}`` is unitary similar to ``\boldsymbol{A}``. Thus, each ``\boldsymbol{A}_k`` has the same eigenvalues as ``\boldsymbol{A}``. We shall see that the basic QR algorithm is related to the __power method__.
+"""
+
+# ╔═╡ ddd773ea-58cd-4407-9aa6-61729ed010f4
+let
+	A = [2 1;1 2]
+	# for i in 1:1
+	# 	Q,R = qr(A)
+	# 	A = R*Q
+	# end
+	A
+end
+
+# ╔═╡ 4798f6c5-ce48-4f6e-9832-a2b7274ae157
+let
+	A=[0.9501   0.8913   0.8214   0.9218 
+	0.2311   0.7621   0.4447   0.7382 
+	0.6068   0.4565   0.6154   0.1763 
+	0.4860   0.0185   0.7919   0.4057]
+	# for i in 1:14
+	# 	Q,R = qr(A)
+	# 	A  = R*Q
+	# end
+	A
+end
+
+# ╔═╡ 02990fd6-6114-43ed-9c4b-340c670a1200
+md"### Relation to the Power Method"
+
+# ╔═╡ fd84a70e-8828-401a-b8f2-7a1b1b45dec7
+cm"""
+- ``\tilde{\boldsymbol{R}}_k`` is upper triangular, so its first column is a multiple of ``\boldsymbol{e}_1`` so that
+```math
+\boldsymbol{A}^k \boldsymbol{e}_1=\tilde{\boldsymbol{Q}}_k \tilde{\boldsymbol{R}}_k \boldsymbol{e}_1=\tilde{r}_{11}^{(k)} \tilde{\boldsymbol{Q}}_k \boldsymbol{e}_1 \text { or } \tilde{\boldsymbol{q}}_1^{(k)}:=\tilde{\boldsymbol{Q}}_k \boldsymbol{e}_1=\frac{1}{\tilde{r}_{11}^{(k)}} \boldsymbol{A}^k \boldsymbol{e}_1
+```
+
+- Since ``\left\|\tilde{\boldsymbol{q}}_1^{(k)}\right\|_2=1`` the first column of ``\tilde{\boldsymbol{Q}}_k`` is the result of applying the __normalized power iteration__ to the starting vector ``\boldsymbol{x}_0=\boldsymbol{e}_1``. 
+
+- If this iteration converges we conclude that the first column of ``\tilde{\boldsymbol{Q}}_k`` must converge to a dominant eigenvector of ``\boldsymbol{A}``. It can be shown that the first column of ``\boldsymbol{A}_k`` must then converge to ``\lambda_1 \boldsymbol{e}_1``, where ``\lambda_1`` is a dominant eigenvalue of ``\boldsymbol{A}``. 
+"""
+
+# ╔═╡ da175646-2d15-4192-bf0e-80c4c8f4511c
+md"""
+## The Shifted QR Algorithms
+"""
+
+# ╔═╡ 3e6a8368-7562-4b3e-a192-e29e4c3a12e6
+cm"""
+The __explicitly shifted QR algorithm__:
+<div style="border: 2px solid red;" >
+
+```math
+\begin{aligned}
+& \boldsymbol{A}_1=\boldsymbol{A} \\
+& \text { for } k=1,2, \ldots \\
+& \quad \text { Choose a shift } s_k \\
+& \qquad \boldsymbol{Q}_k \boldsymbol{R}_k=\boldsymbol{A}_k-s_k \boldsymbol{I} \quad\left(\mathrm{QR} \text { factorization of } \boldsymbol{A}_k-s \boldsymbol{I}\right) \\
+& \quad \boldsymbol{A}_{k+1}=\boldsymbol{R}_k \boldsymbol{Q}_k+s_k \boldsymbol{I} \\
+& \text { end }
+\end{aligned}
+```
+
+</div>
 """
 
 # ╔═╡ ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
@@ -4414,6 +4513,42 @@ For the inverse power method the main step is replaced by
 
 $(bbl("Remark",""))
 Note that we solve the linear system rather than computing the inverse matrix. Normally the PLU factorization of ``\boldsymbol{A}-s \boldsymbol{I}`` is precomputed in order to speed up the computation.
+"""
+
+# ╔═╡ e365d03e-13ed-4ec3-90e7-aea82cc85077
+cm"""
+$(ex("Example 1","(QR Iteration; Real Eigenvalues)"))  
+We start with
+```math
+\boldsymbol{A}_1=\boldsymbol{A}=\left[\begin{array}{ll}
+2 & 1 \\
+1 & 2
+\end{array}\right]=\left(\frac{1}{\sqrt{5}}\left[\begin{array}{cc}
+-2 & -1 \\
+-1 & 2
+\end{array}\right]\right) *\left(\frac{1}{\sqrt{5}}\left[\begin{array}{cc}
+-5 & -4 \\
+0 & 3
+\end{array}\right]\right)=\boldsymbol{Q}_1 \boldsymbol{R}_1
+```
+"""
+
+# ╔═╡ 1a79eaaa-b7f5-4215-b607-c678dab7cad8
+cm"""
+$(ex(2))
+```math
+A_1=A=\left[\begin{array}{llll}0.9501 & 0.8913 & 0.8214 & 0.9218 \\ 0.2311 & 0.7621 & 0.4447 & 0.7382 \\ 0.6068 & 0.4565 & 0.6154 & 0.1763 \\ 0.4860 & 0.0185 & 0.7919 & 0.4057\end{array}\right]
+```
+"""
+
+# ╔═╡ d1ff999f-4609-4f5c-8514-71e180aca33d
+cm"""
+$(bth("(QR and Power)"))
+For ``k=1,2,3, \ldots``, the ``Q R`` factorization of ``\boldsymbol{A}^k`` is ``\boldsymbol{A}^k=\tilde{\boldsymbol{Q}}_k \tilde{\boldsymbol{R}}_k``, where
+```math
+\tilde{\boldsymbol{Q}}_k:=\boldsymbol{Q}_1 \cdots \boldsymbol{Q}_k \text { and } \tilde{\boldsymbol{R}}_k:=\boldsymbol{R}_k \cdots \boldsymbol{R}_1 \text {, }
+```
+and ``\boldsymbol{Q}_1, \ldots, \boldsymbol{Q}_k, \boldsymbol{R}_1, \ldots, \boldsymbol{R}_k`` are the matrices generated by the basic ``Q R`` algorithm (above).
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -6885,13 +7020,24 @@ version = "1.4.1+1"
 # ╟─2965088c-09c5-48f0-a36d-9345fcc000a8
 # ╠═acd94aa6-0042-4ba6-b3b0-360d4d7259f7
 # ╟─49bbacf6-0162-40dc-a426-a8b924ffd37c
-# ╠═4539150a-3501-4afc-b105-0b7c80b17b9d
+# ╟─4539150a-3501-4afc-b105-0b7c80b17b9d
 # ╠═520a6cfc-c666-45d7-b8f0-9e9f6eb880ba
 # ╠═0d79809f-8d23-4517-99aa-e98efbbf3050
 # ╟─ce536dab-5efc-4433-8f7b-0fa0954b73a3
 # ╟─f23cf856-1172-4ddc-9a72-ca8f3362f855
 # ╟─14064c61-516b-4b68-94e4-eb3ba469a9e6
 # ╟─00a1538f-7139-40be-96f4-d613c9925583
+# ╟─700de65e-77ab-4abc-9247-69ae0597faf0
+# ╟─ad94f13b-ada0-479e-9401-ec2b2844b9c8
+# ╟─e365d03e-13ed-4ec3-90e7-aea82cc85077
+# ╠═ddd773ea-58cd-4407-9aa6-61729ed010f4
+# ╟─1a79eaaa-b7f5-4215-b607-c678dab7cad8
+# ╠═4798f6c5-ce48-4f6e-9832-a2b7274ae157
+# ╟─02990fd6-6114-43ed-9c4b-340c670a1200
+# ╟─d1ff999f-4609-4f5c-8514-71e180aca33d
+# ╟─fd84a70e-8828-401a-b8f2-7a1b1b45dec7
+# ╟─da175646-2d15-4192-bf0e-80c4c8f4511c
+# ╟─3e6a8368-7562-4b3e-a192-e29e4c3a12e6
 # ╠═4eb18bb0-5b04-11ef-0c2c-8747a3f06685
 # ╟─ed7ac1ae-3da3-4a46-a34b-4b445d52a95f
 # ╟─7b9ffd7c-3b93-4cfd-bed5-1590368ce987
